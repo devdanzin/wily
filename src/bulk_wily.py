@@ -73,11 +73,32 @@ def build_reports(metrics):
     rows = []
     nl_indent = "\n            "
     total = len(files)
+    columns = [f'<td></td>']
+    for metric in metrics:
+        columns.append(f'<td><a href="global_{metric}.html">{metric}</a></td>')
+    row = f"""
+    <tr>
+        <td><b>global</b></td>
+        {nl_indent.join(columns)}
+    </tr>"""
+    rows.append(row)
+    for metric in metrics:
+        metric_name = f"global_{metric}.html"
+        graph(
+            config,
+            "",
+            (metric,),
+            output=f"{path / metric_name}",
+            changes=True,
+            text=False,
+            aggregate=False,
+            plotlyjs="directory",
+        )
     for index, filepath in enumerate(files):
         filename = str(filepath)
         print(filename, f"{index + 1}/{total}")
         htmlname = str(filename).replace("\\", ".").replace("/", ".")
-        output = f"{path}{htmlname}_report.html"
+        output = f"{path / htmlname}_report.html"
         new_output = pathlib.Path().cwd()
         new_output = new_output / pathlib.Path(output)
         report(
@@ -104,11 +125,11 @@ def build_reports(metrics):
                 config,
                 filename,
                 (metric,),
-                output=f"{path}{metric_name}",
+                output=f"{path / metric_name}",
                 changes=True,
                 text=False,
                 aggregate=False,
-                #plotlyjs="directory",
+                plotlyjs="directory",
             )
     entries = "".join(rows)
     with open(path / "index.html", "w") as index:
