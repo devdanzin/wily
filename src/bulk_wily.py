@@ -9,8 +9,8 @@ from git.repo import Repo
 
 from wily.commands.graph import graph
 from wily.commands.report import report
-from wily.config import DEFAULT_CONFIG_PATH
-from wily.config import load as load_config, WilyConfig
+from wily.config import DEFAULT_CONFIG_PATH, WilyConfig
+from wily.config import load as load_config
 from wily.helper.custom_enums import ReportFormat
 from wily.operators import ALL_OPERATORS
 
