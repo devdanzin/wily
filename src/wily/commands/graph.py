@@ -28,6 +28,7 @@ def graph(
     text=False,
     aggregate=False,
     plotlyjs=False,
+    cached=False,
 ):
     """
     Graph information about the cache and runtime.
@@ -83,7 +84,9 @@ def graph(
         last_y = None
         for rev in state.index[state.default_archiver].revisions:
             try:
-                val = rev.get(config, state.default_archiver, operator, str(path), key)
+                val = rev.get(
+                    config, state.default_archiver, operator, str(path), key, cached
+                )
                 if val != last_y or not changes:
                     y.append(val)
                     if z_axis:
@@ -94,6 +97,7 @@ def graph(
                                 z_operator,
                                 str(path),
                                 z_key,
+                                cached,
                             )
                         )
                     if x_axis == "history":
@@ -106,6 +110,7 @@ def graph(
                                 x_operator,
                                 str(path),
                                 x_key,
+                                cached,
                             )
                         )
                     labels.append(

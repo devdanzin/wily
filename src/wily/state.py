@@ -44,7 +44,7 @@ class IndexedRevision:
         d["operators"] = self.operators
         return d
 
-    def get(self, config, archiver, operator, path, key):
+    def get(self, config, archiver, operator, path, key, cached=False):
         """
         Get the metric data for this indexed revision.
 
@@ -65,7 +65,10 @@ class IndexedRevision:
         """
         if not self._data:
             self._data = cache.get(
-                config=config, archiver=archiver, revision=self.revision.key
+                config=config,
+                archiver=archiver,
+                revision=self.revision.key,
+                cached=cached,
             )["operator_data"]
         logger.debug(f"Fetching metric {path} - {key} for operator {operator}")
         return get_metric(self._data, operator, path, key)

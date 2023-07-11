@@ -10,6 +10,7 @@ import json
 import os.path
 import pathlib
 import shutil
+from functools import cache
 
 from wily import __version__, logger
 from wily.archivers import ALL_ARCHIVERS
@@ -256,7 +257,7 @@ def get_archiver_index(config, archiver):
     return index
 
 
-def get(config, archiver, revision):
+def get(config, archiver, revision, cached=False):
     """
     Get the data for a given revision.
 
@@ -269,10 +270,23 @@ def get(config, archiver, revision):
     :param revision: The revision ID
     :type  revision: ``str``
 
+    :param cached: Whether to use a cache
+    :type  cached: ``bool``
+
     :return: The data record for that revision
     :rtype: ``dict``
     """
     root = pathlib.Path(config.cache_path) / archiver
+    if cached:
+        index = _get_revision(revision, root)
+    else:
+        with (root / f"{revision}.json").open("r") as rev_f:
+            index = json.load(rev_f)
+    return index
+
+
+@cache
+def _get_revision(revision, root):
     # TODO : string escaping!!!
     with (root / f"{revision}.json").open("r") as rev_f:
         index = json.load(rev_f)

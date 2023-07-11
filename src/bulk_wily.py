@@ -73,7 +73,7 @@ def build_reports(metrics):
     rows = []
     nl_indent = "\n            "
     total = len(files)
-    columns = [f'<td></td>']
+    columns = [f"<td></td>"]
     for metric in metrics:
         columns.append(f'<td><a href="global_{metric}.html">{metric}</a></td>')
     row = f"""
@@ -93,6 +93,7 @@ def build_reports(metrics):
             text=False,
             aggregate=False,
             plotlyjs="directory",
+            cached=True,
         )
     for index, filepath in enumerate(files):
         filename = str(filepath)
@@ -109,6 +110,7 @@ def build_reports(metrics):
             new_output,
             include_message=True,
             format=ReportFormat.HTML,
+            cached=True,
         )
         columns = [f'<td><a href="{htmlname}_report.html">Report</a></td>']
         for metric in metrics:
@@ -130,6 +132,7 @@ def build_reports(metrics):
                 text=False,
                 aggregate=False,
                 plotlyjs="directory",
+                cached=True,
             )
     entries = "".join(rows)
     with open(path / "index.html", "w") as index:

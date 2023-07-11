@@ -26,7 +26,9 @@ from wily.operators import (
 from wily.state import State
 
 
-def diff(config, files, metrics, changes_only=True, detail=True, revision=None):
+def diff(
+    config, files, metrics, changes_only=True, detail=True, revision=None, cached=False
+):
     """
     Show the differences in metrics for each of the files.
 
@@ -122,7 +124,7 @@ def diff(config, files, metrics, changes_only=True, detail=True, revision=None):
         for operator, metric in metrics:
             try:
                 current = target_revision.get(
-                    config, state.default_archiver, operator, file, metric.name
+                    config, state.default_archiver, operator, file, metric.name, cached
                 )
             except KeyError:
                 current = "-"

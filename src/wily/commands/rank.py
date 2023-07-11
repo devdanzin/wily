@@ -22,7 +22,9 @@ from wily.operators import resolve_metric_as_tuple
 from wily.state import State
 
 
-def rank(config, path, metric, revision_index, limit, threshold, descending):
+def rank(
+    config, path, metric, revision_index, limit, threshold, descending, cached=False
+):
     """
     Rank command ordering files, methods or functions using metrics.
 
@@ -96,7 +98,7 @@ def rank(config, path, metric, revision_index, limit, threshold, descending):
                     f"Fetching metric {metric.name} for {operator} in {str(item)}"
                 )
                 val = target_revision.get(
-                    config, archiver, operator, str(item), metric.name
+                    config, archiver, operator, str(item), metric.name, cached
                 )
                 value = val
                 data.append((item, value))

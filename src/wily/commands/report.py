@@ -31,6 +31,7 @@ def report(
     format=ReportFormat.CONSOLE,
     console_format=None,
     changes_only=False,
+    cached=False,
 ):
     """
     Show information about the cache and runtime.
@@ -108,7 +109,9 @@ def report(
                     logger.debug(
                         f"Fetching metric {meta['key']} for {meta['operator']} in {path}"
                     )
-                    val = rev.get(config, archiver, meta["operator"], path, meta["key"])
+                    val = rev.get(
+                        config, archiver, meta["operator"], path, meta["key"], cached
+                    )
 
                     last_val = last.get(meta["key"], None)
                     # Measure the difference between this value and the last
