@@ -52,7 +52,7 @@ def run_operator(operator, revision, config, targets):
     return operator.name, data
 
 
-def build(config, archiver, operators):
+def build(config, archiver, operators, cached=False):
     """
     Build the history given a archiver and collection of operators.
 
@@ -83,7 +83,7 @@ def build(config, archiver, operators):
 
     state = State(config, archiver=archiver)
     # Check for existence of cache, else provision
-    state.ensure_exists()
+    state.ensure_exists(cached)
 
     index = state.index[archiver.name]
 

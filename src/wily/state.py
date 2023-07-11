@@ -88,7 +88,10 @@ class IndexedRevision:
         """
         if not self._data:
             self._data = cache.get(
-                config=config, archiver=archiver, revision=self.revision.key
+                config=config,
+                archiver=archiver,
+                revision=self.revision.key,
+                cached=True,
             )["operator_data"]
         logger.debug("Fetching keys")
         return list(self._data[operator].keys())
@@ -236,9 +239,9 @@ class State:
             self.index[archiver] = Index(self.config, resolve_archiver(archiver))
         self.default_archiver = self.archivers[0]
 
-    def ensure_exists(self):
+    def ensure_exists(self, cached=False):
         """Ensure that cache directory exists."""
-        if not cache.exists(self.config):
+        if not cache.exists(self.config, cached):
             logger.debug("Wily cache not found, creating.")
             cache.create(self.config)
             logger.debug("Created wily cache")

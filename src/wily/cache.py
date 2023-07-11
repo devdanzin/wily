@@ -18,7 +18,7 @@ from wily.lang import _
 from wily.operators import resolve_operator
 
 
-def exists(config):
+def exists(config, cached=True):
     """
     Check whether the .wily/ directory exists.
 
@@ -36,8 +36,11 @@ def exists(config):
         return False
     index_path = pathlib.Path(config.cache_path) / "index.json"
     if index_path.exists():
-        with open(index_path) as out:
-            index = json.load(out)
+        if cached:
+            index = _load_index(index_path)
+        else:
+            with open(index_path) as out:
+                index = json.load(out)
         if index["version"] != __version__:
             # TODO: Inspect the versions properly.
             logger.warning(
@@ -49,6 +52,13 @@ def exists(config):
         )
         create_index(config)
     return True
+
+
+@cache
+def _load_index(index_path):
+    with open(index_path) as out:
+        index = json.load(out)
+    return index
 
 
 def create_index(config):
@@ -192,7 +202,7 @@ def list_archivers(config):
     return result
 
 
-def get_default_metrics(config):
+def get_default_metrics(config, cached=True):
     """
     Get the default metrics for a configuration.
 
@@ -206,7 +216,7 @@ def get_default_metrics(config):
     default_metrics = []
 
     for archiver in archivers:
-        index = get_archiver_index(config, archiver)
+        index = get_archiver_index(config, archiver, cached)
 
         if len(index) == 0:
             logger.warning(_("No records found in the index, no metrics available"))
@@ -238,7 +248,7 @@ def has_archiver_index(config, archiver):
     return root.exists()
 
 
-def get_archiver_index(config, archiver):
+def get_archiver_index(config, archiver, cached=True):
     """
     Get the contents of the archiver index file.
 
@@ -252,6 +262,16 @@ def get_archiver_index(config, archiver):
     :rtype: ``dict``
     """
     root = pathlib.Path(config.cache_path) / archiver
+    if cached:
+        index = _get_index(root)
+    else:
+        with (root / "index.json").open("r") as index_f:
+            index = json.load(index_f)
+    return index
+
+
+@cache
+def _get_index(root):
     with (root / "index.json").open("r") as index_f:
         index = json.load(index_f)
     return index
