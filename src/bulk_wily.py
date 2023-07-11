@@ -5,6 +5,7 @@ from time import time
 
 start = time()
 
+import click
 from git.repo import Repo
 
 from wily.commands.graph import graph
@@ -145,13 +146,26 @@ def build_reports(config, metrics, files, path, cached=True):
     print(f"Report and metrics time: {time() - start_metrics_report} secs")
 
 
+@click.group
 def main():
+    pass
+
+
+@main.command(help="Build the bulk report.")
+@click.option(
+    "-c",
+    "--cache/--no-cache",
+    default=False,
+    help=_("Use caching"),
+)
+@click.pass_context
+def build(ctx, cache):
     path = pathlib.Path("reports/")
     path.mkdir(exist_ok=True, parents=True)
     config = load_config(DEFAULT_CONFIG_PATH)
     files = get_all_tracked(config)
     metrics = list_metrics()
-    build_reports(config, metrics, files, path)
+    build_reports(config, metrics, files, path, cached=cache)
     print(f"Import time: {import_time} secs")
     print(f"Total time: {time() - start} secs")
 
