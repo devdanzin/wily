@@ -14,6 +14,7 @@ from wily.config import load as load_config
 from wily.helper.custom_enums import ReportFormat
 from wily.operators import ALL_OPERATORS
 
+print(f"Import time: {time() - start} secs")
 
 def get_all_tracked(config: WilyConfig):
     """Get all tracked files that ever existed in git repo."""
@@ -82,6 +83,7 @@ def build_reports(metrics):
         {nl_indent.join(columns)}
     </tr>"""
     rows.append(row)
+    start_global = time()
     for metric in metrics:
         metric_name = f"global_{metric}.html"
         graph(
@@ -95,6 +97,9 @@ def build_reports(metrics):
             plotlyjs="directory",
             cached=True,
         )
+    print(f"Globals time: {time() - start_global} secs")
+
+    start_metrics_report = time()
     for index, filepath in enumerate(files):
         filename = str(filepath)
         print(filename, f"{index + 1}/{total}")
@@ -135,6 +140,7 @@ def build_reports(metrics):
                 plotlyjs="directory",
                 cached=True,
             )
+    print(f"Report and metrics time: {time() - start_metrics_report} secs")
     entries = "".join(rows)
     with open(path / "index.html", "w") as index:
         index.write(header)
@@ -143,4 +149,4 @@ def build_reports(metrics):
 
 
 build_reports(metrics)
-print(f"{time() - start} secs")
+print(f"Total time: {time() - start} secs")
