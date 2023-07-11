@@ -111,6 +111,7 @@ def build_reports(metrics):
             include_message=True,
             format=ReportFormat.HTML,
             cached=True,
+            changes_only=True,
         )
         columns = [f'<td><a href="{htmlname}_report.html">Report</a></td>']
         for metric in metrics:
