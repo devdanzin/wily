@@ -14,7 +14,8 @@ from wily.config import load as load_config
 from wily.helper.custom_enums import ReportFormat
 from wily.operators import ALL_OPERATORS
 
-print(f"Import time: {time() - start} secs")
+import_time = time() - start
+
 
 def get_all_tracked(config: WilyConfig):
     """Get all tracked files that ever existed in git repo."""
@@ -38,13 +39,12 @@ def list_metrics():
     return metrics
 
 
-metrics = list_metrics()
-
-columns = ["<td><h3>Report</h3></td>"]
-for metric in metrics:
-    columns.append(f"<td><h3>{metric}</h3></td>")
-nl_indent = "\n            "
-header = f"""<!DOCTYPE html>
+def get_header_and_footer(metrics):
+    columns = ["<td><h3>Report</h3></td>"]
+    for metric in metrics:
+        columns.append(f"<td><h3>{metric}</h3></td>")
+    nl_indent = "\n            "
+    header = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -59,18 +59,13 @@ header = f"""<!DOCTYPE html>
         </tr>
     </thead>
 """
-footer = """</table>
+    footer = """</table>
 </body>
 </html>"""
-
-path = pathlib.Path("reports/")
-path.mkdir(exist_ok=True, parents=True)
-
-config = load_config(DEFAULT_CONFIG_PATH)
-files = get_all_tracked(config)
+    return header, footer
 
 
-def build_reports(metrics):
+def build_reports(config, metrics, files, path, cached=True):
     rows = []
     nl_indent = "\n            "
     total = len(files)
@@ -95,9 +90,9 @@ def build_reports(metrics):
             text=False,
             aggregate=False,
             plotlyjs="directory",
-            cached=True,
+            cached=cached,
         )
-    print(f"Globals time: {time() - start_global} secs")
+    globals_time = time() - start_global
 
     start_metrics_report = time()
     for index, filepath in enumerate(files):
@@ -115,7 +110,7 @@ def build_reports(metrics):
             new_output,
             include_message=True,
             format=ReportFormat.HTML,
-            cached=True,
+            cached=cached,
             changes_only=True,
         )
         columns = [f'<td><a href="{htmlname}_report.html">Report</a></td>']
@@ -138,15 +133,28 @@ def build_reports(metrics):
                 text=False,
                 aggregate=False,
                 plotlyjs="directory",
-                cached=True,
+                cached=cached,
             )
-    print(f"Report and metrics time: {time() - start_metrics_report} secs")
     entries = "".join(rows)
+    header, footer = get_header_and_footer(metrics)
     with open(path / "index.html", "w") as index:
         index.write(header)
         index.write(entries)
         index.write(footer)
+    print(f"Globals time: {globals_time} secs")
+    print(f"Report and metrics time: {time() - start_metrics_report} secs")
 
 
-build_reports(metrics)
-print(f"Total time: {time() - start} secs")
+def main():
+    path = pathlib.Path("reports/")
+    path.mkdir(exist_ok=True, parents=True)
+    config = load_config(DEFAULT_CONFIG_PATH)
+    files = get_all_tracked(config)
+    metrics = list_metrics()
+    build_reports(config, metrics, files, path)
+    print(f"Import time: {import_time} secs")
+    print(f"Total time: {time() - start} secs")
+
+
+if __name__ == "__main__":
+    main()
