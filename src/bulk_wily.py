@@ -49,7 +49,7 @@ def get_headers(metrics):
     return nl_indent.join(columns)
 
 
-def build_reports(config, metrics, files, path, cached=True):
+def build_reports(config, metrics, files, path, cached=True, index_only=False):
     """Build bulk reports."""
     rows = []
     nl_indent = "\n            "
@@ -64,40 +64,42 @@ def build_reports(config, metrics, files, path, cached=True):
         </tr>"""
     rows.append(row)
     start_global = time()
-    for metric in metrics:
-        metric_name = f"global_{metric}.html"
-        graph(
-            config,
-            "",
-            (metric,),
-            output=f"{path / metric_name}",
-            changes=True,
-            text=False,
-            aggregate=False,
-            plotlyjs="directory",
-            cached=cached,
-        )
+    if not index_only:
+        for metric in metrics:
+            metric_name = f"global_{metric}.html"
+            graph(
+                config,
+                "",
+                (metric,),
+                output=f"{path / metric_name}",
+                changes=True,
+                text=False,
+                aggregate=False,
+                plotlyjs="directory",
+                cached=cached,
+            )
     globals_time = time() - start_global
 
     start_metrics_report = time()
     for index, filepath in enumerate(files):
         filename = str(filepath)
-        print(filename, f"{index + 1}/{total}")
         htmlname = str(filename).replace("\\", ".").replace("/", ".")
-        output = f"{path / htmlname}_report.html"
-        new_output = pathlib.Path().cwd()
-        new_output = new_output / pathlib.Path(output)
-        report(
-            config,
-            filename,
-            metrics,
-            500,
-            new_output,
-            include_message=True,
-            format=ReportFormat.HTML,
-            cached=cached,
-            changes_only=True,
-        )
+        if not index_only:
+            print(filename, f"{index + 1}/{total}")
+            output = f"{path / htmlname}_report.html"
+            new_output = pathlib.Path().cwd()
+            new_output = new_output / pathlib.Path(output)
+            report(
+                config,
+                filename,
+                metrics,
+                500,
+                new_output,
+                include_message=True,
+                format=ReportFormat.HTML,
+                cached=cached,
+                changes_only=True,
+            )
         columns = [f'<td><a href="{htmlname}_report.html">Report</a></td>']
         for metric in metrics:
             columns.append(f'<td><a href="{htmlname}_{metric}.html">{metric}</a></td>')
@@ -107,19 +109,21 @@ def build_reports(config, metrics, files, path, cached=True):
             {nl_indent.join(columns)}
         </tr>"""
         rows.append(row)
-        for metric in metrics:
-            metric_name = f"{htmlname}_{metric}.html"
-            graph(
-                config,
-                filename,
-                (metric,),
-                output=f"{path / metric_name}",
-                changes=True,
-                text=False,
-                aggregate=False,
-                plotlyjs="directory",
-                cached=cached,
-            )
+        if not index_only:
+            for metric in metrics:
+                metric_name = f"{htmlname}_{metric}.html"
+                graph(
+                    config,
+                    filename,
+                    (metric,),
+                    output=f"{path / metric_name}",
+                    changes=True,
+                    text=False,
+                    aggregate=False,
+                    plotlyjs="directory",
+                    cached=cached,
+                )
+
     entries = "".join(rows)
     table_headers = get_headers(metrics)
     templates_dir = (pathlib.Path(__file__).parents[0] / "wily" / "templates").resolve()
@@ -130,6 +134,7 @@ def build_reports(config, metrics, files, path, cached=True):
 
     with (path / "index.html").open("w", errors="xmlcharrefreplace") as output:
         output.write(report_template)
+
     print(f"Globals time: {globals_time} secs")
     print(f"Report and metrics time: {time() - start_metrics_report} secs")
 
@@ -146,15 +151,21 @@ def main():
     default=False,
     help="Use caching",
 )
+@click.option(
+    "-i",
+    "--index/--full",
+    default=False,
+    help="Only build index.html",
+)
 @click.pass_context
-def build(ctx, cache):
+def build(ctx, cache, index):
     """Build the bulk reports."""
     path = pathlib.Path("reports/")
     path.mkdir(exist_ok=True, parents=True)
     config = load_config(DEFAULT_CONFIG_PATH)
     files = get_all_tracked(config)
     metrics = list_metrics()
-    build_reports(config, metrics, files, path, cached=cache)
+    build_reports(config, metrics, files, path, cached=cache, index_only=index)
     print(f"Total time: {time() - start} secs")
 
 
