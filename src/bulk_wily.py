@@ -52,6 +52,7 @@ def get_headers(metrics):
 def build_reports(config, metrics, files, path, cached=True, index_only=False):
     """Build bulk reports."""
     rows = []
+    created_files = [path / "index.html"]
     nl_indent = "\n            "
     total = len(files)
     columns = ["    <td></td>"]
@@ -64,14 +65,17 @@ def build_reports(config, metrics, files, path, cached=True, index_only=False):
         </tr>"""
     rows.append(row)
     start_global = time()
-    if not index_only:
-        for metric in metrics:
-            metric_name = f"global_{metric}.html"
+
+    for metric in metrics:
+        metric_name = f"global_{metric}.html"
+        metric_filename = f"{path / metric_name}"
+        created_files.append(metric_filename)
+        if not index_only:
             graph(
                 config,
                 "",
                 (metric,),
-                output=f"{path / metric_name}",
+                output=metric_filename,
                 changes=True,
                 text=False,
                 aggregate=False,
@@ -84,11 +88,12 @@ def build_reports(config, metrics, files, path, cached=True, index_only=False):
     for index, filepath in enumerate(files):
         filename = str(filepath)
         htmlname = str(filename).replace("\\", ".").replace("/", ".")
+        output = f"{path / htmlname}_report.html"
+        new_output = pathlib.Path().cwd()
+        new_output = new_output / pathlib.Path(output)
+        created_files.append(new_output)
         if not index_only:
             print(filename, f"{index + 1}/{total}")
-            output = f"{path / htmlname}_report.html"
-            new_output = pathlib.Path().cwd()
-            new_output = new_output / pathlib.Path(output)
             report(
                 config,
                 filename,
@@ -109,14 +114,17 @@ def build_reports(config, metrics, files, path, cached=True, index_only=False):
             {nl_indent.join(columns)}
         </tr>"""
         rows.append(row)
-        if not index_only:
-            for metric in metrics:
-                metric_name = f"{htmlname}_{metric}.html"
+
+        for metric in metrics:
+            metric_name = f"{htmlname}_{metric}.html"
+            metric_filename = f"{path / metric_name}"
+            created_files.append(metric_filename)
+            if not index_only:
                 graph(
                     config,
                     filename,
                     (metric,),
-                    output=f"{path / metric_name}",
+                    output=metric_filename,
                     changes=True,
                     text=False,
                     aggregate=False,
@@ -137,6 +145,8 @@ def build_reports(config, metrics, files, path, cached=True, index_only=False):
 
     print(f"Globals time: {globals_time} secs")
     print(f"Report and metrics time: {time() - start_metrics_report} secs")
+
+    return created_files
 
 
 @click.group
@@ -166,6 +176,21 @@ def build(ctx, cache, index):
     files = get_all_tracked(config)
     metrics = list_metrics()
     build_reports(config, metrics, files, path, cached=cache, index_only=index)
+    print(f"Total time: {time() - start} secs")
+
+
+@main.command(help="Erase the bulk report files.")
+@click.pass_context
+def clean(ctx):
+    """Erase the bulk report files."""
+    path = pathlib.Path("reports/")
+    config = load_config(DEFAULT_CONFIG_PATH)
+    files = get_all_tracked(config)
+    metrics = list_metrics()
+    files_to_clean = build_reports(config, metrics, files, path, index_only=True)
+    for file in files_to_clean:
+        to_delete = pathlib.Path(file)
+        to_delete.unlink(missing_ok=True)
     print(f"Total time: {time() - start} secs")
 
 
