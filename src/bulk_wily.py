@@ -4,8 +4,6 @@ import pathlib
 from string import Template
 from time import time
 
-start = time()
-
 import click
 from git.repo import Repo
 
@@ -16,7 +14,7 @@ from wily.config import load as load_config
 from wily.helper.custom_enums import ReportFormat
 from wily.operators import ALL_OPERATORS
 
-import_time = time() - start
+start = time()
 
 
 def get_all_tracked(config: WilyConfig):
@@ -31,6 +29,7 @@ def get_all_tracked(config: WilyConfig):
 
 
 def list_metrics():
+    """List all known metrics."""
     metrics = []
     for name, operator in sorted(ALL_OPERATORS.items()):
         if len(operator.cls.metrics) == 0:
@@ -42,6 +41,7 @@ def list_metrics():
 
 
 def get_headers(metrics):
+    """Get headers for the index.html table."""
     columns = ["<td><h3>Filename</h3></td>", "<td><h3>Report</h3></td>"]
     for metric in metrics:
         columns.append(f"<td><h3>{metric}</h3></td>")
@@ -50,10 +50,11 @@ def get_headers(metrics):
 
 
 def build_reports(config, metrics, files, path, cached=True):
+    """Build bulk reports."""
     rows = []
     nl_indent = "\n            "
     total = len(files)
-    columns = [f"    <td></td>"]
+    columns = ["    <td></td>"]
     for metric in metrics:
         columns.append(f'<td><a href="global_{metric}.html">{metric}</a></td>')
     row = f"""
@@ -135,7 +136,7 @@ def build_reports(config, metrics, files, path, cached=True):
 
 @click.group
 def main():
-    pass
+    """Group commands."""
 
 
 @main.command(help="Build the bulk report.")
@@ -143,17 +144,17 @@ def main():
     "-c",
     "--cache/--no-cache",
     default=False,
-    help=_("Use caching"),
+    help="Use caching",
 )
 @click.pass_context
 def build(ctx, cache):
+    """Build the bulk reports."""
     path = pathlib.Path("reports/")
     path.mkdir(exist_ok=True, parents=True)
     config = load_config(DEFAULT_CONFIG_PATH)
     files = get_all_tracked(config)
     metrics = list_metrics()
     build_reports(config, metrics, files, path, cached=cache)
-    print(f"Import time: {import_time} secs")
     print(f"Total time: {time() - start} secs")
 
 
