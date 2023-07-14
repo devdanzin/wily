@@ -158,7 +158,7 @@ def main():
 @click.option(
     "-c",
     "--cache/--no-cache",
-    default=False,
+    default=True,
     help="Use caching",
 )
 @click.option(
