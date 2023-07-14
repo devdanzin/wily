@@ -1,6 +1,7 @@
 """Quick and dirty global report generator for Wily."""
 
 import pathlib
+from string import Template
 from time import time
 
 start = time()
@@ -40,44 +41,26 @@ def list_metrics():
     return metrics
 
 
-def get_header_and_footer(metrics):
-    columns = ["<td><h3>Report</h3></td>"]
+def get_headers(metrics):
+    columns = ["<td><h3>Filename</h3></td>", "<td><h3>Report</h3></td>"]
     for metric in metrics:
         columns.append(f"<td><h3>{metric}</h3></td>")
     nl_indent = "\n            "
-    header = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Wily Reports</title>
-</head>
-<body>
-<table>
-    <thead>
-        <tr>
-            <td><h3>Filename</h3></td>
-            {nl_indent.join(columns)}
-        </tr>
-    </thead>
-"""
-    footer = """</table>
-</body>
-</html>"""
-    return header, footer
+    return nl_indent.join(columns)
 
 
 def build_reports(config, metrics, files, path, cached=True):
     rows = []
     nl_indent = "\n            "
     total = len(files)
-    columns = [f"<td></td>"]
+    columns = [f"    <td></td>"]
     for metric in metrics:
         columns.append(f'<td><a href="global_{metric}.html">{metric}</a></td>')
     row = f"""
-    <tr>
-        <td><b>global</b></td>
+        <tr>
+            <td><b>global</b></td>
         {nl_indent.join(columns)}
-    </tr>"""
+        </tr>"""
     rows.append(row)
     start_global = time()
     for metric in metrics:
@@ -137,11 +120,15 @@ def build_reports(config, metrics, files, path, cached=True):
                 cached=cached,
             )
     entries = "".join(rows)
-    header, footer = get_header_and_footer(metrics)
-    with open(path / "index.html", "w") as index:
-        index.write(header)
-        index.write(entries)
-        index.write(footer)
+    table_headers = get_headers(metrics)
+    templates_dir = (pathlib.Path(__file__).parents[0] / "wily" / "templates").resolve()
+    report_template = Template((templates_dir / "bulk_template.html").read_text())
+    report_template = report_template.safe_substitute(
+        headers=table_headers, content=entries
+    )
+
+    with (path / "index.html").open("w", errors="xmlcharrefreplace") as output:
+        output.write(report_template)
     print(f"Globals time: {globals_time} secs")
     print(f"Report and metrics time: {time() - start_metrics_report} secs")
 
