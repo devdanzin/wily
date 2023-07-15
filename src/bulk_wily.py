@@ -49,7 +49,7 @@ def get_headers(metrics):
     return nl_indent.join(columns)
 
 
-def build_reports(config, metrics, files, path, cached=True, index_only=False):
+def build_reports(config, metrics, files, path, cached=True, index_only=False, globals_only=False):
     """Build bulk reports."""
     rows = []
     created_files = [path / "index.html"]
@@ -92,7 +92,7 @@ def build_reports(config, metrics, files, path, cached=True, index_only=False):
         new_output = pathlib.Path().cwd()
         new_output = new_output / pathlib.Path(output)
         created_files.append(new_output)
-        if not index_only:
+        if not index_only and not globals_only:
             print(filename, f"{index + 1}/{total}")
             report(
                 config,
@@ -119,7 +119,7 @@ def build_reports(config, metrics, files, path, cached=True, index_only=False):
             metric_name = f"{htmlname}_{metric}.html"
             metric_filename = f"{path / metric_name}"
             created_files.append(metric_filename)
-            if not index_only:
+            if not index_only and not globals_only:
                 graph(
                     config,
                     filename,
@@ -167,15 +167,21 @@ def main():
     default=False,
     help="Only build index.html",
 )
+@click.option(
+    "-g",
+    "--globals-only/--per-file",
+    default=False,
+    help="Only create metric graphs for all files",
+)
 @click.pass_context
-def build(ctx, cache, index):
+def build(ctx, cache, index, globals_only):
     """Build the bulk reports."""
     path = pathlib.Path("reports/")
     path.mkdir(exist_ok=True, parents=True)
     config = load_config(DEFAULT_CONFIG_PATH)
     files = get_all_tracked(config)
     metrics = list_metrics()
-    build_reports(config, metrics, files, path, cached=cache, index_only=index)
+    build_reports(config, metrics, files, path, cached=cache, index_only=index, globals_only=globals_only)
     print(f"Total time: {time() - start} secs")
 
 
