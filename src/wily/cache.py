@@ -12,6 +12,8 @@ import pathlib
 import shutil
 from functools import cache
 
+from cachier import cachier
+
 from wily import __version__, logger
 from wily.archivers import ALL_ARCHIVERS
 from wily.lang import _
@@ -54,7 +56,7 @@ def exists(config, cached=True):
     return True
 
 
-@cache
+@cachier(pickle_reload=False)
 def _load_index(index_path):
     with open(index_path) as out:
         index = json.load(out)
@@ -96,6 +98,13 @@ def clean(config):
     :type  config: :class:`wily.config.WilyConfig`
 
     """
+    if hasattr(_load_index, "clear_cache"):
+        print("Cleaning cachier caches.")
+        _load_index.clear_cache()
+        _get_index.clear_cache()
+        _get_revision.clear_cache()
+    else:
+        print("No cachier caches found.")
     if not exists(config):
         logger.debug("Wily cache does not exist, skipping")
         return
@@ -270,7 +279,7 @@ def get_archiver_index(config, archiver, cached=True):
     return index
 
 
-@cache
+@cachier(pickle_reload=False)
 def _get_index(root):
     with (root / "index.json").open("r") as index_f:
         index = json.load(index_f)
@@ -305,7 +314,7 @@ def get(config, archiver, revision, cached=False):
     return index
 
 
-@cache
+@cachier(pickle_reload=False)
 def _get_revision(revision, root):
     # TODO : string escaping!!!
     with (root / f"{revision}.json").open("r") as rev_f:
