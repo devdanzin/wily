@@ -197,6 +197,10 @@ class Index:
 
         :param revision: The revision.
         :type  revision: :class:`Revision` or :class:`LazyRevision`
+
+        :param operators: Operators for the revision.
+        :type operators:  ``list`` of :class:`Operator`
+
         """
         ir = IndexedRevision(
             revision=revision, operators=[operator.name for operator in operators]
