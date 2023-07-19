@@ -2,11 +2,14 @@
 
 import json
 from pathlib import Path
+from sys import exit
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter, TerminalFormatter
 from pygments.lexers import PythonLexer
 
+from wily import logger
+from wily.archivers import resolve_archiver
 from wily.config import DEFAULT_CONFIG_PATH
 from wily.config import load as load_config
 from wily.state import IndexedRevision, State
@@ -92,18 +95,45 @@ def map_lines(details):
     return lines
 
 
-def annotate_revision(format="HTML"):
+def annotate_revision(format="HTML", revision_index=""):
     """Generate annotated files from detailed metric data in a revision."""
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
-    target_revision: IndexedRevision = state.index[state.default_archiver].last_revision
-    rev_data = Path(config.cache_path) / "git" / f"{target_revision.revision.key}.json"
+
+    target_revision: IndexedRevision
+    if not revision_index:
+        target_revision = state.index[state.default_archiver].last_revision
+    else:
+        rev = resolve_archiver(state.default_archiver).cls(config).find(revision_index)
+        logger.debug(f"Resolved {revision_index} to {rev.key} ({rev.message})")
+        try:
+            target_revision = state.index[state.default_archiver][rev.key]
+        except KeyError:
+            logger.error(
+                f"Revision {revision_index} is not in the cache, make sure you have run wily build."
+            )
+            exit(1)
+    rev_key = target_revision.revision.key
+    rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
     as_dict = json.loads(rev_data.read_text())
     py_files = [
         key
         for key in as_dict["operator_data"]["cyclomatic"].keys()
         if key.endswith(".py")
     ]
+    if not py_files:
+        logger.error(
+            f"Revision {rev_key} has no files with Cyclomatic Complexity data."
+        )
+        exit(1)
+    if format.lower() == "html":
+        logger.info(
+            f"Saving annotated source code for {', '.join(py_files)} at rev {rev_key}."
+        )
+    elif format.lower() == "console":
+        logger.info(
+            f"Showing annotated source code for {', '.join(py_files)} at rev {rev_key}."
+        )
     for filename in py_files:
         details = as_dict["operator_data"]["cyclomatic"][filename]["detailed"]
         path = Path(filename)
@@ -147,6 +177,7 @@ def generate_annotated_html(code, filename, metrics, target_revision):
     reports_dir.mkdir(parents=True, exist_ok=True)
     filename = filename.replace("\\", ".").replace("/", ".")
     output = reports_dir / f"annotated_{filename}.html"
+    logger.info(f"Saving {filename} annotated source code to {output}.")
     with output.open("w") as html:
         html.write(result)
 
