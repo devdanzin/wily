@@ -1,9 +1,11 @@
 """Annotate source code with metrics."""
 
 import json
+import logging
 from pathlib import Path
 from sys import exit
 
+from git import Repo
 from pygments import highlight
 from pygments.formatters import HtmlFormatter, TerminalFormatter
 from pygments.lexers import PythonLexer
@@ -13,6 +15,8 @@ from wily.archivers import resolve_archiver
 from wily.config import DEFAULT_CONFIG_PATH
 from wily.config import load as load_config
 from wily.state import IndexedRevision, State
+
+logger.setLevel(logging.INFO)
 
 
 class AnnotatedHTMLFormatter(HtmlFormatter):
@@ -99,12 +103,15 @@ def annotate_revision(format="HTML", revision_index=""):
     """Generate annotated files from detailed metric data in a revision."""
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
+    repo = Repo(config.path)
 
     target_revision: IndexedRevision
     if not revision_index:
+        commit = repo.rev_parse("HEAD")
         target_revision = state.index[state.default_archiver].last_revision
     else:
-        rev = resolve_archiver(state.default_archiver).cls(config).find(revision_index)
+        commit = repo.rev_parse(revision_index)
+        rev = resolve_archiver(state.default_archiver).cls(config).find(commit.hexsha)
         logger.debug(f"Resolved {revision_index} to {rev.key} ({rev.message})")
         try:
             target_revision = state.index[state.default_archiver][rev.key]
@@ -128,13 +135,19 @@ def annotate_revision(format="HTML", revision_index=""):
         exit(1)
     if format.lower() == "html":
         logger.info(
-            f"Saving annotated source code for {', '.join(py_files)} at rev {rev_key}."
+            f"Saving annotated source code for {', '.join(py_files)} at rev {rev_key[:7]}."
         )
     elif format.lower() == "console":
         logger.info(
-            f"Showing annotated source code for {', '.join(py_files)} at rev {rev_key}."
+            f"Showing annotated source code for {', '.join(py_files)} at rev {rev_key[:7]}."
         )
     for filename in py_files:
+        diff = commit.diff(None, filename)
+        if diff:
+            if diff[0].change_type in ("M",):
+                logger.error(
+                    f"Changes found in {filename} since revision {rev_key[:7]}. Line numbers might be wrong."
+                )
         details = as_dict["operator_data"]["cyclomatic"][filename]["detailed"]
         path = Path(filename)
         code = path.read_text()
