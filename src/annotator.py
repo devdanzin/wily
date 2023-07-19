@@ -59,12 +59,16 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     blue = 0
                     c = f"rgba{(red, green, blue, 0.75)}"
                 yield 1, (
-                    f'<div style="background-color: {c}; width: 100%%;">'
+                    f'<div style="background-color: {c}; width: 100%;">'
                     '<span style="background-color: #ffffff;">'
                     f'{" ".join(self.metrics[i])} |</span> {value}</div>'
                 )
             else:
-                yield 1, value
+                yield 1, (
+                    '<div style="background-color: #ffffff; width: 100%;">'
+                    '<span style="background-color: #ffffff;">'
+                    f'{" ".join(("--", "--"))} |</span> {value}</div>'
+                )
 
 
 class AnnotatedTerminalFormatter(TerminalFormatter):
