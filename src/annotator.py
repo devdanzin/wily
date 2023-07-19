@@ -1,4 +1,5 @@
 """Annotate source code with metrics."""
+from __future__ import annotations
 
 import json
 import logging
@@ -22,7 +23,7 @@ logger.setLevel(logging.INFO)
 class AnnotatedHTMLFormatter(HtmlFormatter):
     """Annotate and color source code with metric values as HTML."""
 
-    def __init__(self, metrics=None, **options):
+    def __init__(self, metrics: dict[int, list[str]] | None = None, **options) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
         self.metrics = metrics
@@ -41,8 +42,10 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
     def annotate_lines(self, tokensource):
         """Add metric annotations from self.metrics."""
         for i, (_t, value) in enumerate(tokensource):
+            if not self.metrics:
+                yield 1, value
             if i in self.metrics:
-                if self.metrics[i][1] == "--":  # Just use function/method values for now
+                if self.metrics[i][1] == "--":  # Just use function values for now
                     c = "#ffffff"
                 else:
                     val = int(self.metrics[i][1])
@@ -77,7 +80,7 @@ class AnnotatedTerminalFormatter(TerminalFormatter):
         )
 
 
-def last_line(details):
+def last_line(details: dict) -> int:
     """Get the last line from a series of detailed metric entries."""
     lineends = []
     for _name, detail in details.items():
@@ -85,21 +88,21 @@ def last_line(details):
     return max(lineends)
 
 
-def map_lines(details):
+def map_lines(details: dict) -> dict[int, list[str]]:
     """Map metric values to lines, for functions/methods and classes."""
     last = last_line(details)
     lines = {i: ["--", "--"] for i in range(last + 1)}
     for _name, detail in details.items():
         if "is_method" in detail:
             for line in range(detail["lineno"] - 1, detail["endline"]):
-                lines[line] = lines[line][0], f"{detail['complexity']:02d}"
+                lines[line] = [lines[line][0], f"{detail['complexity']:02d}"]
         else:
             for line in range(detail["lineno"] - 1, detail["endline"]):
-                lines[line] = f"{detail['complexity']:02d}", lines[line][1]
+                lines[line] = [f"{detail['complexity']:02d}", lines[line][1]]
     return lines
 
 
-def annotate_revision(format="HTML", revision_index=""):
+def annotate_revision(format: str = "HTML", revision_index: str = "") -> None:
     """Generate annotated files from detailed metric data in a revision."""
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
@@ -152,12 +155,14 @@ def annotate_revision(format="HTML", revision_index=""):
         code = path.read_text()
         metrics = map_lines(details)
         if format.lower() == "html":
-            generate_annotated_html(code, filename, metrics, target_revision)
+            generate_annotated_html(
+                code, filename, metrics, target_revision.revision.key
+            )
         elif format.lower() == "console":
             print_annotated_source(code, metrics)
 
 
-def print_annotated_source(code, metrics):
+def print_annotated_source(code: str, metrics: dict[int, list[str]]):
     """Print source annotated with metric to terminal."""
     result = highlight(
         code,
@@ -170,13 +175,15 @@ def print_annotated_source(code, metrics):
     print(result)
 
 
-def generate_annotated_html(code, filename, metrics, target_revision):
+def generate_annotated_html(
+    code: str, filename: str, metrics: dict[int, list[str]], key: str
+):
     """Generate an annotated HTML file from source code and metric data."""
     result = highlight(
         code,
         PythonLexer(),
         AnnotatedHTMLFormatter(
-            title=f"CC for {filename} at {target_revision.revision.key[:7]}",
+            title=f"CC for {filename} at {key[:7]}",
             lineanchors="line",
             anchorlinenos=True,
             filename=filename,
