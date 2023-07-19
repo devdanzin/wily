@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 from sys import exit
 
+import click
 from git import Repo
 from pygments import highlight
 from pygments.formatters import HtmlFormatter, TerminalFormatter
@@ -201,5 +202,25 @@ def generate_annotated_html(
         html.write(result)
 
 
+@click.command(help="Annotate source files with Cyclomatic Complexity values.")
+@click.option(
+    "-f",
+    "--format",
+    default="CONSOLE",
+    help="Save HTML or print to CONSOLE",
+    type=click.STRING,
+)
+@click.option(
+    "-r",
+    "--revision",
+    default="HEAD",
+    help="Annotate with metric values from specific revision",
+    type=click.STRING,
+)
+def run(format: str, revision: str) -> None:
+    """Generate annotated source."""
+    annotate_revision(format=format, revision_index=revision)
+
+
 if __name__ == "__main__":
-    annotate_revision("console")
+    run()
