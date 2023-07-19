@@ -42,7 +42,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         """Add metric annotations from self.metrics."""
         for i, (_t, value) in enumerate(tokensource):
             if i in self.metrics:
-                if self.metrics[i][1] == "-":  # Just use function/method values for now
+                if self.metrics[i][1] == "--":  # Just use function/method values for now
                     c = "#ffffff"
                 else:
                     val = int(self.metrics[i][1])
@@ -70,7 +70,7 @@ class AnnotatedTerminalFormatter(TerminalFormatter):
     def _write_lineno(self, outfile):
         """Write line numbers and metric annotations."""
         self._lineno += 1
-        metric_values = " ".join(self.metrics.get(self._lineno - 1, ("-", "-")))
+        metric_values = " ".join(self.metrics.get(self._lineno - 1, ("--", "--")))
         outfile.write(
             f"%s%04d: {metric_values} |"
             % (self._lineno != 1 and "\n" or "", self._lineno)
@@ -88,14 +88,14 @@ def last_line(details):
 def map_lines(details):
     """Map metric values to lines, for functions/methods and classes."""
     last = last_line(details)
-    lines = {i: ["-", "-"] for i in range(last + 1)}
+    lines = {i: ["--", "--"] for i in range(last + 1)}
     for _name, detail in details.items():
         if "is_method" in detail:
             for line in range(detail["lineno"] - 1, detail["endline"]):
-                lines[line] = lines[line][0], str(detail["complexity"])
+                lines[line] = lines[line][0], f"{detail['complexity']:02d}"
         else:
             for line in range(detail["lineno"] - 1, detail["endline"]):
-                lines[line] = str(detail["complexity"]), lines[line][1]
+                lines[line] = f"{detail['complexity']:02d}", lines[line][1]
     return lines
 
 
