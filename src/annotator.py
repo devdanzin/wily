@@ -96,7 +96,7 @@ def last_line(details: dict) -> int:
     lineends = []
     for _name, detail in details.items():
         lineends.append(detail["endline"])
-    return max(lineends)
+    return max(lineends or [0])
 
 
 def map_lines(details: dict) -> dict[int, tuple[str, str]]:
