@@ -109,13 +109,31 @@ def map_lines(details: dict) -> dict[int, tuple[str, str]]:
     return lines
 
 
-def annotate_revision(format: str = "HTML", revision_index: str = "") -> None:
+def bulk_annotate() -> None:
+    config = load_config(DEFAULT_CONFIG_PATH)
+    state = State(config)
+    latest = {}
+    for rev_key in state.index[state.default_archiver].revision_keys:
+        rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
+        as_dict = json.loads(rev_data.read_text())
+        cyclomatic = as_dict["operator_data"]["cyclomatic"]
+        for filename, data in cyclomatic.items():
+            if filename.endswith(".py") and filename not in latest:
+                latest[filename] = rev_key
+    for filename, rev_key in latest.items():
+        annotate_revision(format="HTML", revision_index=rev_key, path=filename)
+
+
+def annotate_revision(
+    format: str = "HTML", revision_index: str = "", path: str = ""
+) -> None:
     """Generate annotated files from detailed metric data in a revision."""
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
     repo = Repo(config.path)
 
     target_revision: IndexedRevision
+    # TODO: try to fetch revision_index from index before resolving in repo.
     if not revision_index:
         commit = repo.rev_parse("HEAD")
     else:
@@ -139,16 +157,21 @@ def annotate_revision(format: str = "HTML", revision_index: str = "") -> None:
     rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
     as_dict = json.loads(rev_data.read_text())
     cyclomatic = as_dict["operator_data"]["cyclomatic"]
-    py_files = [
-        key
-        for key in cyclomatic.keys()
-        if key.endswith(".py")
-    ]
-    if not py_files:
-        logger.error(
-            f"Revision {rev_key} has no files with Cyclomatic Complexity data."
-        )
-        exit(1)
+    if path:
+        if path not in cyclomatic:
+            logger.error(
+                f"Data for file {path} not found on revision {rev_key}."
+            )
+            exit(1)
+        else:
+            py_files = [path]
+    else:
+        py_files = [key for key in cyclomatic.keys() if key.endswith(".py")]
+        if not py_files:
+            logger.error(
+                f"Revision {rev_key} has no files with Cyclomatic Complexity data."
+            )
+            exit(1)
     if format.lower() == "html":
         logger.info(
             f"Saving annotated source code for {', '.join(py_files)} at rev {rev_key[:7]}."
@@ -240,4 +263,4 @@ def run(format: str, revision: str) -> None:
 
 
 if __name__ == "__main__":
-    run()
+    bulk_annotate()
