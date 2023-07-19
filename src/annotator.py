@@ -108,18 +108,17 @@ def annotate_revision(format="HTML", revision_index=""):
     target_revision: IndexedRevision
     if not revision_index:
         commit = repo.rev_parse("HEAD")
-        target_revision = state.index[state.default_archiver].last_revision
     else:
         commit = repo.rev_parse(revision_index)
         rev = resolve_archiver(state.default_archiver).cls(config).find(commit.hexsha)
         logger.debug(f"Resolved {revision_index} to {rev.key} ({rev.message})")
-        try:
-            target_revision = state.index[state.default_archiver][rev.key]
-        except KeyError:
-            logger.error(
-                f"Revision {revision_index} is not in the cache, make sure you have run wily build."
-            )
-            exit(1)
+    try:
+        target_revision = state.index[state.default_archiver][commit.hexsha]
+    except KeyError:
+        logger.error(
+            f"Revision {revision_index or 'HEAD'} is not in the cache, make sure you have run wily build."
+        )
+        exit(1)
     rev_key = target_revision.revision.key
     rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
     as_dict = json.loads(rev_data.read_text())
