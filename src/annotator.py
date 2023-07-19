@@ -5,6 +5,7 @@ import json
 import logging
 from pathlib import Path
 from sys import exit
+from typing import Any
 
 import click
 import git
@@ -25,7 +26,9 @@ logger.setLevel(logging.INFO)
 class AnnotatedHTMLFormatter(HtmlFormatter):
     """Annotate and color source code with metric values as HTML."""
 
-    def __init__(self, metrics: dict[int, list[str]] | None = None, **options) -> None:
+    def __init__(
+        self, metrics: dict[int, tuple[str, str]] | None = None, **options: Any
+    ) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
         self.metrics = metrics
@@ -67,7 +70,9 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
 class AnnotatedTerminalFormatter(TerminalFormatter):
     """Annotate and source code with metric values to print to terminal."""
 
-    def __init__(self, metrics=None, **options):
+    def __init__(
+        self, metrics: dict[int, tuple[str, str]] | None = None, **options: Any
+    ) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
         self.metrics = metrics
@@ -90,17 +95,17 @@ def last_line(details: dict) -> int:
     return max(lineends)
 
 
-def map_lines(details: dict) -> dict[int, list[str]]:
+def map_lines(details: dict) -> dict[int, tuple[str, str]]:
     """Map metric values to lines, for functions/methods and classes."""
     last = last_line(details)
-    lines = {i: ["--", "--"] for i in range(last + 1)}
+    lines = {i: ("--", "--") for i in range(last + 1)}
     for _name, detail in details.items():
         if "is_method" in detail:
             for line in range(detail["lineno"] - 1, detail["endline"]):
-                lines[line] = [lines[line][0], f"{detail['complexity']:02d}"]
+                lines[line] = (lines[line][0], f"{detail['complexity']:02d}")
         else:
             for line in range(detail["lineno"] - 1, detail["endline"]):
-                lines[line] = [f"{detail['complexity']:02d}", lines[line][1]]
+                lines[line] = (f"{detail['complexity']:02d}", lines[line][1])
     return lines
 
 
@@ -170,7 +175,7 @@ def annotate_revision(format: str = "HTML", revision_index: str = "") -> None:
             print_annotated_source(code, metrics)
 
 
-def print_annotated_source(code: str, metrics: dict[int, list[str]]):
+def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]):
     """Print source annotated with metric to terminal."""
     result = highlight(
         code,
@@ -184,7 +189,7 @@ def print_annotated_source(code: str, metrics: dict[int, list[str]]):
 
 
 def generate_annotated_html(
-    code: str, filename: str, metrics: dict[int, list[str]], key: str
+    code: str, filename: str, metrics: dict[int, tuple[str, str]], key: str
 ):
     """Generate an annotated HTML file from source code and metric data."""
     result = highlight(
