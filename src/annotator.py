@@ -138,9 +138,10 @@ def annotate_revision(format: str = "HTML", revision_index: str = "") -> None:
     rev_key = target_revision.revision.key
     rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
     as_dict = json.loads(rev_data.read_text())
+    cyclomatic = as_dict["operator_data"]["cyclomatic"]
     py_files = [
         key
-        for key in as_dict["operator_data"]["cyclomatic"].keys()
+        for key in cyclomatic.keys()
         if key.endswith(".py")
     ]
     if not py_files:
@@ -163,7 +164,7 @@ def annotate_revision(format: str = "HTML", revision_index: str = "") -> None:
                 logger.error(
                     f"Changes found in {filename} since revision {rev_key[:7]}. Line numbers might be wrong."
                 )
-        details = as_dict["operator_data"]["cyclomatic"][filename]["detailed"]
+        details = cyclomatic[filename]["detailed"]
         path = Path(filename)
         code = path.read_text()
         metrics = map_lines(details)
