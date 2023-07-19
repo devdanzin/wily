@@ -227,9 +227,7 @@ def generate_annotated_html(
 def run(format: str, revision: str) -> None:
     """Generate annotated source."""
     if format.lower() not in ("html", "console"):
-        logger.error(
-            f"Format must be HTML or CONSOLE, not {format}."
-        )
+        logger.error(f"Format must be HTML or CONSOLE, not {format}.")
         exit(1)
 
     annotate_revision(format=format, revision_index=revision)
