@@ -7,6 +7,7 @@ from pathlib import Path
 from sys import exit
 
 import click
+import git
 from git import Repo
 from pygments import highlight
 from pygments.formatters import HtmlFormatter, TerminalFormatter
@@ -113,7 +114,13 @@ def annotate_revision(format: str = "HTML", revision_index: str = "") -> None:
     if not revision_index:
         commit = repo.rev_parse("HEAD")
     else:
-        commit = repo.rev_parse(revision_index)
+        try:
+            commit = repo.rev_parse(revision_index)
+        except git.BadName:
+            logger.error(
+                f"Revision {revision_index} not found in current git repository."
+            )
+            exit(1)
         rev = resolve_archiver(state.default_archiver).cls(config).find(commit.hexsha)
         logger.debug(f"Resolved {revision_index} to {rev.key} ({rev.message})")
     try:
@@ -219,6 +226,12 @@ def generate_annotated_html(
 )
 def run(format: str, revision: str) -> None:
     """Generate annotated source."""
+    if format.lower() not in ("html", "console"):
+        logger.error(
+            f"Format must be HTML or CONSOLE, not {format}."
+        )
+        exit(1)
+
     annotate_revision(format=format, revision_index=revision)
 
 
