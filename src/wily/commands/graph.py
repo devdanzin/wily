@@ -135,7 +135,7 @@ def graph(
             except KeyError:
                 # missing data
                 pass
-        if x:
+        if len(x) > 1:
             # Create traces
             trace = go.Scatter(
                 x=x,
