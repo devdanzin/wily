@@ -133,7 +133,12 @@ def build_reports(
                     cached=cached,
                 )
 
-        columns = [f'<td><a href="{htmlname}_report.html">Report</a></td>']
+        html_report = f"{htmlname}_report.html"
+        if (path / html_report).exists():
+            report_label = f'<td><a href="{html_report}">Report</a></td>'
+        else:
+            report_label = '<td>Report</td>'
+        columns = [report_label]
         for metric in metrics:
             html_metric = f"{htmlname}_{metric}.html"
             if (path / html_metric).exists():
