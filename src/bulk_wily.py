@@ -90,6 +90,8 @@ def build_reports(
     for index, filepath in enumerate(files):
         filename = str(filepath)
         htmlname = str(filename).replace("\\", ".").replace("/", ".")
+        annotated_name = f"annotated_{htmlname}.html"
+        annotated_path = pathlib.Path(annotated_name)
         output = f"{path / htmlname}_report.html"
         new_output = pathlib.Path().cwd()
         new_output = new_output / pathlib.Path(output)
@@ -110,9 +112,12 @@ def build_reports(
         columns = [f'<td><a href="{htmlname}_report.html">Report</a></td>']
         for metric in metrics:
             columns.append(f'<td><a href="{htmlname}_{metric}.html">{metric}</a></td>')
+        filename_or_link = filename
+        if (path / annotated_path).exists():
+            filename_or_link = f'<a href="{annotated_path}">{filename}</a>'
         row = f"""
         <tr>
-            <td><b>{filename}</b></td>
+            <td><b>{filename_or_link}</b></td>
             {nl_indent.join(columns)}
         </tr>"""
         rows.append(row)
