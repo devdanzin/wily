@@ -109,18 +109,6 @@ def build_reports(
                 cached=cached,
                 changes_only=True,
             )
-        columns = [f'<td><a href="{htmlname}_report.html">Report</a></td>']
-        for metric in metrics:
-            columns.append(f'<td><a href="{htmlname}_{metric}.html">{metric}</a></td>')
-        filename_or_link = filename
-        if (path / annotated_path).exists():
-            filename_or_link = f'<a href="{annotated_path}">{filename}</a>'
-        row = f"""
-        <tr>
-            <td><b>{filename_or_link}</b></td>
-            {nl_indent.join(columns)}
-        </tr>"""
-        rows.append(row)
 
         for metric in metrics:
             metric_name = f"{htmlname}_{metric}.html"
@@ -138,6 +126,23 @@ def build_reports(
                     plotlyjs="directory",
                     cached=cached,
                 )
+
+        columns = [f'<td><a href="{htmlname}_report.html">Report</a></td>']
+        for metric in metrics:
+            html_metric = f"{htmlname}_{metric}.html"
+            if (path / html_metric).exists():
+                columns.append(f'<td><a href="{htmlname}_{metric}.html">{metric}</a></td>')
+            else:
+                columns.append(f"<td>{metric}</td>")
+        filename_or_link = filename
+        if (path / annotated_path).exists():
+            filename_or_link = f'<a href="{annotated_path}">{filename}</a>'
+        row = f"""
+        <tr>
+            <td><b>{filename_or_link}</b></td>
+            {nl_indent.join(columns)}
+        </tr>"""
+        rows.append(row)
 
     entries = "".join(rows)
     table_headers = get_headers(metrics)
