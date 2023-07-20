@@ -54,8 +54,8 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     c = "#ffffff"
                 else:
                     val = int(self.metrics[i][1])
-                    red = max(0, min(255, round(0.02 * 255 * (val - 1))))
-                    green = max(0, min(255, round(0.02 * 255 * (50 - val + 1))))
+                    red = max(0, min(255, round(0.04 * 255 * (val - 1))))
+                    green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
                     blue = 0
                     c = f"rgba{(red, green, blue, 0.75)}"
                 yield 1, (
