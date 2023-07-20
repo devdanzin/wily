@@ -57,15 +57,7 @@ def build_reports(
     created_files = [path / "index.html"]
     nl_indent = "\n            "
     total = len(files)
-    columns = ["    <td></td>"]
-    for metric in metrics:
-        columns.append(f'<td><a href="global_{metric}.html">{metric}</a></td>')
-    row = f"""
-        <tr>
-            <td><b>global</b></td>
-        {nl_indent.join(columns)}
-        </tr>"""
-    rows.append(row)
+
     start_global = time()
 
     for metric in metrics:
@@ -84,6 +76,20 @@ def build_reports(
                 plotlyjs="directory",
                 cached=cached,
             )
+    columns = ["    <td></td>"]
+    for metric in metrics:
+        html_global = f"global_{metric}.html"
+        if (path / html_global).exists():
+            columns.append(f'<td><a href="{html_global}">{metric}</a></td>')
+        else:
+            columns.append(f'<td>{metric}</td>')
+
+    row = f"""
+        <tr>
+            <td><b>global</b></td>
+        {nl_indent.join(columns)}
+        </tr>"""
+    rows.append(row)
     globals_time = time() - start_global
 
     start_metrics_report = time()
