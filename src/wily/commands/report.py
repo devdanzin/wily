@@ -165,6 +165,8 @@ def report(
                             *vals,
                         )
                     )
+    if not data:
+        return
     descriptions = [meta["title"] for meta in metric_metas]
     if include_message:
         headers = (_("Revision"), _("Message"), _("Author"), _("Date"), *descriptions)
