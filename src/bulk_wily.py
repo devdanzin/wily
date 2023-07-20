@@ -36,7 +36,8 @@ def list_metrics():
             metrics.append(name)
         else:
             for metric in operator.cls.metrics:
-                metrics.append(metric.name)
+                if metric.name != "rank":
+                    metrics.append(metric.name)
     return metrics
 
 
