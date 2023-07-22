@@ -11,35 +11,44 @@
 	    text-decoration: none;
     }
 
-    th {
+    tbody > tr > th {
       text-align: left;
       font-weight: bold;
       padding: 10px;
-    }
-
-    th[scope=row] {
       position: -webkit-sticky;
       position: sticky;
       left: 0;
-      z-index: 4;
-      background-color: #ccc;
+      z-index: 1;
+      color: inherit;
+      background-color: inherit;
     }
 
-    th:not([scope=row]) {
+    thead > tr > th {
+      background-color: #ddd;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+    }
+
+    thead > tr > th:first-child {
+      left: 0;
+      z-index: 4;
+      background-color: #ddd;
+      text-align: center;
+      font-weight: bold;
+      padding: 10px;
       position: -webkit-sticky;
       position: sticky;
       top: 0;
       z-index: 2;
-      background-color: #ddd;
-    }
-
-    th:not([scope=row]):first-child {
-      left: 0;
-      z-index: 3;
     }
 
     tr:nth-child(even) {
       background-color: #eee;
+    }
+
+    tr:nth-child(odd) {
+      background-color: #fff;
     }
 
     td {
