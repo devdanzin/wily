@@ -3,7 +3,6 @@
 import pathlib
 from string import Template
 from time import time
-from typing import cast
 
 import click
 from git.repo import Repo
