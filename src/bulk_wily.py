@@ -3,6 +3,7 @@
 import pathlib
 from string import Template
 from time import time
+from typing import cast
 
 import click
 from git.repo import Repo
@@ -17,18 +18,20 @@ from wily.operators import ALL_OPERATORS
 start = time()
 
 
-def get_all_tracked(config: WilyConfig):
+def get_all_tracked(config: WilyConfig) -> list[pathlib.Path]:
     """Get all tracked files that ever existed in git repo."""
     repo = Repo(config.path)
-    paths = repo.git.execute(
+    path_log = repo.git.execute(
         ["git", "log", "--name-only", "--pretty=format:", "--name-only"]
-    ).split("\n")
-    paths = [name for name in paths if name.endswith(".py")]
+    )
+    assert isinstance(path_log, str)
+    path_list = path_log.split("\n")
+    paths = [name for name in path_list if name.endswith(".py")]
     paths = sorted(set(paths))
     return [pathlib.Path(path) for path in paths]
 
 
-def list_metrics():
+def list_metrics() -> list[str]:
     """List all known metrics."""
     metrics = []
     for name, operator in sorted(ALL_OPERATORS.items()):
@@ -41,7 +44,7 @@ def list_metrics():
     return metrics
 
 
-def get_headers(metrics):
+def get_headers(metrics: list[str]) -> str:
     """Get headers for the index.html table."""
     columns = ["<td><h3>Filename</h3></td>", "<td><h3>Report</h3></td>"]
     for metric in metrics:
@@ -51,8 +54,14 @@ def get_headers(metrics):
 
 
 def build_reports(
-    config, metrics, files, path, cached=True, index_only=False, globals_only=False
-):
+    config: WilyConfig,
+    metrics: list[str],
+    files: list[pathlib.Path],
+    path: pathlib.Path,
+    cached: bool = True,
+    index_only: bool = False,
+    globals_only: bool = False,
+) -> list[pathlib.Path]:
     """Build bulk reports."""
     rows = []
     created_files = [path / "index.html"]
@@ -63,8 +72,9 @@ def build_reports(
 
     for metric in metrics:
         metric_name = f"global_{metric}.html"
-        metric_filename = f"{path / metric_name}"
-        created_files.append(metric_filename)
+        metric_file = path / metric_name
+        metric_filename = str(metric_file)
+        created_files.append(metric_file)
         if not index_only:
             graph(
                 config,
@@ -83,7 +93,7 @@ def build_reports(
         if (path / html_global).exists():
             columns.append(f'<td><a href="{html_global}">{metric}</a></td>')
         else:
-            columns.append(f'<td>{metric}</td>')
+            columns.append(f"<td>{metric}</td>")
 
     row = f"""
         <tr>
@@ -119,8 +129,9 @@ def build_reports(
 
         for metric in metrics:
             metric_name = f"{htmlname}_{metric}.html"
-            metric_filename = f"{path / metric_name}"
-            created_files.append(metric_filename)
+            metric_file = path / metric_name
+            metric_filename = str(metric_file)
+            created_files.append(metric_file)
             if not index_only and not globals_only:
                 graph(
                     config,
@@ -138,12 +149,14 @@ def build_reports(
         if (path / html_report).exists():
             report_label = f'<td><a href="{html_report}">Report</a></td>'
         else:
-            report_label = '<td>Report</td>'
+            report_label = "<td>Report</td>"
         columns = [report_label]
         for metric in metrics:
             html_metric = f"{htmlname}_{metric}.html"
             if (path / html_metric).exists():
-                columns.append(f'<td><a href="{htmlname}_{metric}.html">{metric}</a></td>')
+                columns.append(
+                    f'<td><a href="{htmlname}_{metric}.html">{metric}</a></td>'
+                )
             else:
                 columns.append(f"<td>{metric}</td>")
         filename_or_link = filename
@@ -160,12 +173,12 @@ def build_reports(
     table_headers = get_headers(metrics)
     templates_dir = (pathlib.Path(__file__).parents[0] / "wily" / "templates").resolve()
     report_template = Template((templates_dir / "bulk_template.html").read_text())
-    report_template = report_template.safe_substitute(
+    report_result = report_template.safe_substitute(
         headers=table_headers, content=entries
     )
 
-    with (path / "index.html").open("w", errors="xmlcharrefreplace") as output:
-        output.write(report_template)
+    with (path / "index.html").open("w", errors="xmlcharrefreplace") as index_output:
+        index_output.write(report_result)
 
     print(f"Globals time: {globals_time} secs")
     print(f"Report and metrics time: {time() - start_metrics_report} secs")
@@ -174,7 +187,7 @@ def build_reports(
 
 
 @click.group
-def main():
+def main() -> None:
     """Group commands."""
 
 
@@ -198,7 +211,7 @@ def main():
     help="Only create metric graphs for all files",
 )
 @click.pass_context
-def build(ctx, cache, index, globals_only):
+def build(ctx: click.Context, cache: bool, index: bool, globals_only: bool) -> None:
     """Build the bulk reports."""
     path = pathlib.Path("reports/")
     path.mkdir(exist_ok=True, parents=True)
@@ -219,7 +232,7 @@ def build(ctx, cache, index, globals_only):
 
 @main.command(help="Erase the bulk report files.")
 @click.pass_context
-def clean(ctx):
+def clean(ctx: click.Context) -> None:
     """Erase the bulk report files."""
     path = pathlib.Path("reports/")
     config = load_config(DEFAULT_CONFIG_PATH)
