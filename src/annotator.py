@@ -27,13 +27,13 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
     """Annotate and color source code with metric values as HTML."""
 
     def __init__(
-        self, metrics: dict[int, tuple[str, str]] | None = None, **options: Any
+        self, metrics: dict[int, tuple[str, str]], **options: Any
     ) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
         self.metrics = metrics
 
-    def wrap(self, source):
+    def wrap(self, source) -> None:
         """Wrap the ``source`` in custom generators."""
         output = source
         output = self.annotate_lines(output)
@@ -75,13 +75,13 @@ class AnnotatedTerminalFormatter(TerminalFormatter):
     """Annotate and source code with metric values to print to terminal."""
 
     def __init__(
-        self, metrics: dict[int, tuple[str, str]] | None = None, **options: Any
+        self, metrics: dict[int, tuple[str, str]], **options: Any
     ) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
         self.metrics = metrics
 
-    def _write_lineno(self, outfile):
+    def _write_lineno(self, outfile) -> None:
         """Write line numbers and metric annotations."""
         self._lineno += 1
         metric_values = " ".join(self.metrics.get(self._lineno - 1, ("--", "--")))
@@ -95,7 +95,8 @@ def last_line(details: dict) -> int:
     """Get the last line from a series of detailed metric entries."""
     lineends = []
     for _name, detail in details.items():
-        lineends.append(detail["endline"])
+        endline: int = detail["endline"]
+        lineends.append(endline)
     return max(lineends or [0])
 
 
@@ -114,6 +115,7 @@ def map_lines(details: dict) -> dict[int, tuple[str, str]]:
 
 
 def bulk_annotate() -> None:
+    """Annotate all Python files found in the index's revisions."""
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
     latest = {}
@@ -121,7 +123,7 @@ def bulk_annotate() -> None:
         rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
         as_dict = json.loads(rev_data.read_text())
         cyclomatic = as_dict["operator_data"]["cyclomatic"]
-        for filename, data in cyclomatic.items():
+        for filename, _data in cyclomatic.items():
             if filename.endswith(".py") and filename not in latest:
                 latest[filename] = rev_key
     for filename, rev_key in latest.items():
@@ -192,8 +194,8 @@ def annotate_revision(
                     f"Changes found in {filename} since revision {rev_key[:7]}. Line numbers might be wrong."
                 )
         details = cyclomatic[filename]["detailed"]
-        path = Path(filename)
-        code = path.read_text()
+        path_ = Path(filename)
+        code = path_.read_text()
         metrics = map_lines(details)
         if format.lower() == "html":
             generate_annotated_html(
@@ -203,7 +205,7 @@ def annotate_revision(
             print_annotated_source(code, metrics)
 
 
-def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]):
+def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> None:
     """Print source annotated with metric to terminal."""
     result = highlight(
         code,
@@ -218,7 +220,7 @@ def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]):
 
 def generate_annotated_html(
     code: str, filename: str, metrics: dict[int, tuple[str, str]], key: str
-):
+) -> None:
     """Generate an annotated HTML file from source code and metric data."""
     result = highlight(
         code,
