@@ -4,10 +4,20 @@ Git Archiver.
 Implementation of the archiver API for the gitpython module.
 """
 import logging
+import posixpath
+import stat
+import sys
+from io import BytesIO
 from typing import Dict, List, Tuple
 
 import git.exc
-from git import Commit
+from dulwich.diff_tree import tree_changes
+from dulwich.objects import Commit
+from dulwich.index import build_index_from_tree
+from dulwich.objectspec import parse_tree
+from dulwich.porcelain import open_repo_closing
+from dulwich.repo import Repo as DRepo
+from dulwich.walk import WalkEntry
 from git.repo import Repo
 
 from wily.archivers import BaseArchiver, Revision
@@ -35,36 +45,85 @@ class DirtyGitRepositoryError(Exception):
         self.message = "Dirty repository, make sure you commit/stash files first"
 
 
-def get_tracked_files_dirs(repo: Repo, commit: Commit) -> Tuple[List[str], List[str]]:
+def ls_tree(
+    repo,
+    treeish=b"HEAD",
+    outstream=sys.stdout,
+    recursive=False,
+    name_only=False,
+    dir_only=False,
+):
+    """List contents of a tree.
+
+    Args:
+      repo: Path to the repository
+      treeish: Tree id to list
+      outstream: Output stream (defaults to stdout)
+      recursive: Whether to recursively list files
+      name_only: Only print item name
+    """
+
+    def list_tree(store, treeid, base):
+        # if isinstance(store[treeid], Commit):
+        #     return
+        # print(type(store[treeid]), store[treeid])
+        for (name, mode, sha) in store[treeid].iteritems():
+            a_dir = stat.S_ISDIR(mode)
+            if base:
+                name = posixpath.join(base, name)
+            if name_only and not a_dir and not dir_only:
+                outstream.write(name + b"\n")
+            elif a_dir and dir_only:
+                outstream.write(name + b"\n")
+            # else:
+            #     outstream.write(pretty_format_tree_entry(name, mode, sha))
+            if a_dir and recursive:
+                list_tree(store, sha, name)
+
+    with open_repo_closing(repo) as r:
+        tree = parse_tree(r, treeish)
+        list_tree(r.object_store, tree.id, "")
+
+
+def checkout(repo, revision=b"HEAD"):
+    indexfile = repo.index_path()
+    # we want to checkout HEAD
+    tree = repo[revision].tree
+    build_index_from_tree(repo.path, indexfile, repo.object_store, tree)
+
+
+def get_tracked_files_dirs(repo: DRepo, hexsha: str) -> Tuple[List[str], List[str]]:
     """Get tracked files in a repo for a commit hash using ls-tree."""
-    paths = repo.git.execute(
-        ["git", "ls-tree", "--name-only", "--full-tree", "-r", commit.hexsha]
-    ).split("\n")
-    dirs = [""] + repo.git.execute(
-        ["git", "ls-tree", "--name-only", "--full-tree", "-r", "-d", commit.hexsha]
-    ).split("\n")
-    return paths, dirs
+    output = BytesIO()
+    ls_tree(repo, hexsha, outstream=output, recursive=True, name_only=True)
+    dpaths = output.getvalue().decode().split("\n")
+    dpaths.remove("")
+    dir_output = BytesIO()
+    ls_tree(repo, hexsha, outstream=dir_output, recursive=True, name_only=True, dir_only=True)
+    ddirs = dir_output.getvalue().decode().split("\n") + [""]
+    return dpaths, ddirs
 
 
 def whatchanged(
-    commit_a: Commit, commit_b: Commit
+    tree_a: str, tree_b: str, store
 ) -> Tuple[List[str], List[str], List[str]]:
     """Get files added, modified and deleted between commits."""
-    diffs = commit_b.diff(commit_a)
-    added_files = []
-    modified_files = []
-    deleted_files = []
-    for diff in diffs:
-        if diff.new_file:
-            added_files.append(diff.b_path)
-        elif diff.deleted_file:
-            deleted_files.append(diff.a_path)
-        elif diff.renamed_file:
-            added_files.append(diff.b_path)
-            deleted_files.append(diff.a_path)
-        elif diff.change_type == "M":
-            modified_files.append(diff.a_path)
-    return added_files, modified_files, deleted_files
+    ddiffs = tree_changes(store, tree_b, tree_a)
+    dadded_files = []
+    dmodified_files = []
+    ddeleted_files = []
+
+    for ddiff in ddiffs:
+        if ddiff.type == "modify":
+            dmodified_files.append(ddiff.new.path.decode())
+        elif ddiff.type == "add":
+            dadded_files.append(ddiff.new.path.decode())
+        elif ddiff.type == "delete":
+            ddeleted_files.append(ddiff.old.path.decode())
+        elif ddiff.type == "renamed":
+            dadded_files.append(ddiff.new.path)
+            ddeleted_files.append(ddiff.old.path)
+    return dadded_files, dmodified_files, ddeleted_files
 
 
 class GitArchiver(BaseArchiver):
@@ -83,6 +142,7 @@ class GitArchiver(BaseArchiver):
             self.repo = Repo(config.path)
         except git.exc.InvalidGitRepositoryError as e:
             raise InvalidGitRepositoryError from e
+        self.drepo = DRepo(config.path)
 
         self.config = config
         if self.repo.head.is_detached:
@@ -108,20 +168,23 @@ class GitArchiver(BaseArchiver):
             raise DirtyGitRepositoryError(self.repo.untracked_files)
 
         revisions = []
-        for commit in self.repo.iter_commits(
-            self.current_branch, max_count=max_revisions, reverse=True
-        ):
-            tracked_files, tracked_dirs = get_tracked_files_dirs(self.repo, commit)
-            if not commit.parents or not revisions:
+        entry: WalkEntry
+        dcommit: Commit
+
+        for entry in self.drepo.get_walker(max_entries=max_revisions, reverse=True):
+            dcommit: Commit = entry.commit
+            tracked_files, tracked_dirs = get_tracked_files_dirs(self.drepo, dcommit.id)
+            if not dcommit.parents or not revisions:
                 added_files = tracked_files
                 modified_files = []
                 deleted_files = []
             else:
                 added_files, modified_files, deleted_files = whatchanged(
-                    commit, self.repo.commit(commit.hexsha + "~1")
+                    dcommit.tree, self.drepo.object_store[dcommit.parents[0]].tree, self.drepo.object_store
                 )
 
-            logger.debug(f"For revision {commit.name_rev.split(' ')[0]} found:")
+            name = dcommit.id.decode()
+            logger.debug(f"For revision {name} found:")
             logger.debug(f"Tracked files: {tracked_files}")
             logger.debug(f"Tracked directories: {tracked_dirs}")
             logger.debug(f"Added files: {added_files}")
@@ -129,11 +192,11 @@ class GitArchiver(BaseArchiver):
             logger.debug(f"Deleted files: {deleted_files}")
 
             rev = Revision(
-                key=commit.name_rev.split(" ")[0],
-                author_name=commit.author.name,
-                author_email=commit.author.email,
-                date=commit.committed_date,
-                message=commit.message,
+                key=name,
+                author_name=dcommit.author.decode().split(" ")[0],
+                author_email=dcommit.author.decode().split(" ")[1].strip("<>"),
+                date=dcommit.commit_time,
+                message=dcommit.message.decode(),
                 tracked_files=tracked_files,
                 tracked_dirs=tracked_dirs,
                 added_files=added_files,
@@ -153,8 +216,9 @@ class GitArchiver(BaseArchiver):
         :param options: Any additional options.
         :type  options: ``dict``
         """
-        rev = revision.key
-        self.repo.git.checkout(rev)
+        rev = revision.key.encode()
+        # self.repo.git.checkout(rev)
+        checkout(self.drepo, rev)
 
     def finish(self):
         """
@@ -162,7 +226,7 @@ class GitArchiver(BaseArchiver):
 
         For git, will checkout HEAD on the original branch when finishing
         """
-        self.repo.git.checkout(self.current_branch)
+        checkout(self.drepo)
         self.repo.close()
 
     def find(self, search: str) -> Revision:
@@ -176,14 +240,14 @@ class GitArchiver(BaseArchiver):
         :rtype: Instance of :class:`Revision`
         """
         commit = self.repo.commit(search)
-        tracked_files, tracked_dirs = get_tracked_files_dirs(self.repo, commit)
+        tracked_files, tracked_dirs = get_tracked_files_dirs(self.drepo, commit.hexsha)
         if not commit.parents:
             added_files = tracked_files
             modified_files = []
             deleted_files = []
         else:
             added_files, modified_files, deleted_files = whatchanged(
-                commit, self.repo.commit(commit.hexsha + "~1")
+                commit.tree.hexsha, self.repo.commit(commit.hexsha + "~1").tree.hexsha, self.drepo.object_store
             )
 
         return Revision(
