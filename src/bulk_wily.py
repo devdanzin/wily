@@ -46,9 +46,9 @@ def list_metrics() -> list[str]:
 
 def get_headers(metrics: list[str]) -> str:
     """Get headers for the index.html table."""
-    columns = ["<td><h3>Filename</h3></td>", "<td><h3>Report</h3></td>"]
+    columns = ["<th><h3>Filename</h3></th>", "<th><h3>Report</h3></th>"]
     for metric in metrics:
-        columns.append(f"<td><h3>{metric}</h3></td>")
+        columns.append(f"<th><h3>{metric}</h3></th>")
     nl_indent = "\n            "
     return nl_indent.join(columns)
 
@@ -97,7 +97,7 @@ def build_reports(
 
     row = f"""
         <tr>
-            <td><b>global</b></td>
+            <th>global</th>
         {nl_indent.join(columns)}
         </tr>"""
     rows.append(row)
@@ -164,7 +164,7 @@ def build_reports(
             filename_or_link = f'<a href="{annotated_path}">{filename}</a>'
         row = f"""
         <tr>
-            <td><b>{filename_or_link}</b></td>
+            <th>{filename_or_link}</th>
             {nl_indent.join(columns)}
         </tr>"""
         rows.append(row)

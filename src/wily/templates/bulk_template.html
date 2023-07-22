@@ -2,6 +2,50 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+
+    a:hover {
+	    text-decoration: none;
+    }
+
+    th {
+      text-align: left;
+      font-weight: bold;
+      padding: 10px;
+    }
+
+    th[scope=row] {
+      position: -webkit-sticky;
+      position: sticky;
+      left: 0;
+      z-index: 4;
+      background-color: #ccc;
+    }
+
+    th:not([scope=row]) {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background-color: #ddd;
+    }
+
+    th:not([scope=row]):first-child {
+      left: 0;
+      z-index: 3;
+    }
+
+    tr:nth-child(even) {
+      background-color: #eee;
+    }
+
+    td {
+      text-align: center;
+    }
+  </style>
   <title>Wily Reports</title>
 </head>
 <body>
@@ -17,4 +61,3 @@
 </table>
 </body>
 </html>
-
