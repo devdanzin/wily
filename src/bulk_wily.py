@@ -86,19 +86,7 @@ def build_reports(
                 plotlyjs="directory",
                 cached=cached,
             )
-    columns = ["    <td></td>"]
-    for metric in metrics:
-        html_global = f"global_{metric}.html"
-        if (path / html_global).exists():
-            columns.append(f'<td><a href="{html_global}">{metric}</a></td>')
-        else:
-            columns.append(f"<td>{metric}</td>")
-
-    row = f"""
-        <tr>
-            <th>global</th>
-        {nl_indent.join(columns)}
-        </tr>"""
+    row = generate_global_row(metrics, nl_indent, path)
     rows.append(row)
     globals_time = time() - start_global
 
@@ -106,8 +94,6 @@ def build_reports(
     for index, filepath in enumerate(files):
         filename = str(filepath)
         htmlname = str(filename).replace("\\", ".").replace("/", ".")
-        annotated_name = f"annotated_{htmlname}.html"
-        annotated_path = pathlib.Path(annotated_name)
         output = f"{path / htmlname}_report.html"
         new_output = pathlib.Path().cwd()
         new_output = new_output / pathlib.Path(output)
@@ -144,28 +130,7 @@ def build_reports(
                     cached=cached,
                 )
 
-        html_report = f"{htmlname}_report.html"
-        if (path / html_report).exists():
-            report_label = f'<td><a href="{html_report}">Report</a></td>'
-        else:
-            report_label = "<td>Report</td>"
-        columns = [report_label]
-        for metric in metrics:
-            html_metric = f"{htmlname}_{metric}.html"
-            if (path / html_metric).exists():
-                columns.append(
-                    f'<td><a href="{htmlname}_{metric}.html">{metric}</a></td>'
-                )
-            else:
-                columns.append(f"<td>{metric}</td>")
-        filename_or_link = filename
-        if (path / annotated_path).exists():
-            filename_or_link = f'<a href="{annotated_path}">{filename}</a>'
-        row = f"""
-        <tr>
-            <th>{filename_or_link}</th>
-            {nl_indent.join(columns)}
-        </tr>"""
+        row = generate_table_row(filename, htmlname, metrics, nl_indent, path)
         rows.append(row)
 
     entries = "".join(rows)
@@ -183,6 +148,51 @@ def build_reports(
     print(f"Report and metrics time: {time() - start_metrics_report} secs")
 
     return created_files
+
+
+def generate_global_row(metrics: list[str], nl_indent: str, path: pathlib.Path) -> str:
+    """Generate the "global" table row containing metrics."""
+    columns = ["    <td></td>"]
+    for metric in metrics:
+        html_global = f"global_{metric}.html"
+        if (path / html_global).exists():
+            columns.append(f'<td><a href="{html_global}">{metric}</a></td>')
+        else:
+            columns.append(f"<td>{metric}</td>")
+    row = f"""
+        <tr>
+            <th>global</th>
+        {nl_indent.join(columns)}
+        </tr>"""
+    return row
+
+
+def generate_table_row(
+    filename: str, htmlname: str, metrics: list[str], nl_indent: str, path: pathlib.Path
+) -> str:
+    """Generate a table row containing the file and metrics."""
+    html_report = f"{htmlname}_report.html"
+    if (path / html_report).exists():
+        report_label = f'<td><a href="{html_report}">Report</a></td>'
+    else:
+        report_label = "<td>Report</td>"
+    columns = [report_label]
+    for metric in metrics:
+        html_metric = f"{htmlname}_{metric}.html"
+        if (path / html_metric).exists():
+            columns.append(f'<td><a href="{htmlname}_{metric}.html">{metric}</a></td>')
+        else:
+            columns.append(f"<td>{metric}</td>")
+    filename_or_link = filename
+    annotated_path = pathlib.Path(f"annotated_{htmlname}.html")
+    if (path / annotated_path).exists():
+        filename_or_link = f'<a href="{annotated_path}">{filename}</a>'
+    row = f"""
+        <tr>
+            <th>{filename_or_link}</th>
+            {nl_indent.join(columns)}
+        </tr>"""
+    return row
 
 
 @click.group
