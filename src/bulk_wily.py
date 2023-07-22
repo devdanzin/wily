@@ -150,15 +150,22 @@ def build_reports(
     return created_files
 
 
+def link_if_exists(
+    columns: list[str], filename: str, name: str, path: pathlib.Path
+) -> None:
+    """Link to a metric/report file if it exists, otherwise just output the name."""
+    if (path / filename).exists():
+        columns.append(f'<td><a href="{filename}">{name}</a></td>')
+    else:
+        columns.append(f"<td>{name}</td>")
+
+
 def generate_global_row(metrics: list[str], nl_indent: str, path: pathlib.Path) -> str:
     """Generate the "global" table row containing metrics."""
     columns = ["    <td></td>"]
     for metric in metrics:
         html_global = f"global_{metric}.html"
-        if (path / html_global).exists():
-            columns.append(f'<td><a href="{html_global}">{metric}</a></td>')
-        else:
-            columns.append(f"<td>{metric}</td>")
+        link_if_exists(columns, html_global, metric, path)
     row = f"""
         <tr>
             <th>global</th>
@@ -171,18 +178,12 @@ def generate_table_row(
     filename: str, htmlname: str, metrics: list[str], nl_indent: str, path: pathlib.Path
 ) -> str:
     """Generate a table row containing the file and metrics."""
+    columns: list[str] = []
     html_report = f"{htmlname}_report.html"
-    if (path / html_report).exists():
-        report_label = f'<td><a href="{html_report}">Report</a></td>'
-    else:
-        report_label = "<td>Report</td>"
-    columns = [report_label]
+    link_if_exists(columns, html_report, "Report", path)
     for metric in metrics:
         html_metric = f"{htmlname}_{metric}.html"
-        if (path / html_metric).exists():
-            columns.append(f'<td><a href="{htmlname}_{metric}.html">{metric}</a></td>')
-        else:
-            columns.append(f"<td>{metric}</td>")
+        link_if_exists(columns, html_metric, metric, path)
     filename_or_link = filename
     annotated_path = pathlib.Path(f"annotated_{htmlname}.html")
     if (path / annotated_path).exists():
