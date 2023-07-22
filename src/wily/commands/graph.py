@@ -70,7 +70,7 @@ def graph(
         x_operator, x_key = metric_parts(x_axis)
 
     y_metric = resolve_metric(metrics[0])
-    title = f"{x_axis.capitalize()} of {y_metric.description} for {path}{' aggregated' if aggregate else ''}"
+    title = f"{x_axis.capitalize()} of {y_metric.description} for {path or '/'}{' aggregated' if aggregate else ''}"
 
     if not aggregate:
         tracked_files = set()
