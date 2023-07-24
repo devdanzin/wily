@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+
+    a:hover {
+	    text-decoration: none;
+    }
+
+    tbody > tr > th {
+      text-align: left;
+      font-weight: bold;
+      padding: 10px;
+      position: -webkit-sticky;
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      color: inherit;
+      background-color: inherit;
+    }
+
+    thead > tr > th {
+      background-color: #ddd;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+    }
+
+    thead > tr > th:first-child {
+      left: 0;
+      z-index: 4;
+      background-color: #ddd;
+      text-align: center;
+      font-weight: bold;
+      padding: 10px;
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    tr:nth-child(even) {
+      background-color: #eee;
+    }
+
+    tr:nth-child(odd) {
+      background-color: #fff;
+    }
+
+    td {
+      text-align: center;
+    }
+  </style>
+  <title>Wily Reports</title>
+</head>
+<body>
+<table>
+    <thead>
+        <tr>
+            <th><h3>Filename</h3></th>
+            <th><h3>Report</h3></th>
+            <th><h3>complexity</h3></th>
+            <th><h3>h1</h3></th>
+            <th><h3>h2</h3></th>
+            <th><h3>N1</h3></th>
+            <th><h3>N2</h3></th>
+            <th><h3>vocabulary</h3></th>
+            <th><h3>length</h3></th>
+            <th><h3>volume</h3></th>
+            <th><h3>difficulty</h3></th>
+            <th><h3>effort</h3></th>
+            <th><h3>mi</h3></th>
+            <th><h3>loc</h3></th>
+            <th><h3>lloc</h3></th>
+            <th><h3>sloc</h3></th>
+            <th><h3>comments</h3></th>
+            <th><h3>multi</h3></th>
+            <th><h3>blank</h3></th>
+            <th><h3>single_comments</h3></th>
+        </tr>
+    </thead>
+    <tbody>
+            
+        <tr>
+            <th>global</th>
+            <td></td>
+            <td><a href="global_complexity.html">complexity</a></td>
+            <td><a href="global_h1.html">h1</a></td>
+            <td><a href="global_h2.html">h2</a></td>
+            <td><a href="global_N1.html">N1</a></td>
+            <td><a href="global_N2.html">N2</a></td>
+            <td><a href="global_vocabulary.html">vocabulary</a></td>
+            <td><a href="global_length.html">length</a></td>
+            <td><a href="global_volume.html">volume</a></td>
+            <td><a href="global_difficulty.html">difficulty</a></td>
+            <td><a href="global_effort.html">effort</a></td>
+            <td><a href="global_mi.html">mi</a></td>
+            <td><a href="global_loc.html">loc</a></td>
+            <td><a href="global_lloc.html">lloc</a></td>
+            <td><a href="global_sloc.html">sloc</a></td>
+            <td><a href="global_comments.html">comments</a></td>
+            <td><a href="global_multi.html">multi</a></td>
+            <td><a href="global_blank.html">blank</a></td>
+            <td><a href="global_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_docs.source.conf.py.html">docs\source\conf.py</a></th>
+            <td><a href="docs.source.conf.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="docs.source.conf.py_loc.html">loc</a></td>
+            <td><a href="docs.source.conf.py_lloc.html">lloc</a></td>
+            <td><a href="docs.source.conf.py_sloc.html">sloc</a></td>
+            <td><a href="docs.source.conf.py_comments.html">comments</a></td>
+            <td>multi</td>
+            <td><a href="docs.source.conf.py_blank.html">blank</a></td>
+            <td><a href="docs.source.conf.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>src\bulk_wily.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.__init__.py.html">src\wily\__init__.py</a></th>
+            <td><a href="src.wily.__init__.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="src.wily.__init__.py_loc.html">loc</a></td>
+            <td><a href="src.wily.__init__.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.__init__.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="src.wily.__init__.py_multi.html">multi</a></td>
+            <td><a href="src.wily.__init__.py_blank.html">blank</a></td>
+            <td><a href="src.wily.__init__.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.__main__.py.html">src\wily\__main__.py</a></th>
+            <td><a href="src.wily.__main__.py_report.html">Report</a></td>
+            <td><a href="src.wily.__main__.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.__main__.py_h1.html">h1</a></td>
+            <td><a href="src.wily.__main__.py_h2.html">h2</a></td>
+            <td><a href="src.wily.__main__.py_N1.html">N1</a></td>
+            <td><a href="src.wily.__main__.py_N2.html">N2</a></td>
+            <td><a href="src.wily.__main__.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.__main__.py_length.html">length</a></td>
+            <td><a href="src.wily.__main__.py_volume.html">volume</a></td>
+            <td><a href="src.wily.__main__.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.__main__.py_effort.html">effort</a></td>
+            <td><a href="src.wily.__main__.py_mi.html">mi</a></td>
+            <td><a href="src.wily.__main__.py_loc.html">loc</a></td>
+            <td><a href="src.wily.__main__.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.__main__.py_sloc.html">sloc</a></td>
+            <td><a href="src.wily.__main__.py_comments.html">comments</a></td>
+            <td><a href="src.wily.__main__.py_multi.html">multi</a></td>
+            <td><a href="src.wily.__main__.py_blank.html">blank</a></td>
+            <td><a href="src.wily.__main__.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.archivers.__init__.py.html">src\wily\archivers\__init__.py</a></th>
+            <td><a href="src.wily.archivers.__init__.py_report.html">Report</a></td>
+            <td><a href="src.wily.archivers.__init__.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="src.wily.archivers.__init__.py_mi.html">mi</a></td>
+            <td><a href="src.wily.archivers.__init__.py_loc.html">loc</a></td>
+            <td><a href="src.wily.archivers.__init__.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.archivers.__init__.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="src.wily.archivers.__init__.py_multi.html">multi</a></td>
+            <td><a href="src.wily.archivers.__init__.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.archivers.filesystem.py.html">src\wily\archivers\filesystem.py</a></th>
+            <td><a href="src.wily.archivers.filesystem.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="src.wily.archivers.filesystem.py_loc.html">loc</a></td>
+            <td><a href="src.wily.archivers.filesystem.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.archivers.filesystem.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="src.wily.archivers.filesystem.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.archivers.git.py.html">src\wily\archivers\git.py</a></th>
+            <td><a href="src.wily.archivers.git.py_report.html">Report</a></td>
+            <td><a href="src.wily.archivers.git.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.archivers.git.py_h1.html">h1</a></td>
+            <td><a href="src.wily.archivers.git.py_h2.html">h2</a></td>
+            <td><a href="src.wily.archivers.git.py_N1.html">N1</a></td>
+            <td><a href="src.wily.archivers.git.py_N2.html">N2</a></td>
+            <td><a href="src.wily.archivers.git.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.archivers.git.py_length.html">length</a></td>
+            <td><a href="src.wily.archivers.git.py_volume.html">volume</a></td>
+            <td><a href="src.wily.archivers.git.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.archivers.git.py_effort.html">effort</a></td>
+            <td><a href="src.wily.archivers.git.py_mi.html">mi</a></td>
+            <td><a href="src.wily.archivers.git.py_loc.html">loc</a></td>
+            <td><a href="src.wily.archivers.git.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.archivers.git.py_sloc.html">sloc</a></td>
+            <td><a href="src.wily.archivers.git.py_comments.html">comments</a></td>
+            <td><a href="src.wily.archivers.git.py_multi.html">multi</a></td>
+            <td><a href="src.wily.archivers.git.py_blank.html">blank</a></td>
+            <td><a href="src.wily.archivers.git.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.cache.py.html">src\wily\cache.py</a></th>
+            <td><a href="src.wily.cache.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="src.wily.cache.py_mi.html">mi</a></td>
+            <td><a href="src.wily.cache.py_loc.html">loc</a></td>
+            <td><a href="src.wily.cache.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.cache.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.commands.__init__.py.html">src\wily\commands\__init__.py</a></th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.commands.build.py.html">src\wily\commands\build.py</a></th>
+            <td><a href="src.wily.commands.build.py_report.html">Report</a></td>
+            <td><a href="src.wily.commands.build.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.commands.build.py_h1.html">h1</a></td>
+            <td><a href="src.wily.commands.build.py_h2.html">h2</a></td>
+            <td><a href="src.wily.commands.build.py_N1.html">N1</a></td>
+            <td><a href="src.wily.commands.build.py_N2.html">N2</a></td>
+            <td><a href="src.wily.commands.build.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.commands.build.py_length.html">length</a></td>
+            <td><a href="src.wily.commands.build.py_volume.html">volume</a></td>
+            <td><a href="src.wily.commands.build.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.commands.build.py_effort.html">effort</a></td>
+            <td><a href="src.wily.commands.build.py_mi.html">mi</a></td>
+            <td><a href="src.wily.commands.build.py_loc.html">loc</a></td>
+            <td><a href="src.wily.commands.build.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.commands.build.py_sloc.html">sloc</a></td>
+            <td><a href="src.wily.commands.build.py_comments.html">comments</a></td>
+            <td>multi</td>
+            <td><a href="src.wily.commands.build.py_blank.html">blank</a></td>
+            <td><a href="src.wily.commands.build.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.commands.diff.py.html">src\wily\commands\diff.py</a></th>
+            <td><a href="src.wily.commands.diff.py_report.html">Report</a></td>
+            <td><a href="src.wily.commands.diff.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.commands.diff.py_h1.html">h1</a></td>
+            <td><a href="src.wily.commands.diff.py_h2.html">h2</a></td>
+            <td><a href="src.wily.commands.diff.py_N1.html">N1</a></td>
+            <td><a href="src.wily.commands.diff.py_N2.html">N2</a></td>
+            <td><a href="src.wily.commands.diff.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.commands.diff.py_length.html">length</a></td>
+            <td><a href="src.wily.commands.diff.py_volume.html">volume</a></td>
+            <td><a href="src.wily.commands.diff.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.commands.diff.py_effort.html">effort</a></td>
+            <td><a href="src.wily.commands.diff.py_mi.html">mi</a></td>
+            <td><a href="src.wily.commands.diff.py_loc.html">loc</a></td>
+            <td><a href="src.wily.commands.diff.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.commands.diff.py_sloc.html">sloc</a></td>
+            <td><a href="src.wily.commands.diff.py_comments.html">comments</a></td>
+            <td><a href="src.wily.commands.diff.py_multi.html">multi</a></td>
+            <td><a href="src.wily.commands.diff.py_blank.html">blank</a></td>
+            <td><a href="src.wily.commands.diff.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.commands.graph.py.html">src\wily\commands\graph.py</a></th>
+            <td><a href="src.wily.commands.graph.py_report.html">Report</a></td>
+            <td><a href="src.wily.commands.graph.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.commands.graph.py_h1.html">h1</a></td>
+            <td><a href="src.wily.commands.graph.py_h2.html">h2</a></td>
+            <td><a href="src.wily.commands.graph.py_N1.html">N1</a></td>
+            <td><a href="src.wily.commands.graph.py_N2.html">N2</a></td>
+            <td><a href="src.wily.commands.graph.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.commands.graph.py_length.html">length</a></td>
+            <td><a href="src.wily.commands.graph.py_volume.html">volume</a></td>
+            <td><a href="src.wily.commands.graph.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.commands.graph.py_effort.html">effort</a></td>
+            <td><a href="src.wily.commands.graph.py_mi.html">mi</a></td>
+            <td><a href="src.wily.commands.graph.py_loc.html">loc</a></td>
+            <td><a href="src.wily.commands.graph.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.commands.graph.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="src.wily.commands.graph.py_multi.html">multi</a></td>
+            <td><a href="src.wily.commands.graph.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.commands.index.py.html">src\wily\commands\index.py</a></th>
+            <td><a href="src.wily.commands.index.py_report.html">Report</a></td>
+            <td><a href="src.wily.commands.index.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.commands.index.py_h1.html">h1</a></td>
+            <td><a href="src.wily.commands.index.py_h2.html">h2</a></td>
+            <td><a href="src.wily.commands.index.py_N1.html">N1</a></td>
+            <td><a href="src.wily.commands.index.py_N2.html">N2</a></td>
+            <td><a href="src.wily.commands.index.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.commands.index.py_length.html">length</a></td>
+            <td><a href="src.wily.commands.index.py_volume.html">volume</a></td>
+            <td><a href="src.wily.commands.index.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.commands.index.py_effort.html">effort</a></td>
+            <td><a href="src.wily.commands.index.py_mi.html">mi</a></td>
+            <td><a href="src.wily.commands.index.py_loc.html">loc</a></td>
+            <td><a href="src.wily.commands.index.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.commands.index.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="src.wily.commands.index.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.commands.list_metrics.py.html">src\wily\commands\list_metrics.py</a></th>
+            <td><a href="src.wily.commands.list_metrics.py_report.html">Report</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_h1.html">h1</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_h2.html">h2</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_N1.html">N1</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_N2.html">N2</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_length.html">length</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_volume.html">volume</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_effort.html">effort</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_mi.html">mi</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_loc.html">loc</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.commands.list_metrics.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="src.wily.commands.list_metrics.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.commands.rank.py.html">src\wily\commands\rank.py</a></th>
+            <td><a href="src.wily.commands.rank.py_report.html">Report</a></td>
+            <td><a href="src.wily.commands.rank.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.commands.rank.py_h1.html">h1</a></td>
+            <td><a href="src.wily.commands.rank.py_h2.html">h2</a></td>
+            <td><a href="src.wily.commands.rank.py_N1.html">N1</a></td>
+            <td><a href="src.wily.commands.rank.py_N2.html">N2</a></td>
+            <td><a href="src.wily.commands.rank.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.commands.rank.py_length.html">length</a></td>
+            <td><a href="src.wily.commands.rank.py_volume.html">volume</a></td>
+            <td><a href="src.wily.commands.rank.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.commands.rank.py_effort.html">effort</a></td>
+            <td><a href="src.wily.commands.rank.py_mi.html">mi</a></td>
+            <td><a href="src.wily.commands.rank.py_loc.html">loc</a></td>
+            <td><a href="src.wily.commands.rank.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.commands.rank.py_sloc.html">sloc</a></td>
+            <td><a href="src.wily.commands.rank.py_comments.html">comments</a></td>
+            <td><a href="src.wily.commands.rank.py_multi.html">multi</a></td>
+            <td><a href="src.wily.commands.rank.py_blank.html">blank</a></td>
+            <td><a href="src.wily.commands.rank.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.commands.report.py.html">src\wily\commands\report.py</a></th>
+            <td><a href="src.wily.commands.report.py_report.html">Report</a></td>
+            <td><a href="src.wily.commands.report.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.commands.report.py_h1.html">h1</a></td>
+            <td><a href="src.wily.commands.report.py_h2.html">h2</a></td>
+            <td><a href="src.wily.commands.report.py_N1.html">N1</a></td>
+            <td><a href="src.wily.commands.report.py_N2.html">N2</a></td>
+            <td><a href="src.wily.commands.report.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.commands.report.py_length.html">length</a></td>
+            <td><a href="src.wily.commands.report.py_volume.html">volume</a></td>
+            <td><a href="src.wily.commands.report.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.commands.report.py_effort.html">effort</a></td>
+            <td><a href="src.wily.commands.report.py_mi.html">mi</a></td>
+            <td><a href="src.wily.commands.report.py_loc.html">loc</a></td>
+            <td><a href="src.wily.commands.report.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.commands.report.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="src.wily.commands.report.py_multi.html">multi</a></td>
+            <td><a href="src.wily.commands.report.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.config.py.html">src\wily\config.py</a></th>
+            <td><a href="src.wily.config.py_report.html">Report</a></td>
+            <td><a href="src.wily.config.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="src.wily.config.py_mi.html">mi</a></td>
+            <td><a href="src.wily.config.py_loc.html">loc</a></td>
+            <td><a href="src.wily.config.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.config.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="src.wily.config.py_multi.html">multi</a></td>
+            <td><a href="src.wily.config.py_blank.html">blank</a></td>
+            <td><a href="src.wily.config.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.decorators.py.html">src\wily\decorators.py</a></th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.helper.__init__.py.html">src\wily\helper\__init__.py</a></th>
+            <td><a href="src.wily.helper.__init__.py_report.html">Report</a></td>
+            <td><a href="src.wily.helper.__init__.py_complexity.html">complexity</a></td>
+            <td><a href="src.wily.helper.__init__.py_h1.html">h1</a></td>
+            <td><a href="src.wily.helper.__init__.py_h2.html">h2</a></td>
+            <td><a href="src.wily.helper.__init__.py_N1.html">N1</a></td>
+            <td><a href="src.wily.helper.__init__.py_N2.html">N2</a></td>
+            <td><a href="src.wily.helper.__init__.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.helper.__init__.py_length.html">length</a></td>
+            <td><a href="src.wily.helper.__init__.py_volume.html">volume</a></td>
+            <td><a href="src.wily.helper.__init__.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.helper.__init__.py_effort.html">effort</a></td>
+            <td><a href="src.wily.helper.__init__.py_mi.html">mi</a></td>
+            <td><a href="src.wily.helper.__init__.py_loc.html">loc</a></td>
+            <td><a href="src.wily.helper.__init__.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.helper.__init__.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="src.wily.helper.__init__.py_blank.html">blank</a></td>
+            <td><a href="src.wily.helper.__init__.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.helper.custom_enums.py.html">src\wily\helper\custom_enums.py</a></th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.lang.py.html">src\wily\lang.py</a></th>
+            <td><a href="src.wily.lang.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="src.wily.lang.py_loc.html">loc</a></td>
+            <td><a href="src.wily.lang.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.lang.py_sloc.html">sloc</a></td>
+            <td><a href="src.wily.lang.py_comments.html">comments</a></td>
+            <td>multi</td>
+            <td>blank</td>
+            <td><a href="src.wily.lang.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.operators.__init__.py.html">src\wily\operators\__init__.py</a></th>
+            <td><a href="src.wily.operators.__init__.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="src.wily.operators.__init__.py_mi.html">mi</a></td>
+            <td><a href="src.wily.operators.__init__.py_loc.html">loc</a></td>
+            <td><a href="src.wily.operators.__init__.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.operators.__init__.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.operators.cyclomatic.py.html">src\wily\operators\cyclomatic.py</a></th>
+            <td><a href="src.wily.operators.cyclomatic.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="src.wily.operators.cyclomatic.py_mi.html">mi</a></td>
+            <td><a href="src.wily.operators.cyclomatic.py_loc.html">loc</a></td>
+            <td><a href="src.wily.operators.cyclomatic.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.operators.cyclomatic.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.operators.halstead.py.html">src\wily\operators\halstead.py</a></th>
+            <td><a href="src.wily.operators.halstead.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="src.wily.operators.halstead.py_mi.html">mi</a></td>
+            <td><a href="src.wily.operators.halstead.py_loc.html">loc</a></td>
+            <td><a href="src.wily.operators.halstead.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.operators.halstead.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.operators.maintainability.py.html">src\wily\operators\maintainability.py</a></th>
+            <td><a href="src.wily.operators.maintainability.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="src.wily.operators.maintainability.py_loc.html">loc</a></td>
+            <td><a href="src.wily.operators.maintainability.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.operators.maintainability.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.operators.raw.py.html">src\wily\operators\raw.py</a></th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_src.wily.state.py.html">src\wily\state.py</a></th>
+            <td><a href="src.wily.state.py_report.html">Report</a></td>
+            <td><a href="src.wily.state.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td><a href="src.wily.state.py_h2.html">h2</a></td>
+            <td><a href="src.wily.state.py_N1.html">N1</a></td>
+            <td><a href="src.wily.state.py_N2.html">N2</a></td>
+            <td><a href="src.wily.state.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="src.wily.state.py_length.html">length</a></td>
+            <td><a href="src.wily.state.py_volume.html">volume</a></td>
+            <td><a href="src.wily.state.py_difficulty.html">difficulty</a></td>
+            <td><a href="src.wily.state.py_effort.html">effort</a></td>
+            <td><a href="src.wily.state.py_mi.html">mi</a></td>
+            <td><a href="src.wily.state.py_loc.html">loc</a></td>
+            <td><a href="src.wily.state.py_lloc.html">lloc</a></td>
+            <td><a href="src.wily.state.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="src.wily.state.py_multi.html">multi</a></td>
+            <td><a href="src.wily.state.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.conftest.py.html">test\conftest.py</a></th>
+            <td><a href="test.conftest.py_report.html">Report</a></td>
+            <td><a href="test.conftest.py_complexity.html">complexity</a></td>
+            <td><a href="test.conftest.py_h1.html">h1</a></td>
+            <td><a href="test.conftest.py_h2.html">h2</a></td>
+            <td><a href="test.conftest.py_N1.html">N1</a></td>
+            <td><a href="test.conftest.py_N2.html">N2</a></td>
+            <td><a href="test.conftest.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.conftest.py_length.html">length</a></td>
+            <td><a href="test.conftest.py_volume.html">volume</a></td>
+            <td><a href="test.conftest.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.conftest.py_effort.html">effort</a></td>
+            <td><a href="test.conftest.py_mi.html">mi</a></td>
+            <td><a href="test.conftest.py_loc.html">loc</a></td>
+            <td><a href="test.conftest.py_lloc.html">lloc</a></td>
+            <td><a href="test.conftest.py_sloc.html">sloc</a></td>
+            <td><a href="test.conftest.py_comments.html">comments</a></td>
+            <td><a href="test.conftest.py_multi.html">multi</a></td>
+            <td><a href="test.conftest.py_blank.html">blank</a></td>
+            <td><a href="test.conftest.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_all_operators.py.html">test\integration\test_all_operators.py</a></th>
+            <td><a href="test.integration.test_all_operators.py_report.html">Report</a></td>
+            <td><a href="test.integration.test_all_operators.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td><a href="test.integration.test_all_operators.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_all_operators.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_all_operators.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_all_operators.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_all_operators.py_length.html">length</a></td>
+            <td><a href="test.integration.test_all_operators.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_all_operators.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_all_operators.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_all_operators.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_all_operators.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_all_operators.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_all_operators.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="test.integration.test_all_operators.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_archiver.py.html">test\integration\test_archiver.py</a></th>
+            <td><a href="test.integration.test_archiver.py_report.html">Report</a></td>
+            <td><a href="test.integration.test_archiver.py_complexity.html">complexity</a></td>
+            <td><a href="test.integration.test_archiver.py_h1.html">h1</a></td>
+            <td><a href="test.integration.test_archiver.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_archiver.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_archiver.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_archiver.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_archiver.py_length.html">length</a></td>
+            <td><a href="test.integration.test_archiver.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_archiver.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_archiver.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_archiver.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_archiver.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_archiver.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_archiver.py_sloc.html">sloc</a></td>
+            <td><a href="test.integration.test_archiver.py_comments.html">comments</a></td>
+            <td>multi</td>
+            <td><a href="test.integration.test_archiver.py_blank.html">blank</a></td>
+            <td><a href="test.integration.test_archiver.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_build.py.html">test\integration\test_build.py</a></th>
+            <td><a href="test.integration.test_build.py_report.html">Report</a></td>
+            <td><a href="test.integration.test_build.py_complexity.html">complexity</a></td>
+            <td><a href="test.integration.test_build.py_h1.html">h1</a></td>
+            <td><a href="test.integration.test_build.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_build.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_build.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_build.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_build.py_length.html">length</a></td>
+            <td><a href="test.integration.test_build.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_build.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_build.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_build.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_build.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_build.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_build.py_sloc.html">sloc</a></td>
+            <td><a href="test.integration.test_build.py_comments.html">comments</a></td>
+            <td><a href="test.integration.test_build.py_multi.html">multi</a></td>
+            <td><a href="test.integration.test_build.py_blank.html">blank</a></td>
+            <td><a href="test.integration.test_build.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_complex_commits.py.html">test\integration\test_complex_commits.py</a></th>
+            <td><a href="test.integration.test_complex_commits.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td><a href="test.integration.test_complex_commits.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_complex_commits.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_complex_commits.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_complex_commits.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_complex_commits.py_length.html">length</a></td>
+            <td><a href="test.integration.test_complex_commits.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_complex_commits.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_complex_commits.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_complex_commits.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_complex_commits.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_complex_commits.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_complex_commits.py_sloc.html">sloc</a></td>
+            <td><a href="test.integration.test_complex_commits.py_comments.html">comments</a></td>
+            <td>multi</td>
+            <td><a href="test.integration.test_complex_commits.py_blank.html">blank</a></td>
+            <td><a href="test.integration.test_complex_commits.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_diff.py.html">test\integration\test_diff.py</a></th>
+            <td><a href="test.integration.test_diff.py_report.html">Report</a></td>
+            <td><a href="test.integration.test_diff.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td><a href="test.integration.test_diff.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_diff.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_diff.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_diff.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_diff.py_length.html">length</a></td>
+            <td><a href="test.integration.test_diff.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_diff.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_diff.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_diff.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_diff.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_diff.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_diff.py_sloc.html">sloc</a></td>
+            <td><a href="test.integration.test_diff.py_comments.html">comments</a></td>
+            <td>multi</td>
+            <td><a href="test.integration.test_diff.py_blank.html">blank</a></td>
+            <td><a href="test.integration.test_diff.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_graph.py.html">test\integration\test_graph.py</a></th>
+            <td><a href="test.integration.test_graph.py_report.html">Report</a></td>
+            <td><a href="test.integration.test_graph.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td><a href="test.integration.test_graph.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_graph.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_graph.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_graph.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_graph.py_length.html">length</a></td>
+            <td><a href="test.integration.test_graph.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_graph.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_graph.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_graph.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_graph.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_graph.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_graph.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="test.integration.test_graph.py_blank.html">blank</a></td>
+            <td><a href="test.integration.test_graph.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_index.py.html">test\integration\test_index.py</a></th>
+            <td><a href="test.integration.test_index.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td><a href="test.integration.test_index.py_h1.html">h1</a></td>
+            <td><a href="test.integration.test_index.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_index.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_index.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_index.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_index.py_length.html">length</a></td>
+            <td><a href="test.integration.test_index.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_index.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_index.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_index.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_index.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_index.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_index.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="test.integration.test_index.py_multi.html">multi</a></td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_ipynb.py.html">test\integration\test_ipynb.py</a></th>
+            <td><a href="test.integration.test_ipynb.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td><a href="test.integration.test_ipynb.py_h1.html">h1</a></td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td><a href="test.integration.test_ipynb.py_vocabulary.html">vocabulary</a></td>
+            <td>length</td>
+            <td><a href="test.integration.test_ipynb.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_ipynb.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_ipynb.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_ipynb.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_ipynb.py_loc.html">loc</a></td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="test.integration.test_ipynb.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_rank.py.html">test\integration\test_rank.py</a></th>
+            <td><a href="test.integration.test_rank.py_report.html">Report</a></td>
+            <td><a href="test.integration.test_rank.py_complexity.html">complexity</a></td>
+            <td><a href="test.integration.test_rank.py_h1.html">h1</a></td>
+            <td><a href="test.integration.test_rank.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_rank.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_rank.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_rank.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_rank.py_length.html">length</a></td>
+            <td><a href="test.integration.test_rank.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_rank.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_rank.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_rank.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_rank.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_rank.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_rank.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="test.integration.test_rank.py_blank.html">blank</a></td>
+            <td><a href="test.integration.test_rank.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_report.py.html">test\integration\test_report.py</a></th>
+            <td><a href="test.integration.test_report.py_report.html">Report</a></td>
+            <td><a href="test.integration.test_report.py_complexity.html">complexity</a></td>
+            <td><a href="test.integration.test_report.py_h1.html">h1</a></td>
+            <td><a href="test.integration.test_report.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_report.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_report.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_report.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_report.py_length.html">length</a></td>
+            <td><a href="test.integration.test_report.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_report.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_report.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_report.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_report.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_report.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_report.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="test.integration.test_report.py_multi.html">multi</a></td>
+            <td><a href="test.integration.test_report.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_state.py.html">test\integration\test_state.py</a></th>
+            <td><a href="test.integration.test_state.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td><a href="test.integration.test_state.py_h2.html">h2</a></td>
+            <td><a href="test.integration.test_state.py_N1.html">N1</a></td>
+            <td><a href="test.integration.test_state.py_N2.html">N2</a></td>
+            <td><a href="test.integration.test_state.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.integration.test_state.py_length.html">length</a></td>
+            <td><a href="test.integration.test_state.py_volume.html">volume</a></td>
+            <td><a href="test.integration.test_state.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.integration.test_state.py_effort.html">effort</a></td>
+            <td><a href="test.integration.test_state.py_mi.html">mi</a></td>
+            <td><a href="test.integration.test_state.py_loc.html">loc</a></td>
+            <td><a href="test.integration.test_state.py_lloc.html">lloc</a></td>
+            <td><a href="test.integration.test_state.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.integration.test_wily.py.html">test\integration\test_wily.py</a></th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>test\test_cache.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>test\test_cli.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>test\unit\test_aggregate_metric.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.unit.test_archivers.py.html">test\unit\test_archivers.py</a></th>
+            <td><a href="test.unit.test_archivers.py_report.html">Report</a></td>
+            <td><a href="test.unit.test_archivers.py_complexity.html">complexity</a></td>
+            <td><a href="test.unit.test_archivers.py_h1.html">h1</a></td>
+            <td><a href="test.unit.test_archivers.py_h2.html">h2</a></td>
+            <td><a href="test.unit.test_archivers.py_N1.html">N1</a></td>
+            <td><a href="test.unit.test_archivers.py_N2.html">N2</a></td>
+            <td><a href="test.unit.test_archivers.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.unit.test_archivers.py_length.html">length</a></td>
+            <td><a href="test.unit.test_archivers.py_volume.html">volume</a></td>
+            <td><a href="test.unit.test_archivers.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.unit.test_archivers.py_effort.html">effort</a></td>
+            <td><a href="test.unit.test_archivers.py_mi.html">mi</a></td>
+            <td><a href="test.unit.test_archivers.py_loc.html">loc</a></td>
+            <td><a href="test.unit.test_archivers.py_lloc.html">lloc</a></td>
+            <td><a href="test.unit.test_archivers.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="test.unit.test_archivers.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>test\unit\test_build.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.unit.test_build_unit.py.html">test\unit\test_build_unit.py</a></th>
+            <td><a href="test.unit.test_build_unit.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="test.unit.test_build_unit.py_mi.html">mi</a></td>
+            <td><a href="test.unit.test_build_unit.py_loc.html">loc</a></td>
+            <td>lloc</td>
+            <td><a href="test.unit.test_build_unit.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="test.unit.test_build_unit.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.unit.test_cache.py.html">test\unit\test_cache.py</a></th>
+            <td><a href="test.unit.test_cache.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td><a href="test.unit.test_cache.py_h2.html">h2</a></td>
+            <td><a href="test.unit.test_cache.py_N1.html">N1</a></td>
+            <td><a href="test.unit.test_cache.py_N2.html">N2</a></td>
+            <td><a href="test.unit.test_cache.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.unit.test_cache.py_length.html">length</a></td>
+            <td><a href="test.unit.test_cache.py_volume.html">volume</a></td>
+            <td><a href="test.unit.test_cache.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.unit.test_cache.py_effort.html">effort</a></td>
+            <td><a href="test.unit.test_cache.py_mi.html">mi</a></td>
+            <td><a href="test.unit.test_cache.py_loc.html">loc</a></td>
+            <td><a href="test.unit.test_cache.py_lloc.html">lloc</a></td>
+            <td><a href="test.unit.test_cache.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="test.unit.test_cache.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.unit.test_cli.py.html">test\unit\test_cli.py</a></th>
+            <td><a href="test.unit.test_cli.py_report.html">Report</a></td>
+            <td><a href="test.unit.test_cli.py_complexity.html">complexity</a></td>
+            <td><a href="test.unit.test_cli.py_h1.html">h1</a></td>
+            <td><a href="test.unit.test_cli.py_h2.html">h2</a></td>
+            <td><a href="test.unit.test_cli.py_N1.html">N1</a></td>
+            <td><a href="test.unit.test_cli.py_N2.html">N2</a></td>
+            <td><a href="test.unit.test_cli.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.unit.test_cli.py_length.html">length</a></td>
+            <td><a href="test.unit.test_cli.py_volume.html">volume</a></td>
+            <td><a href="test.unit.test_cli.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.unit.test_cli.py_effort.html">effort</a></td>
+            <td><a href="test.unit.test_cli.py_mi.html">mi</a></td>
+            <td><a href="test.unit.test_cli.py_loc.html">loc</a></td>
+            <td><a href="test.unit.test_cli.py_lloc.html">lloc</a></td>
+            <td><a href="test.unit.test_cli.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="test.unit.test_cli.py_multi.html">multi</a></td>
+            <td><a href="test.unit.test_cli.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.unit.test_config.py.html">test\unit\test_config.py</a></th>
+            <td><a href="test.unit.test_config.py_report.html">Report</a></td>
+            <td><a href="test.unit.test_config.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td><a href="test.unit.test_config.py_h2.html">h2</a></td>
+            <td><a href="test.unit.test_config.py_N1.html">N1</a></td>
+            <td><a href="test.unit.test_config.py_N2.html">N2</a></td>
+            <td><a href="test.unit.test_config.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.unit.test_config.py_length.html">length</a></td>
+            <td><a href="test.unit.test_config.py_volume.html">volume</a></td>
+            <td><a href="test.unit.test_config.py_difficulty.html">difficulty</a></td>
+            <td><a href="test.unit.test_config.py_effort.html">effort</a></td>
+            <td><a href="test.unit.test_config.py_mi.html">mi</a></td>
+            <td><a href="test.unit.test_config.py_loc.html">loc</a></td>
+            <td><a href="test.unit.test_config.py_lloc.html">lloc</a></td>
+            <td><a href="test.unit.test_config.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="test.unit.test_config.py_multi.html">multi</a></td>
+            <td><a href="test.unit.test_config.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.unit.test_cyclomatic.py.html">test\unit\test_cyclomatic.py</a></th>
+            <td><a href="test.unit.test_cyclomatic.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="test.unit.test_cyclomatic.py_mi.html">mi</a></td>
+            <td><a href="test.unit.test_cyclomatic.py_loc.html">loc</a></td>
+            <td>lloc</td>
+            <td><a href="test.unit.test_cyclomatic.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="test.unit.test_cyclomatic.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.unit.test_helper.py.html">test\unit\test_helper.py</a></th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th><a href="annotated_test.unit.test_operators.py.html">test\unit\test_operators.py</a></th>
+            <td><a href="test.unit.test_operators.py_report.html">Report</a></td>
+            <td><a href="test.unit.test_operators.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td><a href="test.unit.test_operators.py_h2.html">h2</a></td>
+            <td><a href="test.unit.test_operators.py_N1.html">N1</a></td>
+            <td><a href="test.unit.test_operators.py_N2.html">N2</a></td>
+            <td><a href="test.unit.test_operators.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="test.unit.test_operators.py_length.html">length</a></td>
+            <td><a href="test.unit.test_operators.py_volume.html">volume</a></td>
+            <td>difficulty</td>
+            <td><a href="test.unit.test_operators.py_effort.html">effort</a></td>
+            <td><a href="test.unit.test_operators.py_mi.html">mi</a></td>
+            <td><a href="test.unit.test_operators.py_loc.html">loc</a></td>
+            <td><a href="test.unit.test_operators.py_lloc.html">lloc</a></td>
+            <td><a href="test.unit.test_operators.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="test.unit.test_operators.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\__init__.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\__main__.py</th>
+            <td><a href="wily.__main__.py_report.html">Report</a></td>
+            <td><a href="wily.__main__.py_complexity.html">complexity</a></td>
+            <td><a href="wily.__main__.py_h1.html">h1</a></td>
+            <td><a href="wily.__main__.py_h2.html">h2</a></td>
+            <td><a href="wily.__main__.py_N1.html">N1</a></td>
+            <td><a href="wily.__main__.py_N2.html">N2</a></td>
+            <td><a href="wily.__main__.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.__main__.py_length.html">length</a></td>
+            <td><a href="wily.__main__.py_volume.html">volume</a></td>
+            <td><a href="wily.__main__.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.__main__.py_effort.html">effort</a></td>
+            <td><a href="wily.__main__.py_mi.html">mi</a></td>
+            <td><a href="wily.__main__.py_loc.html">loc</a></td>
+            <td><a href="wily.__main__.py_lloc.html">lloc</a></td>
+            <td><a href="wily.__main__.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="wily.__main__.py_multi.html">multi</a></td>
+            <td><a href="wily.__main__.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\archivers\__init__.py</th>
+            <td><a href="wily.archivers.__init__.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="wily.archivers.__init__.py_mi.html">mi</a></td>
+            <td><a href="wily.archivers.__init__.py_loc.html">loc</a></td>
+            <td><a href="wily.archivers.__init__.py_lloc.html">lloc</a></td>
+            <td><a href="wily.archivers.__init__.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\archivers\filesystem.py</th>
+            <td><a href="wily.archivers.filesystem.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="wily.archivers.filesystem.py_loc.html">loc</a></td>
+            <td><a href="wily.archivers.filesystem.py_lloc.html">lloc</a></td>
+            <td><a href="wily.archivers.filesystem.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\archivers\git.py</th>
+            <td><a href="wily.archivers.git.py_report.html">Report</a></td>
+            <td><a href="wily.archivers.git.py_complexity.html">complexity</a></td>
+            <td><a href="wily.archivers.git.py_h1.html">h1</a></td>
+            <td><a href="wily.archivers.git.py_h2.html">h2</a></td>
+            <td><a href="wily.archivers.git.py_N1.html">N1</a></td>
+            <td><a href="wily.archivers.git.py_N2.html">N2</a></td>
+            <td><a href="wily.archivers.git.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.archivers.git.py_length.html">length</a></td>
+            <td><a href="wily.archivers.git.py_volume.html">volume</a></td>
+            <td><a href="wily.archivers.git.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.archivers.git.py_effort.html">effort</a></td>
+            <td><a href="wily.archivers.git.py_mi.html">mi</a></td>
+            <td><a href="wily.archivers.git.py_loc.html">loc</a></td>
+            <td><a href="wily.archivers.git.py_lloc.html">lloc</a></td>
+            <td><a href="wily.archivers.git.py_sloc.html">sloc</a></td>
+            <td><a href="wily.archivers.git.py_comments.html">comments</a></td>
+            <td>multi</td>
+            <td><a href="wily.archivers.git.py_blank.html">blank</a></td>
+            <td><a href="wily.archivers.git.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>wily\cache.py</th>
+            <td><a href="wily.cache.py_report.html">Report</a></td>
+            <td><a href="wily.cache.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="wily.cache.py_mi.html">mi</a></td>
+            <td><a href="wily.cache.py_loc.html">loc</a></td>
+            <td><a href="wily.cache.py_lloc.html">lloc</a></td>
+            <td><a href="wily.cache.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="wily.cache.py_multi.html">multi</a></td>
+            <td><a href="wily.cache.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\commands\__init__.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\commands\build.py</th>
+            <td><a href="wily.commands.build.py_report.html">Report</a></td>
+            <td><a href="wily.commands.build.py_complexity.html">complexity</a></td>
+            <td><a href="wily.commands.build.py_h1.html">h1</a></td>
+            <td><a href="wily.commands.build.py_h2.html">h2</a></td>
+            <td><a href="wily.commands.build.py_N1.html">N1</a></td>
+            <td><a href="wily.commands.build.py_N2.html">N2</a></td>
+            <td><a href="wily.commands.build.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.commands.build.py_length.html">length</a></td>
+            <td><a href="wily.commands.build.py_volume.html">volume</a></td>
+            <td><a href="wily.commands.build.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.commands.build.py_effort.html">effort</a></td>
+            <td><a href="wily.commands.build.py_mi.html">mi</a></td>
+            <td><a href="wily.commands.build.py_loc.html">loc</a></td>
+            <td><a href="wily.commands.build.py_lloc.html">lloc</a></td>
+            <td><a href="wily.commands.build.py_sloc.html">sloc</a></td>
+            <td><a href="wily.commands.build.py_comments.html">comments</a></td>
+            <td><a href="wily.commands.build.py_multi.html">multi</a></td>
+            <td><a href="wily.commands.build.py_blank.html">blank</a></td>
+            <td><a href="wily.commands.build.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>wily\commands\diff.py</th>
+            <td><a href="wily.commands.diff.py_report.html">Report</a></td>
+            <td><a href="wily.commands.diff.py_complexity.html">complexity</a></td>
+            <td><a href="wily.commands.diff.py_h1.html">h1</a></td>
+            <td><a href="wily.commands.diff.py_h2.html">h2</a></td>
+            <td><a href="wily.commands.diff.py_N1.html">N1</a></td>
+            <td><a href="wily.commands.diff.py_N2.html">N2</a></td>
+            <td><a href="wily.commands.diff.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.commands.diff.py_length.html">length</a></td>
+            <td><a href="wily.commands.diff.py_volume.html">volume</a></td>
+            <td><a href="wily.commands.diff.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.commands.diff.py_effort.html">effort</a></td>
+            <td><a href="wily.commands.diff.py_mi.html">mi</a></td>
+            <td><a href="wily.commands.diff.py_loc.html">loc</a></td>
+            <td><a href="wily.commands.diff.py_lloc.html">lloc</a></td>
+            <td><a href="wily.commands.diff.py_sloc.html">sloc</a></td>
+            <td><a href="wily.commands.diff.py_comments.html">comments</a></td>
+            <td>multi</td>
+            <td><a href="wily.commands.diff.py_blank.html">blank</a></td>
+            <td><a href="wily.commands.diff.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>wily\commands\graph.py</th>
+            <td><a href="wily.commands.graph.py_report.html">Report</a></td>
+            <td><a href="wily.commands.graph.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="wily.commands.graph.py_mi.html">mi</a></td>
+            <td><a href="wily.commands.graph.py_loc.html">loc</a></td>
+            <td><a href="wily.commands.graph.py_lloc.html">lloc</a></td>
+            <td><a href="wily.commands.graph.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="wily.commands.graph.py_blank.html">blank</a></td>
+            <td><a href="wily.commands.graph.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>wily\commands\index.py</th>
+            <td><a href="wily.commands.index.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td><a href="wily.commands.index.py_h1.html">h1</a></td>
+            <td><a href="wily.commands.index.py_h2.html">h2</a></td>
+            <td><a href="wily.commands.index.py_N1.html">N1</a></td>
+            <td><a href="wily.commands.index.py_N2.html">N2</a></td>
+            <td><a href="wily.commands.index.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.commands.index.py_length.html">length</a></td>
+            <td><a href="wily.commands.index.py_volume.html">volume</a></td>
+            <td><a href="wily.commands.index.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.commands.index.py_effort.html">effort</a></td>
+            <td><a href="wily.commands.index.py_mi.html">mi</a></td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\commands\list_metrics.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\commands\rank.py</th>
+            <td><a href="wily.commands.rank.py_report.html">Report</a></td>
+            <td><a href="wily.commands.rank.py_complexity.html">complexity</a></td>
+            <td><a href="wily.commands.rank.py_h1.html">h1</a></td>
+            <td><a href="wily.commands.rank.py_h2.html">h2</a></td>
+            <td><a href="wily.commands.rank.py_N1.html">N1</a></td>
+            <td><a href="wily.commands.rank.py_N2.html">N2</a></td>
+            <td><a href="wily.commands.rank.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.commands.rank.py_length.html">length</a></td>
+            <td><a href="wily.commands.rank.py_volume.html">volume</a></td>
+            <td><a href="wily.commands.rank.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.commands.rank.py_effort.html">effort</a></td>
+            <td><a href="wily.commands.rank.py_mi.html">mi</a></td>
+            <td><a href="wily.commands.rank.py_loc.html">loc</a></td>
+            <td><a href="wily.commands.rank.py_lloc.html">lloc</a></td>
+            <td><a href="wily.commands.rank.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="wily.commands.rank.py_multi.html">multi</a></td>
+            <td><a href="wily.commands.rank.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\commands\report.py</th>
+            <td><a href="wily.commands.report.py_report.html">Report</a></td>
+            <td><a href="wily.commands.report.py_complexity.html">complexity</a></td>
+            <td><a href="wily.commands.report.py_h1.html">h1</a></td>
+            <td><a href="wily.commands.report.py_h2.html">h2</a></td>
+            <td><a href="wily.commands.report.py_N1.html">N1</a></td>
+            <td><a href="wily.commands.report.py_N2.html">N2</a></td>
+            <td><a href="wily.commands.report.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.commands.report.py_length.html">length</a></td>
+            <td><a href="wily.commands.report.py_volume.html">volume</a></td>
+            <td><a href="wily.commands.report.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.commands.report.py_effort.html">effort</a></td>
+            <td><a href="wily.commands.report.py_mi.html">mi</a></td>
+            <td><a href="wily.commands.report.py_loc.html">loc</a></td>
+            <td><a href="wily.commands.report.py_lloc.html">lloc</a></td>
+            <td><a href="wily.commands.report.py_sloc.html">sloc</a></td>
+            <td><a href="wily.commands.report.py_comments.html">comments</a></td>
+            <td><a href="wily.commands.report.py_multi.html">multi</a></td>
+            <td><a href="wily.commands.report.py_blank.html">blank</a></td>
+            <td><a href="wily.commands.report.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>wily\commands\show.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\config.py</th>
+            <td><a href="wily.config.py_report.html">Report</a></td>
+            <td><a href="wily.config.py_complexity.html">complexity</a></td>
+            <td><a href="wily.config.py_h1.html">h1</a></td>
+            <td><a href="wily.config.py_h2.html">h2</a></td>
+            <td><a href="wily.config.py_N1.html">N1</a></td>
+            <td><a href="wily.config.py_N2.html">N2</a></td>
+            <td><a href="wily.config.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.config.py_length.html">length</a></td>
+            <td><a href="wily.config.py_volume.html">volume</a></td>
+            <td><a href="wily.config.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.config.py_effort.html">effort</a></td>
+            <td><a href="wily.config.py_mi.html">mi</a></td>
+            <td><a href="wily.config.py_loc.html">loc</a></td>
+            <td><a href="wily.config.py_lloc.html">lloc</a></td>
+            <td><a href="wily.config.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="wily.config.py_multi.html">multi</a></td>
+            <td><a href="wily.config.py_blank.html">blank</a></td>
+            <td><a href="wily.config.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>wily\decorators.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\helper\__init__.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="wily.helper.__init__.py_loc.html">loc</a></td>
+            <td><a href="wily.helper.__init__.py_lloc.html">lloc</a></td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td><a href="wily.helper.__init__.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>wily\helper\custom_enums.py</th>
+            <td><a href="wily.helper.custom_enums.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="wily.helper.custom_enums.py_loc.html">loc</a></td>
+            <td><a href="wily.helper.custom_enums.py_lloc.html">lloc</a></td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td><a href="wily.helper.custom_enums.py_blank.html">blank</a></td>
+            <td><a href="wily.helper.custom_enums.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>wily\operators\__init__.py</th>
+            <td><a href="wily.operators.__init__.py_report.html">Report</a></td>
+            <td><a href="wily.operators.__init__.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td><a href="wily.operators.__init__.py_h2.html">h2</a></td>
+            <td><a href="wily.operators.__init__.py_N1.html">N1</a></td>
+            <td><a href="wily.operators.__init__.py_N2.html">N2</a></td>
+            <td><a href="wily.operators.__init__.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.operators.__init__.py_length.html">length</a></td>
+            <td><a href="wily.operators.__init__.py_volume.html">volume</a></td>
+            <td><a href="wily.operators.__init__.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.operators.__init__.py_effort.html">effort</a></td>
+            <td><a href="wily.operators.__init__.py_mi.html">mi</a></td>
+            <td><a href="wily.operators.__init__.py_loc.html">loc</a></td>
+            <td><a href="wily.operators.__init__.py_lloc.html">lloc</a></td>
+            <td><a href="wily.operators.__init__.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="wily.operators.__init__.py_multi.html">multi</a></td>
+            <td><a href="wily.operators.__init__.py_blank.html">blank</a></td>
+            <td><a href="wily.operators.__init__.py_single_comments.html">single_comments</a></td>
+        </tr>
+        <tr>
+            <th>wily\operators\cyclomatic.py</th>
+            <td><a href="wily.operators.cyclomatic.py_report.html">Report</a></td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td><a href="wily.operators.cyclomatic.py_mi.html">mi</a></td>
+            <td><a href="wily.operators.cyclomatic.py_loc.html">loc</a></td>
+            <td><a href="wily.operators.cyclomatic.py_lloc.html">lloc</a></td>
+            <td><a href="wily.operators.cyclomatic.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\operators\halstead.py</th>
+            <td><a href="wily.operators.halstead.py_report.html">Report</a></td>
+            <td><a href="wily.operators.halstead.py_complexity.html">complexity</a></td>
+            <td><a href="wily.operators.halstead.py_h1.html">h1</a></td>
+            <td><a href="wily.operators.halstead.py_h2.html">h2</a></td>
+            <td><a href="wily.operators.halstead.py_N1.html">N1</a></td>
+            <td><a href="wily.operators.halstead.py_N2.html">N2</a></td>
+            <td><a href="wily.operators.halstead.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.operators.halstead.py_length.html">length</a></td>
+            <td><a href="wily.operators.halstead.py_volume.html">volume</a></td>
+            <td><a href="wily.operators.halstead.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.operators.halstead.py_effort.html">effort</a></td>
+            <td><a href="wily.operators.halstead.py_mi.html">mi</a></td>
+            <td><a href="wily.operators.halstead.py_loc.html">loc</a></td>
+            <td><a href="wily.operators.halstead.py_lloc.html">lloc</a></td>
+            <td><a href="wily.operators.halstead.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\operators\maintainability.py</th>
+            <td><a href="wily.operators.maintainability.py_report.html">Report</a></td>
+            <td><a href="wily.operators.maintainability.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="wily.operators.maintainability.py_loc.html">loc</a></td>
+            <td><a href="wily.operators.maintainability.py_lloc.html">lloc</a></td>
+            <td><a href="wily.operators.maintainability.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\operators\mccabe.py</th>
+            <td>Report</td>
+            <td>complexity</td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td>loc</td>
+            <td>lloc</td>
+            <td>sloc</td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\operators\raw.py</th>
+            <td><a href="wily.operators.raw.py_report.html">Report</a></td>
+            <td><a href="wily.operators.raw.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td>h2</td>
+            <td>N1</td>
+            <td>N2</td>
+            <td>vocabulary</td>
+            <td>length</td>
+            <td>volume</td>
+            <td>difficulty</td>
+            <td>effort</td>
+            <td>mi</td>
+            <td><a href="wily.operators.raw.py_loc.html">loc</a></td>
+            <td><a href="wily.operators.raw.py_lloc.html">lloc</a></td>
+            <td><a href="wily.operators.raw.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td>multi</td>
+            <td>blank</td>
+            <td>single_comments</td>
+        </tr>
+        <tr>
+            <th>wily\state.py</th>
+            <td><a href="wily.state.py_report.html">Report</a></td>
+            <td><a href="wily.state.py_complexity.html">complexity</a></td>
+            <td>h1</td>
+            <td><a href="wily.state.py_h2.html">h2</a></td>
+            <td><a href="wily.state.py_N1.html">N1</a></td>
+            <td><a href="wily.state.py_N2.html">N2</a></td>
+            <td><a href="wily.state.py_vocabulary.html">vocabulary</a></td>
+            <td><a href="wily.state.py_length.html">length</a></td>
+            <td><a href="wily.state.py_volume.html">volume</a></td>
+            <td><a href="wily.state.py_difficulty.html">difficulty</a></td>
+            <td><a href="wily.state.py_effort.html">effort</a></td>
+            <td><a href="wily.state.py_mi.html">mi</a></td>
+            <td><a href="wily.state.py_loc.html">loc</a></td>
+            <td><a href="wily.state.py_lloc.html">lloc</a></td>
+            <td><a href="wily.state.py_sloc.html">sloc</a></td>
+            <td>comments</td>
+            <td><a href="wily.state.py_multi.html">multi</a></td>
+            <td><a href="wily.state.py_blank.html">blank</a></td>
+            <td>single_comments</td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>
