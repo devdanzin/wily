@@ -127,7 +127,12 @@ def bulk_annotate() -> None:
             if filename.endswith(".py") and filename not in latest:
                 latest[filename] = rev_key
     for filename, rev_key in latest.items():
-        annotate_revision(format="HTML", revision_index=rev_key, path=filename)
+        try:
+            annotate_revision(format="HTML", revision_index=rev_key, path=filename)
+        except FileNotFoundError:
+            logger.error(
+                f"Path {filename} not found in current state of git repository."
+            )
 
 
 def annotate_revision(
