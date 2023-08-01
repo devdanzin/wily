@@ -203,6 +203,9 @@ def main() -> None:
 
 
 @main.command(help="Build the bulk report.")
+@click.argument(
+    "paths", nargs=-1, type=click.Path(resolve_path=False, path_type=pathlib.Path)
+)
 @click.option(
     "output_path",
     "-o",
@@ -230,6 +233,7 @@ def main() -> None:
 @click.pass_context
 def build(
     ctx: click.Context,
+    paths: tuple[pathlib.Path],
     output_path: Optional[pathlib.Path],
     cache: bool,
     index: bool,
@@ -240,7 +244,7 @@ def build(
         output_path = pathlib.Path("reports/")
     output_path.mkdir(exist_ok=True, parents=True)
     config = load_config(DEFAULT_CONFIG_PATH)
-    files = get_all_tracked(config)
+    files = paths if paths else get_all_tracked(config)
     metrics = list_metrics()
     build_reports(
         config,
@@ -255,6 +259,9 @@ def build(
 
 
 @main.command(help="Erase the bulk report files.")
+@click.argument(
+    "paths", nargs=-1, type=click.Path(resolve_path=False, path_type=pathlib.Path)
+)
 @click.option(
     "output_path",
     "-o",
@@ -262,12 +269,12 @@ def build(
     type=click.Path(resolve_path=False, path_type=pathlib.Path),
 )
 @click.pass_context
-def clean(ctx: click.Context, output_path: Optional[pathlib.Path]) -> None:
+def clean(ctx: click.Context, paths: tuple[pathlib.Path], output_path: Optional[pathlib.Path]) -> None:
     """Erase the bulk report files."""
     if output_path is None:
         output_path = pathlib.Path("reports/")
     config = load_config(DEFAULT_CONFIG_PATH)
-    files = get_all_tracked(config)
+    files = paths if paths else get_all_tracked(config)
     metrics = list_metrics()
     files_to_clean = build_reports(config, metrics, files, output_path, index_only=True)
     for file in files_to_clean:
