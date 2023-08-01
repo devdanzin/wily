@@ -3,6 +3,7 @@
 import pathlib
 from string import Template
 from time import time
+from typing import Optional
 
 import click
 from git.repo import Repo
@@ -203,6 +204,12 @@ def main() -> None:
 
 @main.command(help="Build the bulk report.")
 @click.option(
+    "output_path",
+    "-o",
+    "--output",
+    type=click.Path(resolve_path=False, path_type=pathlib.Path),
+)
+@click.option(
     "-c",
     "--cache/--no-cache",
     default=True,
@@ -221,10 +228,17 @@ def main() -> None:
     help="Only create metric graphs for all files",
 )
 @click.pass_context
-def build(ctx: click.Context, cache: bool, index: bool, globals_only: bool) -> None:
+def build(
+    ctx: click.Context,
+    output_path: Optional[pathlib.Path],
+    cache: bool,
+    index: bool,
+    globals_only: bool,
+) -> None:
     """Build the bulk reports."""
-    path = pathlib.Path("reports/")
-    path.mkdir(exist_ok=True, parents=True)
+    if output_path is None:
+        output_path = pathlib.Path("reports/")
+    output_path.mkdir(exist_ok=True, parents=True)
     config = load_config(DEFAULT_CONFIG_PATH)
     files = get_all_tracked(config)
     metrics = list_metrics()
@@ -232,7 +246,7 @@ def build(ctx: click.Context, cache: bool, index: bool, globals_only: bool) -> N
         config,
         metrics,
         files,
-        path,
+        output_path,
         cached=cache,
         index_only=index,
         globals_only=globals_only,
@@ -241,14 +255,21 @@ def build(ctx: click.Context, cache: bool, index: bool, globals_only: bool) -> N
 
 
 @main.command(help="Erase the bulk report files.")
+@click.option(
+    "output_path",
+    "-o",
+    "--output",
+    type=click.Path(resolve_path=False, path_type=pathlib.Path),
+)
 @click.pass_context
-def clean(ctx: click.Context) -> None:
+def clean(ctx: click.Context, output_path: Optional[pathlib.Path]) -> None:
     """Erase the bulk report files."""
-    path = pathlib.Path("reports/")
+    if output_path is None:
+        output_path = pathlib.Path("reports/")
     config = load_config(DEFAULT_CONFIG_PATH)
     files = get_all_tracked(config)
     metrics = list_metrics()
-    files_to_clean = build_reports(config, metrics, files, path, index_only=True)
+    files_to_clean = build_reports(config, metrics, files, output_path, index_only=True)
     for file in files_to_clean:
         to_delete = pathlib.Path(file)
         to_delete.unlink(missing_ok=True)
