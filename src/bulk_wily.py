@@ -8,6 +8,7 @@ from typing import Optional
 import click
 from git.repo import Repo
 
+from wily import logger
 from wily.commands.graph import graph
 from wily.commands.report import report
 from wily.config import DEFAULT_CONFIG_PATH, WilyConfig
@@ -15,6 +16,7 @@ from wily.config import load as load_config
 from wily.helper.custom_enums import ReportFormat
 from wily.operators import ALL_OPERATORS
 
+logger.setLevel("INFO")
 start = time()
 
 
@@ -100,7 +102,7 @@ def build_reports(
         new_output = new_output / pathlib.Path(output)
         created_files.append(new_output)
         if not index_only and not globals_only:
-            print(filename, f"{index + 1}/{total}")
+            logger.info(f"{filename} {index + 1}/{total}")
             report(
                 config,
                 filename,
@@ -145,8 +147,8 @@ def build_reports(
     with (path / "index.html").open("w", errors="xmlcharrefreplace") as index_output:
         index_output.write(report_result)
 
-    print(f"Globals time: {globals_time} secs")
-    print(f"Report and metrics time: {time() - start_metrics_report} secs")
+    logger.info(f"Globals time: {globals_time} secs")
+    logger.info(f"Report and metrics time: {time() - start_metrics_report} secs")
 
     return created_files
 
@@ -262,7 +264,7 @@ def build(
         index_only=index,
         globals_only=globals_only,
     )
-    print(f"Total time: {time() - start} secs")
+    logger.info(f"Total time: {time() - start} secs")
 
 
 @main.command(help="Erase the bulk report files.")
@@ -296,7 +298,7 @@ def clean(
     for file in files_to_clean:
         to_delete = pathlib.Path(file)
         to_delete.unlink(missing_ok=True)
-    print(f"Total time: {time() - start} secs")
+    logger.info(f"Total time: {time() - start} secs")
 
 
 if __name__ == "__main__":
