@@ -202,7 +202,7 @@ def generate_table_row(
 
 @click.group
 def main() -> None:
-    """Group commands."""
+    """Bulk operations for wily."""
 
 
 @main.command(help="Build the bulk report.")
