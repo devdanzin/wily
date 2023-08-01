@@ -135,6 +135,7 @@ def graph(
             except KeyError:
                 # missing data
                 pass
+
         if len(x) > 1:
             # Create traces
             trace = go.Scatter(
@@ -153,6 +154,7 @@ def graph(
                 hoveron="points+fills",
             )
             data.append(trace)
+
     if output:
         filename = output
         auto_open = False
