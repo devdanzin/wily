@@ -63,6 +63,7 @@ def build_reports(
     cached: bool = True,
     index_only: bool = False,
     globals_only: bool = False,
+    changes_only: bool = True,
 ) -> list[pathlib.Path]:
     """Build bulk reports."""
     rows = []
@@ -83,7 +84,7 @@ def build_reports(
                 "",
                 (metric,),
                 output=metric_filename,
-                changes=True,
+                changes=changes_only,
                 text=False,
                 aggregate=False,
                 plotlyjs="directory",
@@ -112,7 +113,7 @@ def build_reports(
                 include_message=True,
                 format=ReportFormat.HTML,
                 cached=cached,
-                changes_only=True,
+                changes_only=changes_only,
             )
 
         for metric in metrics:
@@ -126,7 +127,7 @@ def build_reports(
                     filename,
                     (metric,),
                     output=metric_filename,
-                    changes=True,
+                    changes=changes_only,
                     text=False,
                     aggregate=False,
                     plotlyjs="directory",
@@ -238,6 +239,12 @@ def main() -> None:
 @click.option(
     "-m", "--metrics", help="Comma-separated metrics to build bulk reports with"
 )
+@click.option(
+    "-c",
+    "--changes/--all",
+    default=True,
+    help="Only show revisions that have changes",
+)
 @click.pass_context
 def build(
     ctx: click.Context,
@@ -247,6 +254,7 @@ def build(
     index: bool,
     globals_only: bool,
     metrics: str,
+    changes: bool,
 ) -> None:
     """Build the bulk reports."""
     if output_path is None:
@@ -263,6 +271,7 @@ def build(
         cached=cache,
         index_only=index,
         globals_only=globals_only,
+        changes_only=changes,
     )
     logger.info(f"Total time: {time() - start} secs")
 
