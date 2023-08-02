@@ -1,4 +1,12 @@
-"""Quick and dirty global report generator for Wily."""
+"""
+Bulk report generator for wily.
+
+Use wily to create multiple reports and graphs for a Python project stored in
+Git. Generate an index page linking to HTML reports and graphs, if they exist.
+Doing so is faster and results in smaller files than naively running wily
+for each separate file.
+"""
+from __future__ import annotations
 
 import pathlib
 from string import Template
@@ -22,6 +30,7 @@ start = time()
 
 def get_all_tracked(config: WilyConfig) -> list[pathlib.Path]:
     """Get all tracked files that ever existed in git repo."""
+    # ToDo: check whether using graph's method is better
     repo = Repo(config.path)
     path_log = repo.git.execute(
         ["git", "log", "--name-only", "--pretty=format:", "--name-only"]
@@ -34,7 +43,7 @@ def get_all_tracked(config: WilyConfig) -> list[pathlib.Path]:
 
 
 def list_metrics() -> list[str]:
-    """List all known metrics."""
+    """List all known metrics (excluding rank)."""
     metrics = []
     for name, operator in sorted(ALL_OPERATORS.items()):
         if len(operator.cls.metrics) == 0:
@@ -47,7 +56,7 @@ def list_metrics() -> list[str]:
 
 
 def get_headers(metrics: list[str]) -> str:
-    """Get headers for the index.html table."""
+    """Get headers with metric names for the index.html table."""
     columns = ["<th><h3>Filename</h3></th>", "<th><h3>Report</h3></th>"]
     for metric in metrics:
         columns.append(f"<th><h3>{metric}</h3></th>")
@@ -65,7 +74,26 @@ def build_reports(
     globals_only: bool = False,
     changes_only: bool = True,
 ) -> list[pathlib.Path]:
-    """Build bulk reports."""
+    """Build bulk reports.
+
+    This generates an index page that contains links to annotated source files,
+    reports and metric graphs. Depending on options, also creates the HTML reports
+    and graphs.
+
+    Args:
+        config: The `WilyConfig` that will be passed to `graph()` and `report()`.
+        metrics: A lisf of metric names for graph generation.
+        files: A list of `pathlib.Path` of the files for which to generate reports and graphs.
+        path: Output directory where files will be written.
+        cached: Whether to use caching to speed up reading JSON from wily's cache.
+        index_only: Only generate the index page, with links to existing files.
+        globals_only: Only generate the global graphs and the index page.
+        changes_only: Only show revisions with changes.
+
+    Returns:
+        A list of `pathlib.Path` files that would be created.
+
+    """
     rows = []
     created_files = [path / "index.html"]
     nl_indent = "\n            "
@@ -157,7 +185,15 @@ def build_reports(
 def link_if_exists(
     columns: list[str], filename: str, name: str, path: pathlib.Path
 ) -> None:
-    """Link to a metric/report file if it exists, otherwise just output the name."""
+    """Link to a metric/report file if it exists, otherwise just output the name.
+
+    Args:
+        columns: A list of strings that will be appended to.
+        filename: The name of the HTML file to link to, if it exists.
+        name: The name of the metric (or "Report") to include.
+        path: The output directory where files should be searched for.
+
+    """
     if (path / filename).exists():
         columns.append(f'<td><a href="{filename}">{name}</a></td>')
     else:
@@ -165,7 +201,18 @@ def link_if_exists(
 
 
 def generate_global_row(metrics: list[str], nl_indent: str, path: pathlib.Path) -> str:
-    """Generate the "global" table row containing metrics."""
+    """Generate the "global" table row containing metrics.
+
+    Args:
+        metrics: A list of metric names.
+        nl_indent: A string containing a new-line and indentation to format the HTML.
+        path: The output directory where files should be searched for.
+
+    Returns:
+        A string representing an HTML table row containing metric names (which
+        are links to global HTML graphs if the corresponding file exists).
+
+    """
     columns = ["    <td></td>"]
     for metric in metrics:
         html_global = f"global_{metric}.html"
@@ -181,7 +228,20 @@ def generate_global_row(metrics: list[str], nl_indent: str, path: pathlib.Path) 
 def generate_table_row(
     filename: str, htmlname: str, metrics: list[str], nl_indent: str, path: pathlib.Path
 ) -> str:
-    """Generate a table row containing the file and metrics."""
+    """Generate a table row containing the file and metrics.
+
+    Args:
+        filename: The source code filename, with path.
+        htmlname: The source code filename, with path and path separators replaced by dots.
+        metrics: A list of metrics for which to generate links/labels.
+        nl_indent: A string containing a new-line and indentation to format the HTML.
+        path: The output directory where files should be searched for.
+
+
+    Returns:
+        A string representing an HTML table row containing metric names (which
+        are links to HTML graphs if the corresponding file exists).
+    """
     columns: list[str] = []
     html_report = f"{htmlname}_report.html"
     link_if_exists(columns, html_report, "Report", path)
