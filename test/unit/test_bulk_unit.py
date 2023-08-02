@@ -2,8 +2,6 @@ import pathlib
 import sys
 from unittest import mock
 
-import pytest
-
 path = str(pathlib.Path(__file__).parents[2] / "src")
 sys.path.insert(0, path)
 
@@ -243,7 +241,9 @@ def test_build_reports_files_no_metrics():
     config = mock.Mock()
     mock_report = mock.Mock()
     mock_graph = mock.Mock()
-    with mock.patch("bulk_wily.report", mock_report), mock.patch("bulk_wily.graph", mock_graph):
+    with mock.patch("bulk_wily.report", mock_report), mock.patch(
+        "bulk_wily.graph", mock_graph
+    ):
         metrics = []
         files = ["file1.py", "file2.py"]
         result = bulk_wily.build_reports(
@@ -271,7 +271,9 @@ def test_build_reports_files_and_metrics():
     config = mock.Mock()
     mock_report = mock.Mock()
     mock_graph = mock.Mock()
-    with mock.patch("bulk_wily.report", mock_report), mock.patch("bulk_wily.graph", mock_graph):
+    with mock.patch("bulk_wily.report", mock_report), mock.patch(
+        "bulk_wily.graph", mock_graph
+    ):
         metrics = ["metric1", "metric2"]
         files = ["file1.py", "file2.py"]
         result = bulk_wily.build_reports(
@@ -299,7 +301,9 @@ def test_build_reports_index_only():
     config = mock.Mock()
     mock_report = mock.Mock()
     mock_graph = mock.Mock()
-    with mock.patch("bulk_wily.report", mock_report), mock.patch("bulk_wily.graph", mock_graph):
+    with mock.patch("bulk_wily.report", mock_report), mock.patch(
+        "bulk_wily.graph", mock_graph
+    ):
         metrics = ["metric1", "metric2"]
         files = ["file1.py", "file2.py"]
         result = bulk_wily.build_reports(
@@ -327,7 +331,9 @@ def test_build_reports_globals_only():
     config = mock.Mock()
     mock_report = mock.Mock()
     mock_graph = mock.Mock()
-    with mock.patch("bulk_wily.report", mock_report), mock.patch("bulk_wily.graph", mock_graph):
+    with mock.patch("bulk_wily.report", mock_report), mock.patch(
+        "bulk_wily.graph", mock_graph
+    ):
         metrics = ["metric1", "metric2"]
         files = ["file1.py", "file2.py"]
         result = bulk_wily.build_reports(
