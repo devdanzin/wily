@@ -206,7 +206,7 @@ def test_generate_table_row():
     assert result == metrics_with_files
 
 
-def test_build_reports():
+def test_build_reports_empty():
     mock_path = mock.MagicMock()
     mock_exists = mock.MagicMock(return_value=False)
     mock_exists.exists = mock_exists
@@ -233,7 +233,16 @@ def test_build_reports():
     mock_report.assert_not_called()
     mock_graph.assert_not_called()
 
-    mock_path.__truediv__.reset_mock()
+
+def test_build_reports_files_no_metrics():
+    mock_path = mock.MagicMock()
+    mock_exists = mock.MagicMock(return_value=False)
+    mock_exists.exists = mock_exists
+    mock_path.__truediv__.return_value = mock_exists
+    mock.mock_open(mock=mock_exists)
+    config = mock.Mock()
+    mock_report = mock.Mock()
+    mock_graph = mock.Mock()
     with mock.patch("bulk_wily.report", mock_report), mock.patch("bulk_wily.graph", mock_graph):
         metrics = []
         files = ["file1.py", "file2.py"]
@@ -252,8 +261,16 @@ def test_build_reports():
     assert mock_report.call_count == 2
     assert mock_graph.call_count == 0
 
-    mock_path.__truediv__.reset_mock()
-    mock_report.reset_mock()
+
+def test_build_reports_files_and_metrics():
+    mock_path = mock.MagicMock()
+    mock_exists = mock.MagicMock(return_value=False)
+    mock_exists.exists = mock_exists
+    mock_path.__truediv__.return_value = mock_exists
+    mock.mock_open(mock=mock_exists)
+    config = mock.Mock()
+    mock_report = mock.Mock()
+    mock_graph = mock.Mock()
     with mock.patch("bulk_wily.report", mock_report), mock.patch("bulk_wily.graph", mock_graph):
         metrics = ["metric1", "metric2"]
         files = ["file1.py", "file2.py"]
@@ -272,9 +289,16 @@ def test_build_reports():
     assert mock_report.call_count == 2
     assert mock_graph.call_count == 6
 
-    mock_path.__truediv__.reset_mock()
-    mock_report.reset_mock()
-    mock_graph.reset_mock()
+
+def test_build_reports_index_only():
+    mock_path = mock.MagicMock()
+    mock_exists = mock.MagicMock(return_value=False)
+    mock_exists.exists = mock_exists
+    mock_path.__truediv__.return_value = mock_exists
+    mock.mock_open(mock=mock_exists)
+    config = mock.Mock()
+    mock_report = mock.Mock()
+    mock_graph = mock.Mock()
     with mock.patch("bulk_wily.report", mock_report), mock.patch("bulk_wily.graph", mock_graph):
         metrics = ["metric1", "metric2"]
         files = ["file1.py", "file2.py"]
@@ -292,3 +316,31 @@ def test_build_reports():
     assert mock_path.__truediv__.call_count == 20
     assert mock_report.call_count == 0
     assert mock_graph.call_count == 0
+
+
+def test_build_reports_globals_only():
+    mock_path = mock.MagicMock()
+    mock_exists = mock.MagicMock(return_value=False)
+    mock_exists.exists = mock_exists
+    mock_path.__truediv__.return_value = mock_exists
+    mock.mock_open(mock=mock_exists)
+    config = mock.Mock()
+    mock_report = mock.Mock()
+    mock_graph = mock.Mock()
+    with mock.patch("bulk_wily.report", mock_report), mock.patch("bulk_wily.graph", mock_graph):
+        metrics = ["metric1", "metric2"]
+        files = ["file1.py", "file2.py"]
+        result = bulk_wily.build_reports(
+            config,
+            metrics,
+            files,
+            mock_path,
+            cached=True,
+            index_only=False,
+            globals_only=True,
+            changes_only=True,
+        )
+        assert len(result) == 9
+    assert mock_path.__truediv__.call_count == 20
+    assert mock_report.call_count == 0
+    assert mock_graph.call_count == 2
