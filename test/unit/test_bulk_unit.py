@@ -72,13 +72,20 @@ def test_list_metrics_mock_metrics():
         ]
 
 
-def test_get_headers():
+def test_get_headers_no_metrics():
     nl_indent = "\n            "
     default_headers = nl_indent.join(
         ["<th><h3>Filename</h3></th>", "<th><h3>Report</h3></th>"]
     )
     no_metrics_result = bulk_wily.get_headers([])
     assert no_metrics_result == default_headers
+
+
+def test_get_headers_metrics():
+    nl_indent = "\n            "
+    default_headers = nl_indent.join(
+        ["<th><h3>Filename</h3></th>", "<th><h3>Report</h3></th>"]
+    )
     metrics = ["metric1", "metric3", "metric3"]
     metric_headers = """
             <th><h3>metric1</h3></th>
@@ -88,12 +95,15 @@ def test_get_headers():
     assert metrics_result == default_headers + metric_headers
 
 
-def test_link_if_exists():
+def test_link_if_exists_link():
     mock_path = mock.MagicMock()
     columns = []
     bulk_wily.link_if_exists(columns, "filename.html", "metric", mock_path)
     assert columns[0] == '<td><a href="filename.html">metric</a></td>'
 
+
+def test_link_if_exists_no_link():
+    mock_path = mock.MagicMock()
     mock_exists = mock.Mock(return_value=False)
     mock_exists.exists = mock_exists
     mock_path.__truediv__.return_value = mock_exists
@@ -102,7 +112,7 @@ def test_link_if_exists():
     assert columns[0] == "<td>metric</td>"
 
 
-def test_generate_global_row():
+def test_generate_global_row_empty():
     nl_indent = "\n            "
 
     mock_path = mock.MagicMock()
@@ -119,6 +129,15 @@ def test_generate_global_row():
     result = bulk_wily.generate_global_row(metrics, nl_indent, mock_path)
     assert result == empty_header
 
+
+def test_generate_global_row_with_metrics():
+    nl_indent = "\n            "
+
+    mock_path = mock.MagicMock()
+    mock_exists = mock.Mock(return_value=False)
+    mock_exists.exists = mock_exists
+    mock_path.__truediv__.return_value = mock_exists
+
     with_metrics = """
         <tr>
             <th>global</th>
@@ -130,6 +149,15 @@ def test_generate_global_row():
     result = bulk_wily.generate_global_row(metrics, nl_indent, mock_path)
     assert result == with_metrics
 
+
+def test_generate_global_row_with_linked_metrics():
+    nl_indent = "\n            "
+
+    mock_path = mock.MagicMock()
+    mock_exists = mock.Mock(return_value=True)
+    mock_exists.exists = mock_exists
+    mock_path.__truediv__.return_value = mock_exists
+
     with_linked_metrics = """
         <tr>
             <th>global</th>
@@ -138,7 +166,6 @@ def test_generate_global_row():
             <td><a href="global_metric2.html">metric2</a></td>
         </tr>"""
     metrics = ["metric1", "metric2"]
-    mock_exists.return_value = True
     result = bulk_wily.generate_global_row(metrics, nl_indent, mock_path)
     assert result == with_linked_metrics
 
