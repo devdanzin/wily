@@ -17,46 +17,34 @@ import tabulate
 
 from wily import format_date, format_revision, logger
 from wily.archivers import resolve_archiver
-from wily.config import DEFAULT_PATH
+from wily.config import DEFAULT_PATH, WilyConfig
 from wily.helper import get_maxcolwidth, get_style
 from wily.operators import resolve_metric_as_tuple
 from wily.state import State
 
 
 def rank(
-    config,
-    path,
-    metric,
-    revision_index,
-    limit,
-    threshold,
-    descending,
-    wrap,
-    cached=False,
-):
+    config: WilyConfig,
+    path: str,
+    metric: str,
+    revision_index: str,
+    limit: int,
+    threshold: int,
+    descending: bool,
+    wrap: bool,
+    cached: bool,
+) -> None:
     """
     Rank command ordering files, methods or functions using metrics.
 
     :param config: The configuration.
-    :type config: :class:'wily.config.WilyConfig'
-
     :param path: The path to the file.
-    :type path ''str''
-
     :param metric: Name of the metric to report on.
-    :type metric: ''str''
-
     :param revision_index: Version of git repository to revert to.
-    :type revision_index: ``str``
-
     :param limit: Limit the number of items in the table.
-    :type  limit: ``int``
-
     :param threshold: For total values beneath the threshold return a non-zero exit code.
-    :type  threshold: ``int``
-
-    :type descending: Rank in descending order
-    :param descending: ``bool``
+    :param descending: Rank in descending order
+    :param wrap: Wrap output
 
     :return: Sorted table of all files in path, sorted in order of metric.
     """
@@ -64,7 +52,7 @@ def rank(
 
     data = []
 
-    operator, metric = resolve_metric_as_tuple(metric)
+    operator, resolved_metric = resolve_metric_as_tuple(metric)
     operator = operator.name
 
     state = State(config)
@@ -72,7 +60,11 @@ def rank(
     if not revision_index:
         target_revision = state.index[state.default_archiver].last_revision
     else:
-        rev = resolve_archiver(state.default_archiver).cls(config).find(revision_index)
+        rev = (
+            resolve_archiver(state.default_archiver)
+            .archiver_cls(config)
+            .find(revision_index)
+        )
         logger.debug(f"Resolved {revision_index} to {rev.key} ({rev.message})")
         try:
             target_revision = state.index[state.default_archiver][rev.key]
@@ -83,7 +75,7 @@ def rank(
             exit(1)
 
     logger.info(
-        f"-----------Rank for {metric.description} for {format_revision(target_revision.revision.key)} by {target_revision.revision.author_name} on {format_date(target_revision.revision.date)}.------------"
+        f"-----------Rank for {resolved_metric.description} for {format_revision(target_revision.revision.key)} by {target_revision.revision.author_name} on {format_date(target_revision.revision.date)}.------------"
     )
 
     if path is None:
@@ -107,10 +99,10 @@ def rank(
         for archiver in state.archivers:
             try:
                 logger.debug(
-                    f"Fetching metric {metric.name} for {operator} in {str(item)}"
+                    f"Fetching metric {resolved_metric.name} for {operator} in {str(item)}"
                 )
                 val = target_revision.get(
-                    config, archiver, operator, str(item), metric.name, cached
+                    config, archiver, operator, str(item), resolved_metric.name, cached
                 )
                 value = val
                 data.append((item, value))
@@ -127,10 +119,10 @@ def rank(
         return
 
     # Tack on the total row at the end
-    total = metric.aggregate(rev[1] for rev in data)
+    total = resolved_metric.aggregate(rev[1] for rev in data)
     data.append(["Total", total])
 
-    headers = ("File", metric.description)
+    headers = ("File", resolved_metric.description)
     maxcolwidth = get_maxcolwidth(headers, wrap)
     style = get_style()
     print(
