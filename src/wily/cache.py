@@ -226,7 +226,9 @@ def has_archiver_index(config: WilyConfig, archiver: Union[Archiver, str]) -> bo
     return root.exists()
 
 
-def get_archiver_index(config: WilyConfig, archiver: Union[Archiver, str], cached: bool = True) -> Any:
+def get_archiver_index(
+    config: WilyConfig, archiver: Union[Archiver, str], cached: bool = True
+) -> Any:
     """
     Get the contents of the archiver index file.
 
@@ -251,7 +253,10 @@ def _get_index(root: pathlib.Path) -> Any:
 
 
 def get(
-    config: WilyConfig, archiver: Union[Archiver, str], revision: str, cached: bool = False
+    config: WilyConfig,
+    archiver: Union[Archiver, str],
+    revision: str,
+    cached: bool = False,
 ) -> Dict[Any, Any]:
     """
     Get the data for a given revision.

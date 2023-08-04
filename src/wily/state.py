@@ -47,7 +47,13 @@ class IndexedRevision:
         return d
 
     def get(
-        self, config: WilyConfig, archiver: str, operator: str, path: str, key: str, cached: bool = False
+        self,
+        config: WilyConfig,
+        archiver: str,
+        operator: str,
+        path: str,
+        key: str,
+        cached: bool = False,
     ) -> Any:
         """
         Get the metric data for this indexed revision.
