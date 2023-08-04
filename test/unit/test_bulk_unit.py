@@ -45,17 +45,17 @@ def test_list_metrics_real_metrics():
 
 
 def test_list_metrics_mock_metrics():
-    bare_operator_metrics = {"cls.metrics": []}
+    bare_operator_metrics = {"operator_cls.metrics": []}
     mock_bare_operator = mock.Mock(**bare_operator_metrics)
     single_metric = mock.Mock()
     single_metric.name = "single_metric"
-    single_operator_metrics = {"cls.metrics": [single_metric]}
+    single_operator_metrics = {"operator_cls.metrics": [single_metric]}
     mock_single_operator = mock.Mock(**single_operator_metrics)
     multiple_metric1 = mock.Mock()
     multiple_metric1.name = "multiple_metric1"
     multiple_metric2 = mock.Mock()
     multiple_metric2.name = "multiple_metric2"
-    multiple_operator_metrics = {"cls.metrics": [multiple_metric1, multiple_metric2]}
+    multiple_operator_metrics = {"operator_cls.metrics": [multiple_metric1, multiple_metric2]}
     mock_multiple_operator = mock.Mock(**multiple_operator_metrics)
     operators = {
         "bare_operator": mock_bare_operator,

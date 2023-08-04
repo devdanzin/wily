@@ -46,10 +46,10 @@ def list_metrics() -> list[str]:
     """List all known metrics (excluding rank)."""
     metrics = []
     for name, operator in sorted(ALL_OPERATORS.items()):
-        if len(operator.cls.metrics) == 0:
+        if len(operator.operator_cls.metrics) == 0:
             metrics.append(name)
         else:
-            for metric in operator.cls.metrics:
+            for metric in operator.operator_cls.metrics:
                 if metric.name != "rank":
                     metrics.append(metric.name)
     return metrics
