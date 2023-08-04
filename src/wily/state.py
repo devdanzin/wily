@@ -63,6 +63,7 @@ class IndexedRevision:
         :param operator: The operator to find
         :param path: The path to find
         :param key: The metric key
+        :param cached: Whether to use caching.
         """
         if not self._data:
             self._data = cache.get(

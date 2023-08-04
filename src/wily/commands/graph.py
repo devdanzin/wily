@@ -31,7 +31,7 @@ def graph(
     changes: bool = True,
     text: bool = False,
     aggregate: bool = False,
-    plotlyjs: bool = False,
+    plotlyjs: Union[bool, str] = False,
     cached: bool = False,
 ) -> None:
     """
@@ -45,6 +45,8 @@ def graph(
     :param changes: Only graph changes.
     :param text: Show commit message inline in graph.
     :param aggregate: Aggregate values for graph.
+    :param plotlyjs: Whether and how to include plotlyjs.
+    :param cached: Whether to use caching.
     """
     logger.debug("Running graph command")
 

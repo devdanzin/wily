@@ -45,6 +45,7 @@ def rank(
     :param threshold: For total values beneath the threshold return a non-zero exit code.
     :param descending: Rank in descending order
     :param wrap: Wrap output
+    :param cached: Whether to use caching.
 
     :return: Sorted table of all files in path, sorted in order of metric.
     """

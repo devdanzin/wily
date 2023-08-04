@@ -25,6 +25,7 @@ def exists(config: WilyConfig, cached: bool = True) -> bool:
     Check whether the .wily/ directory exists.
 
     :param config: The configuration
+    :param cached: Whether to use caching
 
     :return: Whether the .wily directory exists
     """
@@ -192,6 +193,7 @@ def get_default_metrics(config: WilyConfig, cached: bool = True) -> List[str]:
     Get the default metrics for a configuration.
 
     :param config: The configuration
+    :param cached: Whether to use caching.
     :return: Return the list of default metrics in this index
     """
     archivers = list_archivers(config)
@@ -234,6 +236,7 @@ def get_archiver_index(
 
     :param config: The configuration
     :param archiver: The name of the archiver type (e.g. 'git')
+    :param cached: Whether to use caching.
     :return: The index data
     """
     root = pathlib.Path(config.cache_path) / str(archiver)

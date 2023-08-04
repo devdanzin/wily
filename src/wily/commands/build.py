@@ -58,6 +58,7 @@ def build(
     :param config: The wily configuration
     :param archiver: The archiver to use
     :param operators: The list of operators to execute
+    :param cached: Whether to use caching
     """
     try:
         logger.debug(f"Using {archiver.name} archiver module")

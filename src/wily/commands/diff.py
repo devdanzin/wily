@@ -49,6 +49,7 @@ def diff(
     :param detail: Show details (function-level)
     :param revision: Compare with specific revision
     :param wrap: Wrap output
+    :param cached: Whether to use caching.
     """
     config.targets = files
     files = list(files)

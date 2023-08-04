@@ -52,6 +52,7 @@ def report(
     :param console_format: Grid format style for tabulate
     :param changes_only: Only report revisions where delta != 0
     :param wrap: Wrap output
+    :param cached: Whether to use caching
     """
     metrics = sorted(metrics)
     logger.debug("Running report command")
