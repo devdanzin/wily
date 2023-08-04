@@ -124,24 +124,25 @@ def graph(
                 # missing data
                 pass
 
-        if len(x) > 1:
-            # Create traces
-            trace = go.Scatter(
-                x=x,
-                y=y,
-                mode="lines+markers+text" if text else "lines+markers",
-                name=f"{path_}",
-                ids=state.index[state.default_archiver].revision_keys,
-                text=labels,
-                marker={
-                    "size": 0 if z_axis is None else z,
-                    "color": list(range(len(y))),
-                    # "colorscale": "Viridis",
-                },
-                xcalendar="gregorian",
-                hoveron="points+fills",
-            )  # type: ignore
-            data.append(trace)
+        if len(x) <= 1:
+            continue
+        # Create traces
+        trace = go.Scatter(
+            x=x,
+            y=y,
+            mode="lines+markers+text" if text else "lines+markers",
+            name=f"{path_}",
+            ids=state.index[state.default_archiver].revision_keys,
+            text=labels,
+            marker={
+                "size": 0 if z_axis is None else z,
+                "color": list(range(len(y))),
+                # "colorscale": "Viridis",
+            },
+            xcalendar="gregorian",
+            hoveron="points+fills",
+        )  # type: ignore
+        data.append(trace)
 
     if output:
         filename = output
@@ -149,17 +150,18 @@ def graph(
     else:
         filename = "wily-report.html"
         auto_open = True
-    if data:
-        plotly.offline.plot(
-            {
-                "data": data,
-                "layout": go.Layout(
-                    title=title,
-                    xaxis={"title": x_axis},
-                    yaxis={"title": y_metric.description},
-                ),  # type: ignore
-            },
-            auto_open=auto_open,
-            filename=filename,
-            include_plotlyjs=plotlyjs,
-        )
+    if not data:
+        return
+    plotly.offline.plot(
+        {
+            "data": data,
+            "layout": go.Layout(
+                title=title,
+                xaxis={"title": x_axis},
+                yaxis={"title": y_metric.description},
+            ),  # type: ignore
+        },
+        auto_open=auto_open,
+        filename=filename,
+        include_plotlyjs=plotlyjs,
+    )
