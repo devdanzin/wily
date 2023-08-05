@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
+from string import Template
 from sys import exit
 from typing import Any
 
@@ -27,7 +28,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
     """Annotate and color source code with metric values as HTML."""
 
     def __init__(
-        self, metrics: dict[int, tuple[str, str]], **options: Any
+        self, metrics: list[dict[int, tuple[str, str]]], **options: Any
     ) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
@@ -47,27 +48,47 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
     def annotate_lines(self, tokensource):
         """Add metric annotations from self.metrics."""
         for i, (_t, value) in enumerate(tokensource):
-            if not self.metrics:
+            empty_halstead = (
+                '<div class="halstead" style="background-color: #ffffff; width: 100%;">'
+                '<span style="background-color: #ffffff;">'
+                f'{" ".join(("---",) * 6 + ("-------",) * 3)} |</span> {value}</div>'
+            )
+            if not self.metrics[0]:
                 yield 1, value
-            if i in self.metrics:
-                if self.metrics[i][1][1] == "-":  # Just use function values for now
+            if i in self.metrics[0]:
+                if self.metrics[0][i][1][1] == "-":  # Just use function values for now
                     c = "#ffffff"
                 else:
-                    val = int(self.metrics[i][1])
+                    val = int(self.metrics[0][i][1])
                     red = max(0, min(255, round(0.04 * 255 * (val - 1))))
                     green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
                     blue = 0
                     c = f"rgba{(red, green, blue, 0.75)}"
+                if i not in self.metrics[1] or self.metrics[1][i][1][1] == "-":
+                    halstead = empty_halstead
+                else:
+                    val = int(self.metrics[1][i][1])
+                    red = max(0, min(255, round(0.04 * 255 * (val - 1))))
+                    green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
+                    blue = 0
+                    h = f"rgba{(red, green, blue, 0.75)}"
+                    halstead = (
+                        f'<div class="halstead" style="background-color: {h}; width: 100%;">'
+                        '<span style="background-color: #ffffff;">'
+                        f'{" ".join(self.metrics[1][i])} |</span> {value}</div>'
+                    )
                 yield 1, (
-                    f'<div style="background-color: {c}; width: 100%;">'
+                    f'<div class="cyclomatic" style="background-color: {c}; width: 100%;">'
                     '<span style="background-color: #ffffff;">'
-                    f'{" ".join(self.metrics[i])} |</span> {value}</div>'
+                    f'{" ".join(self.metrics[0][i])} |</span> {value}</div>'
+                    f"{halstead}"
                 )
             else:
                 yield 1, (
-                    '<div style="background-color: #ffffff; width: 100%;">'
+                    '<div class="cyclomatic" style="background-color: #ffffff; width: 100%;">'
                     '<span style="background-color: #ffffff;">'
                     f'{" ".join(("--", "--"))} |</span> {value}</div>'
+                    f"{empty_halstead}"
                 )
 
 
@@ -142,9 +163,10 @@ def add_halstead_lineno(halstead: dict, cyclomatic: dict):
         if "detailed" not in data:
             continue
         for function, details in data["detailed"].items():
-            if function in cyclomatic[filename]["detailed"]:
-                details["lineno"] = cyclomatic[filename]["detailed"][function]["lineno"]
-                details["endline"] = cyclomatic[filename]["detailed"][function]["endline"]
+            if function not in cyclomatic[filename]["detailed"]:
+                continue
+            details["lineno"] = cyclomatic[filename]["detailed"][function]["lineno"]
+            details["endline"] = cyclomatic[filename]["detailed"][function]["endline"]
 
 
 def bulk_annotate() -> None:
@@ -236,8 +258,7 @@ def annotate_revision(
         details = cyclomatic[filename]["detailed"]
         path_ = Path(filename)  # ToDo: Allow fetching code from previous revisions
         code = path_.read_text()
-        metrics = map_cyclomatic_lines(details)
-        metrics = map_halstead_lines(halstead[filename]["detailed"])
+        metrics = [map_cyclomatic_lines(details), map_halstead_lines(halstead[filename]["detailed"])]
         if format.lower() == "html":
             generate_annotated_html(
                 code, filename, metrics, target_revision.revision.key
@@ -253,36 +274,45 @@ def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> No
         PythonLexer(),
         AnnotatedTerminalFormatter(
             linenos=True,
-            metrics=metrics,
+            metrics=metrics[0],
         ),
     )
     print(result)
 
 
 def generate_annotated_html(
-    code: str, filename: str, metrics: dict[int, tuple[str, str]], key: str
+    code: str, filename: str, metrics: list[dict[int, tuple[str, str]]], key: str
 ) -> None:
     """Generate an annotated HTML file from source code and metric data."""
+    formatter = AnnotatedHTMLFormatter(
+        title=f"CC for {filename} at {key[:7]}",
+        lineanchors="line",
+        anchorlinenos=True,
+        filename=filename,
+        linenos=True,
+        full=False,
+        metrics=metrics,
+    )
     result = highlight(
         code,
         PythonLexer(),
-        AnnotatedHTMLFormatter(
-            title=f"CC for {filename} at {key[:7]}",
-            lineanchors="line",
-            anchorlinenos=True,
-            filename=filename,
-            linenos=True,
-            full=True,
-            metrics=metrics,
-        ),
+        formatter=formatter,
     )
     reports_dir = Path(__file__).parents[1] / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
-    filename = filename.replace("\\", ".").replace("/", ".")
-    output = reports_dir / f"annotated_{filename}.html"
+    htmlname = filename.replace("\\", ".").replace("/", ".")
+    output = reports_dir / f"annotated_{htmlname}.html"
     logger.info(f"Saving {filename} annotated source code to {output}.")
-    with output.open("w") as html:
+
+    templates_dir = (Path(__file__).parent / "wily" / "templates").resolve()
+    report_template = Template((templates_dir / "annotated_template.html").read_text())
+    result = report_template.safe_substitute(filename=filename, annotated=result)
+    with output.open("w", errors="xmlcharrefreplace") as html:
         html.write(result)
+    css_output = reports_dir / "annotated.css"
+    if not css_output.exists():
+        with css_output.open("w") as css:
+            css.write(formatter.get_style_defs())
 
 
 @click.command(help="Annotate source files with Cyclomatic Complexity values.")

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Annotated source for $filename</title>
+    <link rel="stylesheet" href="annotated.css" type="text/css">
+    <style>
+        .halstead {
+            display: none;
+        }
+
+        .toggle{
+            position: fixed;
+        }
+    </style>
+    <script lang="js">
+        disp = false;
+        function toggle() {
+            cy = document.getElementsByClassName("cyclomatic");
+            for (let c in cy) {
+                if (cy[c].style) {
+                    cy[c].style.display = (disp ? "block" : "none");
+                }
+            }
+            ha = document.getElementsByClassName("halstead");
+            for (let h in ha) {
+                if (ha[h].style)
+                    ha[h].style.display = disp ? "none" : "block";
+            }
+            disp = !disp;
+        }
+
+    </script>
+</head>
+<body>
+    <button class="toggle" onclick="toggle()">Toggle</button>
+    <div>
+        $annotated
+    </div>
+</body>
+</html>
