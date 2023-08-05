@@ -155,7 +155,7 @@ def annotate_revision(
                 f"Revision {revision_index} not found in current git repository."
             )
             exit(1)
-        rev = resolve_archiver(state.default_archiver).cls(config).find(commit.hexsha)
+        rev = resolve_archiver(state.default_archiver).archiver_cls(config).find(commit.hexsha)
         logger.debug(f"Resolved {revision_index} to {rev.key} ({rev.message})")
     try:
         target_revision = state.index[state.default_archiver][commit.hexsha]
