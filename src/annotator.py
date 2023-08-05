@@ -50,7 +50,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
             if not self.metrics:
                 yield 1, value
             if i in self.metrics:
-                if self.metrics[i][1] == "--":  # Just use function values for now
+                if self.metrics[i][1][1] == "-":  # Just use function values for now
                     c = "#ffffff"
                 else:
                     val = int(self.metrics[i][1])
@@ -117,7 +117,7 @@ def map_cyclomatic_lines(details: dict) -> dict[int, tuple[str, str]]:
 def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
     """Map Halstead metric values to lines, for functions."""
     last = last_line(details)
-    lines = {i: ("--",) * 9 for i in range(last + 1)}
+    lines = {i: ("---",) * 6 + ("-------",) * 3 for i in range(last + 1)}
     for _name, detail in details.items():
         if "lineno" not in detail:
             continue
