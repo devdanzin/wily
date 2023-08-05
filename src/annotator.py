@@ -95,13 +95,13 @@ def last_line(details: dict) -> int:
     """Get the last line from a series of detailed metric entries."""
     lineends = []
     for _name, detail in details.items():
-        endline: int = detail["endline"]
+        endline: int = detail.get("endline", 0)
         lineends.append(endline)
     return max(lineends or [0])
 
 
-def map_lines(details: dict) -> dict[int, tuple[str, str]]:
-    """Map metric values to lines, for functions/methods and classes."""
+def map_cyclomatic_lines(details: dict) -> dict[int, tuple[str, str]]:
+    """Map complexity metric values to lines, for functions/methods and classes."""
     last = last_line(details)
     lines = {i: ("--", "--") for i in range(last + 1)}
     for _name, detail in details.items():
@@ -112,6 +112,39 @@ def map_lines(details: dict) -> dict[int, tuple[str, str]]:
             for line in range(detail["lineno"] - 1, detail["endline"]):
                 lines[line] = (f"{detail['complexity']:02d}", lines[line][1])
     return lines
+
+
+def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
+    """Map Halstead metric values to lines, for functions."""
+    last = last_line(details)
+    lines = {i: ("--",) * 9 for i in range(last + 1)}
+    for _name, detail in details.items():
+        if "lineno" not in detail:
+            continue
+        for line in range(detail["lineno"] - 1, detail["endline"]):
+            lines[line] = (
+                f"{detail['h1']:03d}",
+                f"{detail['h2']:03d}",
+                f"{detail['N1']:03d}",
+                f"{detail['N2']:03d}",
+                f"{detail['vocabulary']:03d}",
+                f"{detail['length']:03d}",
+                f"{detail['volume']:07.2f}",
+                f"{detail['effort']:07.2f}",
+                f"{detail['difficulty']:07.2f}",
+            )
+    return lines
+
+
+def add_halstead_lineno(halstead: dict, cyclomatic: dict):
+    """Map line numbers from the cyclomatic data to the halstead data."""
+    for filename, data in halstead.items():
+        if "detailed" not in data:
+            continue
+        for function, details in data["detailed"].items():
+            if function in cyclomatic[filename]["detailed"]:
+                details["lineno"] = cyclomatic[filename]["detailed"][function]["lineno"]
+                details["endline"] = cyclomatic[filename]["detailed"][function]["endline"]
 
 
 def bulk_annotate() -> None:
@@ -168,6 +201,8 @@ def annotate_revision(
     rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
     as_dict = json.loads(rev_data.read_text())
     cyclomatic = as_dict["operator_data"]["cyclomatic"]
+    halstead = as_dict["operator_data"]["halstead"]
+    add_halstead_lineno(halstead, cyclomatic)
     if path:
         if path not in cyclomatic:
             logger.error(
@@ -199,9 +234,10 @@ def annotate_revision(
                     f"Changes found in {filename} since revision {rev_key[:7]}. Line numbers might be wrong."
                 )
         details = cyclomatic[filename]["detailed"]
-        path_ = Path(filename)
+        path_ = Path(filename)  # ToDo: Allow fetching code from previous revisions
         code = path_.read_text()
-        metrics = map_lines(details)
+        metrics = map_cyclomatic_lines(details)
+        metrics = map_halstead_lines(halstead[filename]["detailed"])
         if format.lower() == "html":
             generate_annotated_html(
                 code, filename, metrics, target_revision.revision.key
