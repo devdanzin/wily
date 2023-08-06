@@ -95,9 +95,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
 class AnnotatedTerminalFormatter(TerminalFormatter):
     """Annotate and source code with metric values to print to terminal."""
 
-    def __init__(
-        self, metrics: dict[int, tuple[str, str]], **options: Any
-    ) -> None:
+    def __init__(self, metrics: dict[int, tuple[str, str]], **options: Any) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
         self.metrics = metrics
@@ -210,7 +208,11 @@ def annotate_revision(
                 f"Revision {revision_index} not found in current git repository."
             )
             exit(1)
-        rev = resolve_archiver(state.default_archiver).archiver_cls(config).find(commit.hexsha)
+        rev = (
+            resolve_archiver(state.default_archiver)
+            .archiver_cls(config)
+            .find(commit.hexsha)
+        )
         logger.debug(f"Resolved {revision_index} to {rev.key} ({rev.message})")
     try:
         target_revision = state.index[state.default_archiver][commit.hexsha]
@@ -227,9 +229,7 @@ def annotate_revision(
     add_halstead_lineno(halstead, cyclomatic)
     if path:
         if path not in cyclomatic:
-            logger.error(
-                f"Data for file {path} not found on revision {rev_key}."
-            )
+            logger.error(f"Data for file {path} not found on revision {rev_key}.")
             exit(1)
         else:
             py_files = [path]
@@ -259,9 +259,16 @@ def annotate_revision(
             code = path_.read_text()
         else:
             git_filename = filename.replace("\\", "/")
-            code = repo.git.execute(["git", "show", f"{rev_key}:{git_filename}"], as_process=False, stdout_as_string=True)
+            code = repo.git.execute(
+                ["git", "show", f"{rev_key}:{git_filename}"],
+                as_process=False,
+                stdout_as_string=True,
+            )
         details = cyclomatic[filename]["detailed"]
-        metrics = [map_cyclomatic_lines(details), map_halstead_lines(halstead[filename]["detailed"])]
+        metrics = [
+            map_cyclomatic_lines(details),
+            map_halstead_lines(halstead[filename]["detailed"]),
+        ]
         if format.lower() == "html":
             generate_annotated_html(
                 code, filename, metrics, target_revision.revision.key
