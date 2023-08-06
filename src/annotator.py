@@ -250,21 +250,24 @@ def annotate_revision(
         )
     for filename in py_files:
         diff = commit.diff(None, filename)
+        outdated = False
         if diff:
             if diff[0].change_type in ("M",):
-                logger.error(
-                    f"Changes found in {filename} since revision {rev_key[:7]}. Line numbers might be wrong."
-                )
+                outdated = True
+        path_ = Path(filename)
+        if path_.exists() and not outdated:
+            code = path_.read_text()
+        else:
+            git_filename = filename.replace("\\", "/")
+            code = repo.git.execute(["git", "show", f"{rev_key}:{git_filename}"], as_process=False, stdout_as_string=True)
         details = cyclomatic[filename]["detailed"]
-        path_ = Path(filename)  # ToDo: Allow fetching code from previous revisions
-        code = path_.read_text()
         metrics = [map_cyclomatic_lines(details), map_halstead_lines(halstead[filename]["detailed"])]
         if format.lower() == "html":
             generate_annotated_html(
                 code, filename, metrics, target_revision.revision.key
             )
         elif format.lower() == "console":
-            print_annotated_source(code, metrics)
+            print_annotated_source(code, metrics[0])
 
 
 def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> None:
@@ -274,7 +277,7 @@ def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> No
         PythonLexer(),
         AnnotatedTerminalFormatter(
             linenos=True,
-            metrics=metrics[0],
+            metrics=metrics,
         ),
     )
     print(result)
