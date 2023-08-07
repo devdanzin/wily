@@ -27,6 +27,8 @@ logger.setLevel(logging.INFO)
 class AnnotatedHTMLFormatter(HtmlFormatter):
     """Annotate and color source code with metric values as HTML."""
 
+    halstead_names = "h1", "h2", "N1", "N2", "vocabulary", "length", "volume", "effort", "difficulty"
+
     def __init__(
         self, metrics: list[dict[int, tuple[str, str]]], **options: Any
     ) -> None:
@@ -47,11 +49,14 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
 
     def annotate_lines(self, tokensource):
         """Add metric annotations from self.metrics."""
+        spans = []
+        for name, val in zip(self.halstead_names, ("---",) * 6 + ("-------",) * 3):
+            spans.append(f'<span class="{name}_val">{val} </span>')
+
         for i, (_t, value) in enumerate(tokensource):
             empty_halstead = (
                 '<div class="halstead" style="background-color: #ffffff; width: 100%;">'
-                '<span style="background-color: #ffffff;">'
-                f'{" ".join(("---",) * 6 + ("-------",) * 3)} |</span> {value}</div>'
+                f'{"".join(spans)}| {value}</div>'
             )
             if not self.metrics[0]:
                 yield 1, value
@@ -72,10 +77,12 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
                     blue = 0
                     h = f"rgba{(red, green, blue, 0.75)}"
+                    spans = []
+                    for name, val in zip(self.halstead_names, self.metrics[1][i]):
+                        spans.append(f'<span class="{name}_val">{val} </span>')
                     halstead = (
                         f'<div class="halstead" style="background-color: {h}; width: 100%;">'
-                        '<span style="background-color: #ffffff;">'
-                        f'{" ".join(self.metrics[1][i])} |</span> {value}</div>'
+                        f"{''.join(spans)}| {value}</div>"
                     )
                 yield 1, (
                     f'<div class="cyclomatic" style="background-color: {c}; width: 100%;">'

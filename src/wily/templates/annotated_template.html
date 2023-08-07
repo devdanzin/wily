@@ -29,11 +29,37 @@
             }
             disp = !disp;
         }
+        halstead_names = ["h1", "h2", "N1", "N2", "vocabulary", "length", "volume", "effort", "difficulty"]
+
+        function select_metric(name, show_all) {
+            for (let hname in halstead_names) {
+                ha = document.getElementsByClassName(halstead_names[hname] + "_val");
+                for (let h in ha) {
+                    if (ha[h].style)
+                        ha[h].style.display = show_all ? "inline" : "none";
+                }
+                hn = document.getElementsByClassName(name + "_val");
+                for (let h in hn) {
+                    if (hn[h].style)
+                        hn[h].style.display = "inline";
+                }
+            }
+        }
 
     </script>
 </head>
 <body>
     <button class="toggle" onclick="toggle()">Toggle</button>
+    <button class="toggle halstead" style="margin-left: 5%;" onclick="select_metric('h1', false)">h1</button>
+    <button class="toggle halstead" style="margin-left: 9%;" onclick="select_metric('h2', false)">h2</button>
+    <button class="toggle halstead" style="margin-left: 13%;" onclick="select_metric('N1', false)">N1</button>
+    <button class="toggle halstead" style="margin-left: 17%;" onclick="select_metric('N2', false)">N2</button>
+    <button class="toggle halstead" style="margin-left: 21%;" onclick="select_metric('vocabulary', false)">vocabulary</button>
+    <button class="toggle halstead" style="margin-left: 30%;" onclick="select_metric('length', false)">length</button>
+    <button class="toggle halstead" style="margin-left: 37%;" onclick="select_metric('volume', false)">volume</button>
+    <button class="toggle halstead" style="margin-left: 44%;" onclick="select_metric('effort', false)">effort</button>
+    <button class="toggle halstead" style="margin-left: 51%;" onclick="select_metric('difficulty', false)">difficulty</button>
+    <button class="toggle halstead" style="margin-left: 60%;" onclick="select_metric('difficulty', true)">All</button>
     <div>
         $annotated
     </div>
