@@ -35,6 +35,10 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
         self.metrics = metrics
+        spans = []
+        for name, val in zip(self.halstead_names, ("---",) * 6 + ("-------",) * 3):
+            spans.append(f'<span class="{name}_val">{val} </span>')
+        self.empty_halstead_spans = "".join(spans)
 
     def wrap(self, source) -> None:
         """Wrap the ``source`` in custom generators."""
@@ -49,14 +53,10 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
 
     def annotate_lines(self, tokensource):
         """Add metric annotations from self.metrics."""
-        spans = []
-        for name, val in zip(self.halstead_names, ("---",) * 6 + ("-------",) * 3):
-            spans.append(f'<span class="{name}_val">{val} </span>')
-
         for i, (_t, value) in enumerate(tokensource):
             empty_halstead = (
                 '<div class="halstead" style="background-color: #ffffff; width: 100%;">'
-                f'{"".join(spans)}| {value}</div>'
+                f'{self.empty_halstead_spans}| {value}</div>'
             )
             if not self.metrics[0]:
                 yield 1, value
