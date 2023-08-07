@@ -44,6 +44,25 @@
                         hn[h].style.display = "inline";
                 }
             }
+            all_divs = document.querySelectorAll("div");
+            for (let di in all_divs) {
+                if (all_divs[di].className) {
+                    div_classes = all_divs[di].className.split(' ');
+                    color_class = div_classes.find((klass) => klass.startsWith(name));
+                    // This makes it quadratic, figure out how to avoid it.
+                    ha_code = document.getElementsByClassName(color_class);
+                    for (let hi in ha_code) {
+                        if (ha_code[hi].style) {
+                            val_style_name = color_class.replace("_code", "");
+                            val_style_class = document.querySelector("." + val_style_name);
+                            if (val_style_class) {
+                                var val_style = getComputedStyle(val_style_class);
+                                ha_code[hi].style.backgroundColor = val_style.backgroundColor;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
     </script>

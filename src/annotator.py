@@ -73,14 +73,17 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     val = int(self.metrics[1][i][0])
                     h = self.get_halstead_color(val)
                     spans = []
+                    div_classes = []
                     for name, val in zip(self.halstead_names, self.metrics[1][i]):
                         val_ = int(float(val))
                         nameval = f"{name}{val_}"
                         spans.append(f'<span class="{name}_val {nameval}">{val} </span>')
                         if nameval not in self.halstead_styles:
                             self.halstead_styles[f"{nameval}"] = self.get_halstead_color(val_)
+                        div_classes.append(f"{nameval}_code")
                     halstead = (
-                        f'<div class="halstead" style="background-color: {h}; width: 100%;">'
+                        f'<div class="halstead {" ".join(div_classes)}"'
+                        f'style="background-color: {h}; width: 100%;">'
                         f"{''.join(spans)}| {value}</div>"
                     )
                 yield 1, (
