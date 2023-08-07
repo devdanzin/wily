@@ -39,6 +39,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         for name, val in zip(self.halstead_names, ("---",) * 6 + ("-------",) * 3):
             spans.append(f'<span class="{name}_val">{val} </span>')
         self.empty_halstead_spans = "".join(spans)
+        self.halstead_styles: dict[str, str] = {}
 
     def wrap(self, source) -> None:
         """Wrap the ``source`` in custom generators."""
@@ -65,21 +66,19 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     c = "#ffffff"
                 else:
                     val = int(self.metrics[0][i][1])
-                    red = max(0, min(255, round(0.04 * 255 * (val - 1))))
-                    green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
-                    blue = 0
-                    c = f"rgba{(red, green, blue, 0.75)}"
+                    c = self.get_halstead_color(val)
                 if i not in self.metrics[1] or self.metrics[1][i][1][1] == "-":
                     halstead = empty_halstead
                 else:
-                    val = int(self.metrics[1][i][1])
-                    red = max(0, min(255, round(0.04 * 255 * (val - 1))))
-                    green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
-                    blue = 0
-                    h = f"rgba{(red, green, blue, 0.75)}"
+                    val = int(self.metrics[1][i][0])
+                    h = self.get_halstead_color(val)
                     spans = []
                     for name, val in zip(self.halstead_names, self.metrics[1][i]):
-                        spans.append(f'<span class="{name}_val">{val} </span>')
+                        val_ = int(float(val))
+                        nameval = f"{name}{val_}"
+                        spans.append(f'<span class="{name}_val {nameval}">{val} </span>')
+                        if nameval not in self.halstead_styles:
+                            self.halstead_styles[f"{nameval}"] = self.get_halstead_color(val_)
                     halstead = (
                         f'<div class="halstead" style="background-color: {h}; width: 100%;">'
                         f"{''.join(spans)}| {value}</div>"
@@ -97,6 +96,19 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     f'{" ".join(("--", "--"))} |</span> {value}</div>'
                     f"{empty_halstead}"
                 )
+
+    def get_halstead_color(self, val):
+        red = max(0, min(255, round(0.04 * 255 * (val - 1))))
+        green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
+        blue = 0
+        h = f"rgba{(red, green, blue, 0.75)}"
+        return h
+
+    def get_halstead_style_defs(self):
+        result = []
+        for name, value in self.halstead_styles.items():
+            result.append(f".{name} {{ background-color: {value};}}")
+        return "\n" + "\n".join(result)
 
 
 class AnnotatedTerminalFormatter(TerminalFormatter):
@@ -179,6 +191,7 @@ def bulk_annotate() -> None:
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
     latest = {}
+    styles = {}
     for rev_key in state.index[state.default_archiver].revision_keys:
         rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
         as_dict = json.loads(rev_data.read_text())
@@ -188,16 +201,23 @@ def bulk_annotate() -> None:
                 latest[filename] = rev_key
     for filename, rev_key in latest.items():
         try:
-            annotate_revision(format="HTML", revision_index=rev_key, path=filename)
+            styles.update(annotate_revision(format="HTML", revision_index=rev_key, path=filename))
         except FileNotFoundError:
             logger.error(
                 f"Path {filename} not found in current state of git repository."
             )
+    result = []
+    for name, value in styles.items():
+        result.append(f".{name} {{ background-color: {value};}}")
+    reports_dir = Path(__file__).parents[1] / "reports"
+    css_output = reports_dir / "annotated.css"
+    with css_output.open("a") as css:
+        css.write("\n".join(result))
 
 
 def annotate_revision(
     format: str = "HTML", revision_index: str = "", path: str = ""
-) -> None:
+) -> dict[str, str]:
     """Generate annotated files from detailed metric data in a revision."""
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
@@ -255,6 +275,7 @@ def annotate_revision(
         logger.info(
             f"Showing annotated source code for {', '.join(py_files)} at rev {rev_key[:7]}."
         )
+    styles: dict[str, str] = {}
     for filename in py_files:
         diff = commit.diff(None, filename)
         outdated = False
@@ -277,11 +298,13 @@ def annotate_revision(
             map_halstead_lines(halstead[filename]["detailed"]),
         ]
         if format.lower() == "html":
-            generate_annotated_html(
+            style = generate_annotated_html(
                 code, filename, metrics, target_revision.revision.key
             )
+            styles.update(style)
         elif format.lower() == "console":
             print_annotated_source(code, metrics[0])
+    return styles
 
 
 def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> None:
@@ -299,7 +322,7 @@ def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> No
 
 def generate_annotated_html(
     code: str, filename: str, metrics: list[dict[int, tuple[str, str]]], key: str
-) -> None:
+) -> dict[str, str]:
     """Generate an annotated HTML file from source code and metric data."""
     formatter = AnnotatedHTMLFormatter(
         title=f"CC for {filename} at {key[:7]}",
@@ -330,6 +353,7 @@ def generate_annotated_html(
     if not css_output.exists():
         with css_output.open("w") as css:
             css.write(formatter.get_style_defs())
+    return formatter.halstead_styles
 
 
 @click.command(help="Annotate source files with Cyclomatic Complexity values.")
