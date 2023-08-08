@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import shutil
 from pathlib import Path
 from string import Template
 from sys import exit
@@ -196,6 +197,9 @@ def bulk_annotate() -> None:
     state = State(config)
     latest = {}
     styles = {}
+    reports_dir = Path(__file__).parents[1] / "reports"
+    templates_dir = (Path(__file__).parent / "wily" / "templates").resolve()
+    shutil.copyfile(templates_dir / "annotated.js", reports_dir / "annotated.js")
     for rev_key in state.index[state.default_archiver].revision_keys:
         rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
         as_dict = json.loads(rev_data.read_text())
@@ -213,7 +217,6 @@ def bulk_annotate() -> None:
     result = []
     for name, value in styles.items():
         result.append(f".{name} {{ background-color: {value};}}")
-    reports_dir = Path(__file__).parents[1] / "reports"
     css_output = reports_dir / "annotated.css"
     with css_output.open("a") as css:
         css.write("\n".join(result))
