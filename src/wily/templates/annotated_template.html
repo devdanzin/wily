@@ -5,6 +5,9 @@
     <title>Annotated source for $filename</title>
     <link rel="stylesheet" href="annotated.css" type="text/css">
     <style>
+        button {
+            display: inline;
+        }
         .halstead {
             display: none;
         }
@@ -36,7 +39,7 @@
             ha = document.getElementsByClassName("halstead");
             for (let h in ha) {
                 if (ha[h].style)
-                    ha[h].style.display = disp ? "none" : "block";
+                    ha[h].style.display = disp ? "none" : "inline";
             }
             ha = document.getElementsByClassName("halstead_span");
             for (let h in ha) {
@@ -49,8 +52,12 @@
                 first_toggle = false;
 
             }
-            if (!disp)
+            if (!disp) {
                 select_metric("cc_function", false);
+            }
+            else {
+                select_metric("effort", true);
+            }
         }
         halstead_names = ["cc_function", "h1", "h2", "N1", "N2", "vocabulary", "length", "volume", "effort", "difficulty"]
 
@@ -58,7 +65,7 @@
             for (let hname in halstead_names) {
                 ha = document.getElementsByClassName(halstead_names[hname] + "_val");
                 for (let h in ha) {
-                    if (ha[h].style)
+                    if (ha[h].style && halstead_names[hname] != "cc_function")
                         ha[h].style.display = show_all ? "inline" : "none";
                 }
                 hn = document.getElementsByClassName(name + "_val");
@@ -96,17 +103,19 @@
     </script>
 </head>
 <body onload="select_metric('cc_function', false);">
-    <button class="toggle" onclick="toggle()">Toggle</button>
-    <button class="toggle halstead" style="margin-left: 5%;" onclick="select_metric('h1', false)">h1</button>
-    <button class="toggle halstead" style="margin-left: 9%;" onclick="select_metric('h2', false)">h2</button>
-    <button class="toggle halstead" style="margin-left: 13%;" onclick="select_metric('N1', false)">N1</button>
-    <button class="toggle halstead" style="margin-left: 17%;" onclick="select_metric('N2', false)">N2</button>
-    <button class="toggle halstead" style="margin-left: 21%;" onclick="select_metric('vocabulary', false)">vocabulary</button>
-    <button class="toggle halstead" style="margin-left: 30%;" onclick="select_metric('length', false)">length</button>
-    <button class="toggle halstead" style="margin-left: 37%;" onclick="select_metric('volume', false)">volume</button>
-    <button class="toggle halstead" style="margin-left: 44%;" onclick="select_metric('effort', false)">effort</button>
-    <button class="toggle halstead" style="margin-left: 51%;" onclick="select_metric('difficulty', false)">difficulty</button>
-    <button class="toggle halstead" style="margin-left: 60%;" onclick="select_metric('difficulty', true)">All</button>
+    <div  class="toggle">
+        <button onclick="toggle()">Toggle</button>
+        <button class="halstead" onclick="select_metric('h1', false)">h1</button>
+        <button class="halstead" onclick="select_metric('h2', false)">h2</button>
+        <button class="halstead" onclick="select_metric('N1', false)">N1</button>
+        <button class="halstead" onclick="select_metric('N2', false)">N2</button>
+        <button class="halstead" onclick="select_metric('vocabulary', false)">vocabulary</button>
+        <button class="halstead" onclick="select_metric('length', false)">length</button>
+        <button class="halstead" onclick="select_metric('volume', false)">volume</button>
+        <button class="halstead" onclick="select_metric('effort', false)">effort</button>
+        <button class="halstead" onclick="select_metric('difficulty', false)">difficulty</button>
+        <button class="halstead" onclick="select_metric('difficulty', true)">All</button>
+    </div>
     <div>
         $annotated
     </div>
