@@ -231,6 +231,11 @@ def bulk_annotate() -> None:
             logger.error(
                 f"Path {filename} not found in current state of git repository."
             )
+    append_css(css_output, styles)
+
+
+def append_css(css_output: Path, styles: dict[str, str]):
+    """Append CSS from a style dict to a CSS file."""
     result = []
     for name, value in styles.items():
         result.append(f".{name} {{ background-color: {value};}}")
@@ -239,7 +244,7 @@ def bulk_annotate() -> None:
 
 
 def annotate_revision(
-    format: str = "HTML", revision_index: str = "", path: str = ""
+    format: str = "HTML", revision_index: str = "", path: str = "", css: bool = False
 ) -> dict[str, str]:
     """Generate annotated files from detailed metric data in a revision."""
     config = load_config(DEFAULT_CONFIG_PATH)
@@ -326,6 +331,15 @@ def annotate_revision(
             styles.update(style)
         elif format.lower() == "console":
             print_annotated_source(code, metrics[0])
+    if format.lower() == "html":
+        reports_dir = Path(__file__).parents[1] / "reports"
+        templates_dir = (Path(__file__).parent / "wily" / "templates").resolve()
+        js_file = reports_dir / "annotated.js"
+        if not js_file.exists():
+            shutil.copyfile(templates_dir / "annotated.js", js_file)
+        if css:
+            css_output = reports_dir / "annotated.css"
+            append_css(css_output, styles)
     return styles
 
 
