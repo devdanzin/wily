@@ -67,7 +67,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     cc_nameval = ""
                 else:
                     val = int(self.metrics[0][i][1])
-                    c = self.get_halstead_color(val)
+                    c = self.get_cyclomatic_color(val)
                     cc_nameval = f"cc_function{val}"
                     if cc_nameval not in self.halstead_styles:
                         self.halstead_styles[f"{cc_nameval}"] = c
@@ -76,14 +76,14 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     halstead = empty_halstead
                 else:
                     val = int(self.metrics[1][i][0])
-                    h = self.get_halstead_color(val)
+                    h = self.get_cyclomatic_color(val)
                     spans = []
                     for name, val in zip(self.halstead_names, self.metrics[1][i]):
                         val_ = int(float(val))
                         nameval = f"{name}{val_}"
                         spans.append(f'<span class="halstead_span {name}_val {nameval}">{val} </span>')
                         if nameval not in self.halstead_styles:
-                            self.halstead_styles[f"{nameval}"] = self.get_halstead_color(val_)
+                            self.halstead_styles[f"{nameval}"] = self.get_cyclomatic_color(val_)
                         div_classes.append(f"{nameval}_code")
                     halstead = (
                         f"{''.join(spans)}"
@@ -102,7 +102,8 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     f"{empty_halstead}| {value}</div>"
                 )
 
-    def get_halstead_color(self, val):
+    def get_cyclomatic_color(self, val):
+        """Calculate RGB values for a scale from green to red through yellow."""
         red = max(0, min(255, round(0.04 * 255 * (val - 1))))
         green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
         blue = 0
