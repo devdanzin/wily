@@ -1,5 +1,6 @@
 disp = false;
 first_toggle = true;
+last_shown_halstead = "effort";
 function toggle() {
     cy = document.getElementsByClassName("cyclomatic");
     for (let c in cy) {
@@ -32,12 +33,19 @@ function toggle() {
         select_metric("cc_function", false);
     }
     else {
-        select_metric("effort", true);
+        console.log(last_shown_halstead);
+        select_metric(last_shown_halstead, false);
     }
 }
 halstead_names = ["cc_function", "h1", "h2", "N1", "N2", "vocabulary", "length", "volume", "effort", "difficulty"]
 
 function select_metric(name, show_all) {
+    if (show_all) {
+        name = last_shown_halstead;
+    }
+    if (name != "cc_function") {
+        last_shown_halstead = name;
+    }
     for (let hname in halstead_names) {
         ha = document.getElementsByClassName(halstead_names[hname] + "_val");
         for (let h in ha) {
