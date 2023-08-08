@@ -37,9 +37,9 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         self.metrics = metrics
         spans = []
         for name, val in zip(self.halstead_names, ("---",) * 6 + ("-------",) * 3):
-            spans.append(f'<span class="halstead_span {name}_val">{val} </span>')
+            spans.append(f'<span class="halstead_span {name}_val {name}none">{val} </span>')
         self.empty_halstead_spans = "".join(spans)
-        self.halstead_styles: dict[str, str] = {}
+        self.halstead_styles: dict[str, str] = {f"{name}none": "#ffffff" for name in self.halstead_names}
 
     def wrap(self, source) -> None:
         """Wrap the ``source`` in custom generators."""
@@ -60,7 +60,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
             )
             if not self.metrics[0]:
                 yield 1, value
-            div_classes = []
+            div_classes = [f"{name}none" for name in self.halstead_names]
             if i in self.metrics[0]:
                 if self.metrics[0][i][1][1] == "-":  # Just use function values for now
                     cc_nameval = ""
