@@ -28,7 +28,17 @@ logger.setLevel(logging.INFO)
 class AnnotatedHTMLFormatter(HtmlFormatter):
     """Annotate and color source code with metric values as HTML."""
 
-    halstead_names = "h1", "h2", "N1", "N2", "vocabulary", "length", "volume", "effort", "difficulty"
+    halstead_names = (
+        "h1",
+        "h2",
+        "N1",
+        "N2",
+        "vocabulary",
+        "length",
+        "volume",
+        "effort",
+        "difficulty",
+    )
 
     def __init__(
         self, metrics: list[dict[int, tuple[str, str]]], **options: Any
@@ -38,9 +48,13 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         self.metrics = metrics
         spans = []
         for name, val in zip(self.halstead_names, ("---",) * 6 + ("-------",) * 3):
-            spans.append(f'<span class="halstead_span {name}_val {name}none">{val} </span>')
+            spans.append(
+                f'<span class="halstead_span {name}_val {name}none">{val} </span>'
+            )
         self.empty_halstead_spans = "".join(spans)
-        self.halstead_styles: dict[str, str] = {f"{name}none": "#ffffff" for name in self.halstead_names}
+        self.halstead_styles: dict[str, str] = {
+            f"{name}none": "#ffffff" for name in self.halstead_names
+        }
 
     def wrap(self, source) -> None:
         """Wrap the ``source`` in custom generators."""
@@ -48,17 +62,13 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         output = self.annotate_lines(output)
         if self.wrapcode:
             output = self._wrap_code(output)
-
         output = self._wrap_pre(output)
-
         return output
 
     def annotate_lines(self, tokensource):
         """Add metric annotations from self.metrics."""
         for i, (_t, value) in enumerate(tokensource):
-            empty_halstead = (
-                f'{self.empty_halstead_spans}'
-            )
+            empty_halstead = self.empty_halstead_spans
             if not self.metrics[0]:
                 yield 1, value
             div_classes = [f"{name}none" for name in self.halstead_names]
@@ -70,24 +80,23 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     c = self.get_cyclomatic_color(val)
                     cc_nameval = f"cc_function{val}"
                     if cc_nameval not in self.halstead_styles:
-                        self.halstead_styles[f"{cc_nameval}"] = c
+                        self.halstead_styles[cc_nameval] = c
                     div_classes.append(f"{cc_nameval}_code")
                 if i not in self.metrics[1] or self.metrics[1][i][1][1] == "-":
                     halstead = empty_halstead
                 else:
-                    val = int(self.metrics[1][i][0])
-                    h = self.get_cyclomatic_color(val)
                     spans = []
                     for name, val in zip(self.halstead_names, self.metrics[1][i]):
                         val_ = int(float(val))
                         nameval = f"{name}{val_}"
-                        spans.append(f'<span class="halstead_span {name}_val {nameval}">{val} </span>')
+                        spans.append(
+                            f'<span class="halstead_span {name}_val {nameval}">{val} </span>'
+                        )
                         if nameval not in self.halstead_styles:
-                            self.halstead_styles[f"{nameval}"] = self.get_cyclomatic_color(val_)
+                            h = self.get_cyclomatic_color(val_)
+                            self.halstead_styles[nameval] = h
                         div_classes.append(f"{nameval}_code")
-                    halstead = (
-                        f"{''.join(spans)}"
-                    )
+                    halstead = "".join(spans)
                 yield 1, (
                     f'<div class="{" ".join(div_classes)}">'
                     f'<span class="cyclomatic_span cc_function_val {cc_nameval}">'
@@ -102,15 +111,17 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     f"{empty_halstead}| {value}</div>"
                 )
 
-    def get_cyclomatic_color(self, val):
+    def get_cyclomatic_color(self, val: int) -> str:
         """Calculate RGB values for a scale from green to red through yellow."""
+        # This works well for values where red means 50 or above, like Cyclomatic
+        # Complexity. For other ranges, different values should be used.
         red = max(0, min(255, round(0.04 * 255 * (val - 1))))
         green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
         blue = 0
-        h = f"rgba{(red, green, blue, 0.75)}"
-        return h
+        return f"rgba{(red, green, blue, 0.75)}"
 
-    def get_halstead_style_defs(self):
+    def get_halstead_style_defs(self) -> str:
+        """Get additional CSS rules from calculated styles seen."""
         result = []
         for name, value in self.halstead_styles.items():
             result.append(f".{name} {{ background-color: {value};}}")
@@ -180,7 +191,7 @@ def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
     return lines
 
 
-def add_halstead_lineno(halstead: dict, cyclomatic: dict):
+def add_halstead_lineno(halstead: dict, cyclomatic: dict) -> None:
     """Map line numbers from the cyclomatic data to the halstead data."""
     for filename, data in halstead.items():
         if "detailed" not in data:
@@ -213,7 +224,9 @@ def bulk_annotate() -> None:
                 latest[filename] = rev_key
     for filename, rev_key in latest.items():
         try:
-            styles.update(annotate_revision(format="HTML", revision_index=rev_key, path=filename))
+            styles.update(
+                annotate_revision(format="HTML", revision_index=rev_key, path=filename)
+            )
         except FileNotFoundError:
             logger.error(
                 f"Path {filename} not found in current state of git repository."
@@ -271,7 +284,7 @@ def annotate_revision(
         else:
             py_files = [path]
     else:
-        py_files = [key for key in cyclomatic.keys() if key.endswith(".py")]
+        py_files = [key for key in cyclomatic if key.endswith(".py")]
         if not py_files:
             logger.error(
                 f"Revision {rev_key} has no files with Cyclomatic Complexity data."
@@ -289,9 +302,8 @@ def annotate_revision(
     for filename in py_files:
         diff = commit.diff(None, filename)
         outdated = False
-        if diff:
-            if diff[0].change_type in ("M",):
-                outdated = True
+        if diff and diff[0].change_type in ("M",):
+            outdated = True
         path_ = Path(filename)
         if path_.exists() and not outdated:
             code = path_.read_text()
