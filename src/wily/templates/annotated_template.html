@@ -25,16 +25,16 @@
 <body onload="select_metric('cc_function', false);">
     <div  class="toggle">
         <button onclick="toggle()">Toggle</button>
-        <button class="halstead" onclick="select_metric('h1', false)">h1</button>
-        <button class="halstead" onclick="select_metric('h2', false)">h2</button>
-        <button class="halstead" onclick="select_metric('N1', false)">N1</button>
-        <button class="halstead" onclick="select_metric('N2', false)">N2</button>
-        <button class="halstead" onclick="select_metric('vocabulary', false)">vocabulary</button>
-        <button class="halstead" onclick="select_metric('length', false)">length</button>
-        <button class="halstead" onclick="select_metric('volume', false)">volume</button>
-        <button class="halstead" onclick="select_metric('effort', false)">effort</button>
-        <button class="halstead" onclick="select_metric('difficulty', false)">difficulty</button>
-        <button class="halstead" onclick="select_metric('difficulty', true)">All</button>
+        <button id="h1" class="halstead" onclick="select_metric('h1', false)">h1</button>
+        <button id="h2" class="halstead" onclick="select_metric('h2', false)">h2</button>
+        <button id="N1" class="halstead" onclick="select_metric('N1', false)">N1</button>
+        <button id="N2" class="halstead" onclick="select_metric('N2', false)">N2</button>
+        <button id="vocabulary" class="halstead" onclick="select_metric('vocabulary', false)">vocabulary</button>
+        <button id="length" class="halstead" onclick="select_metric('length', false)">length</button>
+        <button id="volume" class="halstead" onclick="select_metric('volume', false)">volume</button>
+        <button id="effort" class="halstead" onclick="select_metric('effort', false)">effort</button>
+        <button id="difficulty" class="halstead" onclick="select_metric('difficulty', false)">difficulty</button>
+        <button id="All" class="halstead" onclick="select_metric('difficulty', true)">All</button>
     </div>
     <div>
         $annotated

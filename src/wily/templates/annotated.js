@@ -27,7 +27,6 @@ function toggle() {
     if (first_toggle) {
         select_metric("h1", true);
         first_toggle = false;
-
     }
     if (!disp) {
         select_metric("cc_function", false);
@@ -72,6 +71,22 @@ function select_metric(name, show_all) {
                     var val_style = getComputedStyle(val_style_class);
                     ha_code[hi].style.backgroundColor = val_style.backgroundColor;
                 }
+            }
+        }
+    }
+    all_buttons = document.querySelectorAll("button");
+    for (let bi in all_buttons) {
+        let btn = all_buttons[bi];
+        if (btn.id == name) {
+            if (btn.style) {
+                btn.style.borderStyle = 'inset';
+                btn.style.backgroundColor = "darkgray";
+            }
+        }
+        else {
+            if (btn.style){
+                btn.style.borderStyle = 'outset';
+                btn.style.backgroundColor = "";
             }
         }
     }
