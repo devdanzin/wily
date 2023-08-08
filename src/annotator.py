@@ -37,7 +37,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         self.metrics = metrics
         spans = []
         for name, val in zip(self.halstead_names, ("---",) * 6 + ("-------",) * 3):
-            spans.append(f'<span class="{name}_val">{val} </span>')
+            spans.append(f'<span class="halstead_span {name}_val">{val} </span>')
         self.empty_halstead_spans = "".join(spans)
         self.halstead_styles: dict[str, str] = {}
 
@@ -56,48 +56,49 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         """Add metric annotations from self.metrics."""
         for i, (_t, value) in enumerate(tokensource):
             empty_halstead = (
-                '<div class="halstead" style="background-color: #ffffff; width: 100%;">'
-                f'{self.empty_halstead_spans}| {value}</div>'
+                f'{self.empty_halstead_spans}'
             )
             if not self.metrics[0]:
                 yield 1, value
+            div_classes = []
             if i in self.metrics[0]:
                 if self.metrics[0][i][1][1] == "-":  # Just use function values for now
-                    c = "#ffffff"
+                    cc_nameval = ""
                 else:
                     val = int(self.metrics[0][i][1])
                     c = self.get_halstead_color(val)
+                    cc_nameval = f"cc_function{val}"
+                    if cc_nameval not in self.halstead_styles:
+                        self.halstead_styles[f"{cc_nameval}"] = c
+                    div_classes.append(f"{cc_nameval}_code")
                 if i not in self.metrics[1] or self.metrics[1][i][1][1] == "-":
                     halstead = empty_halstead
                 else:
                     val = int(self.metrics[1][i][0])
                     h = self.get_halstead_color(val)
                     spans = []
-                    div_classes = []
                     for name, val in zip(self.halstead_names, self.metrics[1][i]):
                         val_ = int(float(val))
                         nameval = f"{name}{val_}"
-                        spans.append(f'<span class="{name}_val {nameval}">{val} </span>')
+                        spans.append(f'<span class="halstead_span {name}_val {nameval}">{val} </span>')
                         if nameval not in self.halstead_styles:
                             self.halstead_styles[f"{nameval}"] = self.get_halstead_color(val_)
                         div_classes.append(f"{nameval}_code")
                     halstead = (
-                        f'<div class="halstead {" ".join(div_classes)}"'
-                        f'style="background-color: {h}; width: 100%;">'
-                        f"{''.join(spans)}| {value}</div>"
+                        f"{''.join(spans)}"
                     )
                 yield 1, (
-                    f'<div class="cyclomatic" style="background-color: {c}; width: 100%;">'
-                    '<span style="background-color: #ffffff;">'
-                    f'{" ".join(self.metrics[0][i])} |</span> {value}</div>'
-                    f"{halstead}"
+                    f'<div class="{" ".join(div_classes)}">'
+                    f'<span class="cyclomatic_span cc_function_val {cc_nameval}">'
+                    f'{" ".join(self.metrics[0][i])} </span>'
+                    f"{halstead}| {value}</div>"
                 )
             else:
                 yield 1, (
-                    '<div class="cyclomatic" style="background-color: #ffffff; width: 100%;">'
-                    '<span style="background-color: #ffffff;">'
-                    f'{" ".join(("--", "--"))} |</span> {value}</div>'
-                    f"{empty_halstead}"
+                    f'<div class="{" ".join(div_classes)}" style="background-color: #ffffff; width: 100%;">'
+                    '<span class="cyclomatic_span cc_function_val" style="background-color: #ffffff;">'
+                    f'{" ".join(("--", "--"))}</span>'
+                    f"{empty_halstead}| {value}</div>"
                 )
 
     def get_halstead_color(self, val):

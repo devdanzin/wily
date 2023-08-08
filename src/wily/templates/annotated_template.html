@@ -9,12 +9,17 @@
             display: none;
         }
 
+        .halstead_span {
+            display: none;
+        }
+
         .toggle{
             position: fixed;
         }
     </style>
     <script lang="js">
         disp = false;
+        first_toggle = true;
         function toggle() {
             cy = document.getElementsByClassName("cyclomatic");
             for (let c in cy) {
@@ -22,14 +27,32 @@
                     cy[c].style.display = (disp ? "block" : "none");
                 }
             }
+            cy = document.getElementsByClassName("cyclomatic_span");
+            for (let c in cy) {
+                if (cy[c].style) {
+                    cy[c].style.display = (disp ? "inline" : "none");
+                }
+            }
             ha = document.getElementsByClassName("halstead");
             for (let h in ha) {
                 if (ha[h].style)
                     ha[h].style.display = disp ? "none" : "block";
             }
+            ha = document.getElementsByClassName("halstead_span");
+            for (let h in ha) {
+                if (ha[h].style)
+                    ha[h].style.display = disp ? "none" : "inline";
+            }
             disp = !disp;
+            if (first_toggle) {
+                select_metric("h1", true);
+                first_toggle = false;
+
+            }
+            if (!disp)
+                select_metric("cc_function", false);
         }
-        halstead_names = ["h1", "h2", "N1", "N2", "vocabulary", "length", "volume", "effort", "difficulty"]
+        halstead_names = ["cc_function", "h1", "h2", "N1", "N2", "vocabulary", "length", "volume", "effort", "difficulty"]
 
         function select_metric(name, show_all) {
             for (let hname in halstead_names) {
@@ -54,6 +77,7 @@
             }
             unique_classes = [...new Set(all_classes)]
             unique_metric_classes = unique_classes.filter((element) => element.startsWith(name))
+            console.log(unique_metric_classes);
             for (let ci in unique_metric_classes) {
                 color_class = unique_metric_classes[ci];
                 ha_code = document.getElementsByClassName(color_class);
@@ -69,10 +93,9 @@
                 }
             }
         }
-
     </script>
 </head>
-<body>
+<body onload="select_metric('cc_function', false);">
     <button class="toggle" onclick="toggle()">Toggle</button>
     <button class="toggle halstead" style="margin-left: 5%;" onclick="select_metric('h1', false)">h1</button>
     <button class="toggle halstead" style="margin-left: 9%;" onclick="select_metric('h2', false)">h2</button>
