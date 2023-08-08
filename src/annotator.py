@@ -98,7 +98,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                 yield 1, (
                     f'<div class="{" ".join(div_classes)}" style="background-color: #ffffff; width: 100%;">'
                     '<span class="cyclomatic_span cc_function_val" style="background-color: #ffffff;">'
-                    f'{" ".join(("--", "--"))}</span>'
+                    f'{" ".join(("--", "--"))} </span>'
                     f"{empty_halstead}| {value}</div>"
                 )
 
