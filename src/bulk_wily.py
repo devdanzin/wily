@@ -15,6 +15,7 @@ from typing import Optional
 
 import click
 from git.repo import Repo
+from wily.defaults import DEFAULT_GRID_STYLE
 
 from wily import logger
 from wily.commands.graph import graph
@@ -138,6 +139,7 @@ def build_reports(
                 metrics,
                 500,
                 new_output,
+                console_format=DEFAULT_GRID_STYLE,
                 include_message=True,
                 format=ReportFormat.HTML,
                 cached=cached,
