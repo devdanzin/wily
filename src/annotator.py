@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import logging
 import shutil
+from collections import defaultdict
 from pathlib import Path
 from string import Template
 from sys import exit
@@ -289,10 +290,18 @@ def bulk_annotate() -> None:
 def append_css(css_output: Path, styles: dict[str, str]):
     """Append CSS from a style dict to a CSS file."""
     result = []
-    for name, value in styles.items():
+    for name, value in simplify_css(styles).items():
         result.append(f".{name} {{ background-color: {value};}}")
     with css_output.open("a") as css:
         css.write("\n\n" + "\n".join(result))
+
+
+def simplify_css(styles: dict[str, str]) -> dict[str, str]:
+    """Collapse rules that use the same color to a single line."""
+    colors_to_rules: defaultdict[str, list[str]] = defaultdict(list)
+    for name, color in styles.items():
+        colors_to_rules[color].append(name)
+    return {", .".join(names): color for color, names in colors_to_rules.items()}
 
 
 def annotate_revision(
