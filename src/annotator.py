@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 from string import Template
 from sys import exit
-from typing import Any
+from typing import Any, Optional
 
 import click
 import git
@@ -23,6 +23,31 @@ from wily.config import load as load_config
 from wily.state import IndexedRevision, State
 
 logger.setLevel(logging.INFO)
+
+# Maximum values for each metric, i.e. what will result in red background
+MAX_DICT = {
+    "cc_function": 50,
+    "h1": 40,
+    "h2": 40,
+    "N1": 40,
+    "N2": 40,
+    "vocabulary": 80,
+    "length": 80,
+    "volume": 500,
+    "effort": 2000,
+    "difficulty": 40,
+}
+
+
+def get_metric_color(val: int, maximum: int = 50, name: Optional[str] = None) -> str:
+    """Calculate RGB values for a scale from green to red through yellow."""
+    if name is not None:
+        maximum = MAX_DICT[name]
+    factor = 2 / maximum
+    red = max(0, min(255, round(factor * 255 * (val - 1))))
+    green = max(0, min(255, round(factor * 255 * (maximum - val + 1))))
+    blue = 0
+    return f"rgba{(red, green, blue, 0.75)}"
 
 
 class AnnotatedHTMLFormatter(HtmlFormatter):
@@ -77,8 +102,9 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     cc_nameval = ""
                 else:
                     val = int(self.metrics[0][i][1])
-                    c = self.get_cyclomatic_color(val)
-                    cc_nameval = f"cc_function{val}"
+                    name = "cc_function"
+                    c = get_metric_color(val, name=name)
+                    cc_nameval = f"{name}{val}"
                     if cc_nameval not in self.halstead_styles:
                         self.halstead_styles[cc_nameval] = c
                     div_classes.append(f"{cc_nameval}_code")
@@ -93,7 +119,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                             f'<span class="halstead_span {name}_val {nameval}">{val} </span>'
                         )
                         if nameval not in self.halstead_styles:
-                            h = self.get_cyclomatic_color(val_)
+                            h = get_metric_color(val_, name=name)
                             self.halstead_styles[nameval] = h
                         div_classes.append(f"{nameval}_code")
                     halstead = "".join(spans)
@@ -110,15 +136,6 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     f'{" ".join(("--", "--"))} </span>'
                     f"{empty_halstead}| {value}</div>"
                 )
-
-    def get_cyclomatic_color(self, val: int) -> str:
-        """Calculate RGB values for a scale from green to red through yellow."""
-        # This works well for values where red means 50 or above, like Cyclomatic
-        # Complexity. For other ranges, different values should be used.
-        red = max(0, min(255, round(0.04 * 255 * (val - 1))))
-        green = max(0, min(255, round(0.04 * 255 * (50 - val + 1))))
-        blue = 0
-        return f"rgba{(red, green, blue, 0.75)}"
 
     def get_halstead_style_defs(self) -> str:
         """Get additional CSS rules from calculated styles seen."""
@@ -210,6 +227,7 @@ def bulk_annotate() -> None:
     latest = {}
     styles = {}
     reports_dir = Path(__file__).parents[1] / "reports"
+    reports_dir.mkdir(exist_ok=True)
     templates_dir = (Path(__file__).parent / "wily" / "templates").resolve()
     shutil.copyfile(templates_dir / "annotated.js", reports_dir / "annotated.js")
     css_output = reports_dir / "annotated.css"
