@@ -70,19 +70,27 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
     ) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
-        self.metrics = metrics
-        spans = []
+        self.cyclomatic = metrics[0]
+        self.halstead = metrics[1]
+
+        halstead_spans: list[str] = []
+        # These should match the column widths of Halstead metrics in map_halstead_lines
         empty_halstead_vals = ("---",) * 6 + ("-------",) * 3
         for name, val in zip(self.halstead_names, empty_halstead_vals):
-            spans.append(
+            halstead_spans.append(
                 f'<span class="halstead_span {name}_val {name}none">{val} </span>'
             )
-        self.empty_halstead_spans = "".join(spans)
+        self.empty_halstead_spans = "".join(halstead_spans)
+
+        # These should match the column widths of CC metrics in map_cyclomatic_lines
+        empty_cyclomatic_vals = ("--", "--")
         self.empty_cyclomatic_span = (
             '<span class="cyclomatic_span cc_function_val" style="background-color: #ffffff;">'
-            f'{" ".join(("--", "--"))} </span>'
+            f'{" ".join(empty_cyclomatic_vals)} </span>'
         )
-        self.halstead_styles: dict[str, str] = {
+
+        # This will be used to create the CSS entries for all classes
+        self.metric_styles: dict[str, str] = {
             f"{name}none": "#ffffff" for name in self.halstead_names
         }
 
@@ -96,12 +104,21 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         return output
 
     def annotate_lines(self, tokensource):
-        """Add metric annotations from self.metrics."""
+        """
+        Add metric annotations from self.cyclomatic and self.halstead.
+
+        A div is created for each code line, containing spans for each metric
+        value. This div and the spans have associated CSS classes that allow
+        changing the background color of the code to match selected metric
+        values and also hiding unselected metrics.
+        """
         for i, (_t, value) in enumerate(tokensource):
-            if not self.metrics[0]:
+            if not self.cyclomatic:  # No metrics
                 yield 1, value
+                continue
+
             div_classes = [f"{name}none" for name in self.halstead_names]
-            if i in self.metrics[0]:
+            if i in self.cyclomatic:  # Line has metric info available
                 cyclomatic = self.get_cyclomatic_content(div_classes, i)
                 halstead = self.get_halstead_content(div_classes, i)
                 yield 1, (
@@ -109,7 +126,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     f"{cyclomatic}"
                     f"{halstead}| {value}</div>"
                 )
-            else:
+            else:  # Line is after last known line, add empty metric spans
                 yield 1, (
                     f'<div class="{" ".join(div_classes)}" style="background-color: #ffffff; width: 100%;">'
                     f"{self.empty_cyclomatic_span}"
@@ -118,45 +135,46 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
 
     def get_halstead_content(self, div_classes: list[str], i: int) -> str:
         """Build spans and add styles for Halstead metrics."""
-        if i not in self.metrics[1] or self.metrics[1][i][1][1] == "-":
+        if i not in self.halstead or self.halstead[i][1][1] == "-":
+            # Line is either not known or has empty metric value ("-").
             halstead = self.empty_halstead_spans
         else:
             spans = []
-            for name, val in zip(self.halstead_names, self.metrics[1][i]):
+            for name, val in zip(self.halstead_names, self.halstead[i]):
                 val_ = int(float(val))
                 nameval = f"{name}{val_}"
                 spans.append(
                     f'<span class="halstead_span {name}_val {nameval}">{val} </span>'
                 )
-                if nameval not in self.halstead_styles:
+                if nameval not in self.metric_styles:
                     h = get_metric_color(val_, name=name)
-                    self.halstead_styles[nameval] = h
+                    self.metric_styles[nameval] = h
                 div_classes.append(f"{nameval}_code")
             halstead = "".join(spans)
         return halstead
 
     def get_cyclomatic_content(self, div_classes: list[str], i: int) -> str:
         """Build span and add styles for Cyclomatic Complexity."""
-        if self.metrics[0][i][1][1] == "-":  # Just use function values for now
+        if self.cyclomatic[i][1][1] == "-":  # Just use function values for now
             cyclomatic = self.empty_cyclomatic_span
         else:
-            val = int(self.metrics[0][i][1])
+            val = int(self.cyclomatic[i][1])
             name = "cc_function"
             c = get_metric_color(val, name=name)
             cc_nameval = f"{name}{val}"
-            if cc_nameval not in self.halstead_styles:
-                self.halstead_styles[cc_nameval] = c
+            if cc_nameval not in self.metric_styles:
+                self.metric_styles[cc_nameval] = c
             div_classes.append(f"{cc_nameval}_code")
             cyclomatic = (
                 f'<span class="cyclomatic_span cc_function_val {cc_nameval}">'
-                f'{" ".join(self.metrics[0][i])} </span>'
+                f'{" ".join(self.cyclomatic[i])} </span>'
             )
         return cyclomatic
 
     def get_halstead_style_defs(self) -> str:
         """Get additional CSS rules from calculated styles seen."""
         result = []
-        for name, value in self.halstead_styles.items():
+        for name, value in self.metric_styles.items():
             result.append(f".{name} {{ background-color: {value};}}")
         return "\n" + "\n".join(result)
 
@@ -423,7 +441,7 @@ def generate_annotated_html(
     if not css_output.exists():
         with css_output.open("w") as css:
             css.write(formatter.get_style_defs())
-    return formatter.halstead_styles
+    return formatter.metric_styles
 
 
 @click.command(help="Annotate source files with Cyclomatic Complexity values.")
