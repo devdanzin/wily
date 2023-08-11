@@ -104,11 +104,11 @@ function display_or_hide_metrics(name, show_all) {
             if (ha[h].style && metric_names[mni] !== "cc_function")
                 ha[h].style.display = show_all ? "inline" : "none";
         }
-        let hn = document.getElementsByClassName(name + "_val");
-        for (let h in hn) {
-            if (hn[h].style)
-                hn[h].style.display = "inline";
-        }
+    }
+    let hn = document.getElementsByClassName(name + "_val");
+    for (let h in hn) {
+        if (hn[h].style)
+            hn[h].style.display = "inline";
     }
 }
 
