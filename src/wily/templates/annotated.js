@@ -99,16 +99,16 @@ metric_names = ["cc_function", "h1", "h2", "N1", "N2", "vocabulary", "length", "
  */
 function display_or_hide_metrics(name, show_all) {
     for (let mni in metric_names) {
-        let ha = document.getElementsByClassName(metric_names[mni] + "_val");
-        for (let h in ha) {
-            if (ha[h].style && metric_names[mni] !== "cc_function")
-                ha[h].style.display = show_all ? "inline" : "none";
+        let spans_to_display_or_hide = document.getElementsByClassName(metric_names[mni] + "_val");
+        for (let si in spans_to_display_or_hide) {
+            if (spans_to_display_or_hide[si].style && metric_names[mni] !== "cc_function")
+                spans_to_display_or_hide[si].style.display = show_all ? "inline" : "none";
         }
     }
-    let hn = document.getElementsByClassName(name + "_val");
-    for (let h in hn) {
-        if (hn[h].style)
-            hn[h].style.display = "inline";
+    let spans_to_display = document.getElementsByClassName(name + "_val");
+    for (let si in spans_to_display) {
+        if (spans_to_display[si].style)
+            spans_to_display[si].style.display = "inline";
     }
 }
 
