@@ -9,13 +9,13 @@ function toggle() {
     let cy_divs = document.getElementsByClassName("cyclomatic");
     for (let ci in cy_divs) {
         if (cy_divs[ci].style) {
-            cy_divs[ci].style.display = (disp ? "block" : "none");
+            cy_divs[ci].style.display = disp ? "block" : "none";
         }
     }
     let cy_spans = document.getElementsByClassName("cyclomatic_span");
     for (let ci in cy_spans) {
         if (cy_spans[ci].style) {
-            cy_spans[ci].style.display = (disp ? "inline" : "none");
+            cy_spans[ci].style.display = disp ? "inline" : "none";
         }
     }
     let ha_divs = document.getElementsByClassName("halstead");
@@ -44,31 +44,34 @@ function toggle() {
     }
 }
 
-
 /**
  * Applies background colors from span classes to corresponding div classes.
  * @param {string[]} all_classes
  * @param {string} name
  */
 function metric_style_to_code_style(all_classes, name) {
-    let unique_classes = [...new Set(all_classes)]
-    let unique_metric_classes = unique_classes.filter((element) => element.startsWith(name))
+    let unique_classes = [...new Set(all_classes)];
+    let unique_metric_classes = unique_classes.filter((element) =>
+        element.startsWith(name),
+    );
     for (let ci in unique_metric_classes) {
         let color_class = unique_metric_classes[ci];
         let ha_code = document.getElementsByClassName(color_class);
         for (let hi in ha_code) {
             if (ha_code[hi].style) {
                 let val_style_name = color_class.replace("_code", "");
-                let val_style_class = document.querySelector("." + val_style_name);
+                let val_style_class = document.querySelector(
+                    "." + val_style_name,
+                );
                 if (val_style_class) {
                     let val_style = getComputedStyle(val_style_class);
-                    ha_code[hi].style.backgroundColor = val_style.backgroundColor;
+                    ha_code[hi].style.backgroundColor =
+                        val_style.backgroundColor;
                 }
             }
         }
     }
 }
-
 
 /**
  * Selects a metric to display, hiding others.
@@ -90,8 +93,19 @@ function select_metric(name, show_all) {
     update_buttons(name);
 }
 
+metric_names = [
+    "cc_function",
+    "h1",
+    "h2",
+    "N1",
+    "N2",
+    "vocabulary",
+    "length",
+    "volume",
+    "effort",
+    "difficulty",
+];
 
-metric_names = ["cc_function", "h1", "h2", "N1", "N2", "vocabulary", "length", "volume", "effort", "difficulty"]
 /**
  * Displays or hides metric spans.
  * @param {boolean} show_all
@@ -99,10 +113,17 @@ metric_names = ["cc_function", "h1", "h2", "N1", "N2", "vocabulary", "length", "
  */
 function display_or_hide_metrics(name, show_all) {
     for (let mni in metric_names) {
-        let spans_to_display_or_hide = document.getElementsByClassName(metric_names[mni] + "_val");
+        let spans_to_display_or_hide = document.getElementsByClassName(
+            metric_names[mni] + "_val",
+        );
         for (let si in spans_to_display_or_hide) {
-            if (spans_to_display_or_hide[si].style && metric_names[mni] !== "cc_function")
-                spans_to_display_or_hide[si].style.display = show_all ? "inline" : "none";
+            if (
+                spans_to_display_or_hide[si].style &&
+                metric_names[mni] !== "cc_function"
+            )
+                spans_to_display_or_hide[si].style.display = show_all
+                    ? "inline"
+                    : "none";
         }
     }
     let spans_to_display = document.getElementsByClassName(name + "_val");
@@ -111,7 +132,6 @@ function display_or_hide_metrics(name, show_all) {
             spans_to_display[si].style.display = "inline";
     }
 }
-
 
 /**
  * Gets CSS classes from all divs
@@ -122,13 +142,12 @@ function get_div_classes() {
     let all_classes = [];
     for (let di in all_divs) {
         if (all_divs[di].className) {
-            let div_classes = all_divs[di].className.split(' ');
+            let div_classes = all_divs[di].className.split(" ");
             all_classes.push(...div_classes);
         }
     }
     return all_classes;
 }
-
 
 /**
  * Updates buttons, making selected metric button look pressed.
@@ -140,12 +159,12 @@ function update_buttons(name) {
         let btn = all_buttons[bi];
         if (btn.id === name) {
             if (btn.style) {
-                btn.style.borderStyle = 'inset';
+                btn.style.borderStyle = "inset";
                 btn.style.backgroundColor = "darkgray";
             }
         } else {
             if (btn.style) {
-                btn.style.borderStyle = 'outset';
+                btn.style.borderStyle = "outset";
                 btn.style.backgroundColor = "";
             }
         }
