@@ -1,3 +1,5 @@
+"use strict";
+
 let disp = false;
 let first_toggle = true;
 let last_shown_halstead = "effort";
@@ -94,7 +96,7 @@ function select_metric(name, show_all) {
     update_buttons(name);
 }
 
-metric_names = [
+let metric_names = [
     "cc_function",
     "h1",
     "h2",
