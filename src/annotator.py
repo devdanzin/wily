@@ -40,8 +40,15 @@ MAX_DICT = {
 }
 
 
-def get_metric_color(val: int, maximum: int = 50, name: Optional[str] = None) -> str:
-    """Calculate RGB values for a scale from green to red through yellow."""
+def get_metric_color(val: float, maximum: int = 50, name: Optional[str] = None) -> str:
+    """
+    Calculate RGB values for a scale from green to red through yellow.
+
+    :param val: The value to convert to RGB color.
+    :param maximum: The maximum expected value, corresponding to red.
+    :param name: A name to get a maximum value from MAX_DICT.
+    :return: A string of the form `"rgba(X, Y, 0, 0.75)"`.
+    """
     if name is not None:
         maximum = MAX_DICT[name]
     factor = 2 / maximum
@@ -135,7 +142,13 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                 )
 
     def get_halstead_content(self, div_classes: list[str], i: int) -> str:
-        """Build spans and add styles for Halstead metrics."""
+        """
+        Build spans and add styles for Halstead metrics.
+
+        :param div_classes: A list containing CSS class names.
+        :param i: Index into self.halstead, corresponding to a source code line.
+        :return: A string containing styled spans with Halstead metric values.
+        """
         if i not in self.halstead or self.halstead[i][1][1] == "-":
             # Line is either not known or has empty metric value ("-").
             halstead = self.empty_halstead_spans
@@ -155,7 +168,13 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         return halstead
 
     def get_cyclomatic_content(self, div_classes: list[str], i: int) -> str:
-        """Build span and add styles for Cyclomatic Complexity."""
+        """
+        Build span and add styles for Cyclomatic Complexity.
+
+        :param div_classes: A list containing CSS class names.
+        :param i: Index into self.cyclomatic, corresponding to a source code line.
+        :return: A string containing styled spans with Cyclomatic metric values.
+        """
         if self.cyclomatic[i][1][1] == "-":  # Just use function values for now
             cyclomatic = self.empty_cyclomatic_span
         else:
@@ -199,7 +218,12 @@ class AnnotatedTerminalFormatter(TerminalFormatter):
 
 
 def last_line(details: dict) -> int:
-    """Get the last line from a series of detailed metric entries."""
+    """
+    Get the last line from a series of detailed metric entries.
+
+    :param details: A dict with detailed metric information, with line numbers.
+    :return: The number of the last known line.
+    """
     lineends = []
     for _name, detail in details.items():
         endline: int = detail.get("endline", 0)
@@ -208,7 +232,12 @@ def last_line(details: dict) -> int:
 
 
 def map_cyclomatic_lines(details: dict) -> dict[int, tuple[str, str]]:
-    """Map complexity metric values to lines, for functions/methods and classes."""
+    """
+    Map complexity metric values to lines, for functions/methods and classes.
+
+    :param details: A dict with detailed metric information, with line numbers.
+    :return: A dict mapping line numbers to Cyclomatic Complexity values.
+    """
     last = last_line(details)
     lines = {i: ("--", "--") for i in range(last + 1)}
     for _name, detail in details.items():
@@ -222,7 +251,12 @@ def map_cyclomatic_lines(details: dict) -> dict[int, tuple[str, str]]:
 
 
 def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
-    """Map Halstead metric values to lines, for functions."""
+    """
+    Map Halstead metric values to lines, for functions.
+
+    :param details: A dict with detailed metric information, with line numbers.
+    :return: A dict mapping line numbers to Halstead values.
+    """
     last = last_line(details)
     lines = {i: ("---",) * 6 + ("-------",) * 3 for i in range(last + 1)}
     for _name, detail in details.items():
@@ -244,7 +278,15 @@ def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
 
 
 def add_halstead_lineno(halstead: dict, cyclomatic: dict) -> None:
-    """Map line numbers from the cyclomatic data to the halstead data."""
+    """
+    Map line numbers from the cyclomatic data to the halstead data.
+
+    Use the Cyclomatic Complexity line numbers, as radon doesn't record line
+    numbers for Halstead metrics.
+
+    :param halstead: A dict with detailed Halstead information, without line numbers.
+    :param cyclomatic: A dict with detailed CC information, with line numbers.
+    """
     for filename, data in halstead.items():
         if "detailed" not in data:
             continue
@@ -288,32 +330,48 @@ def bulk_annotate() -> None:
 
 
 def append_css(css_output: Path, styles: dict[str, str]):
-    """Append CSS from a style dict to a CSS file."""
+    """
+    Append CSS from a style dict to a CSS file.
+
+    :param css_output: Path to the output CSS file.
+    :param styles: A dict of single CSS class names and background color values.
+    """
     result = []
     for name, value in simplify_css(styles).items():
-        result.append(f".{name} {{ background-color: {value};}}")
+        result.append(f"{name} {{ background-color: {value};}}")
     with css_output.open("a") as css:
         css.write("\n\n" + "\n".join(result))
 
 
 def simplify_css(styles: dict[str, str]) -> dict[str, str]:
-    """Collapse rules that use the same color to a single line."""
+    """
+    Collapse rules that use the same color to a single line.
+
+    :param styles: A dict of single CSS class names and background color values.
+    :return: A dict of multiple CSS class names mapping to background color values.
+    """
     colors_to_rules: defaultdict[str, list[str]] = defaultdict(list)
     for name, color in styles.items():
         colors_to_rules[color].append(name)
-    return {", .".join(names): color for color, names in colors_to_rules.items()}
+    return {f".{', .'.join(names)}": color for color, names in colors_to_rules.items()}
 
 
 def annotate_revision(
     format: str = "HTML", revision_index: str = "", path: str = "", css: bool = False
 ) -> dict[str, str]:
-    """Generate annotated files from detailed metric data in a revision."""
+    """
+    Generate annotated files from detailed metric data in a revision.
+
+    :param format: Either `HTML` or `CONSOLE`, determines output format.
+    :param revision_index: A Git revision to annotate at.
+    :param path: A single filename to annotate.
+    :param css: Whether to write a CSS file containing styles.
+    :return: A dict mapping CSS class names to color values.
+    """
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
     repo = Repo(config.path)
 
-    target_revision: IndexedRevision
-    # TODO: try to fetch revision_index from index before resolving in repo.
     if not revision_index:
         commit = repo.rev_parse("HEAD")
     else:
@@ -331,6 +389,7 @@ def annotate_revision(
         )
         logger.debug(f"Resolved {revision_index} to {rev.key} ({rev.message})")
     try:
+        target_revision: IndexedRevision
         target_revision = state.index[state.default_archiver][commit.hexsha]
     except KeyError:
         logger.error(
@@ -380,9 +439,8 @@ def annotate_revision(
                 as_process=False,
                 stdout_as_string=True,
             )
-        details = cyclomatic[filename]["detailed"]
         metrics = [
-            map_cyclomatic_lines(details),
+            map_cyclomatic_lines(cyclomatic[filename]["detailed"]),
             map_halstead_lines(halstead[filename]["detailed"]),
         ]
         if format.lower() == "html":
@@ -405,7 +463,12 @@ def annotate_revision(
 
 
 def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> None:
-    """Print source annotated with metric to terminal."""
+    """
+    Print source annotated with metric to terminal.
+
+    :param code: The source code to highlight.
+    :param metrics: Map of lines to CC metric values.
+    """
     result = highlight(
         code,
         PythonLexer(),
@@ -420,7 +483,15 @@ def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> No
 def generate_annotated_html(
     code: str, filename: str, metrics: list[dict[int, tuple[str, str]]], key: str
 ) -> dict[str, str]:
-    """Generate an annotated HTML file from source code and metric data."""
+    """
+    Generate an annotated HTML file from source code and metric data.
+
+    :param code: The source code to highlight.
+    :param filename: The filename to display in HTML and base HTML file name on.
+    :param metrics: Two maps of lines to metric values (CC and Halstead).
+    :param key: A Git revision key.
+    :return: A map of CSS class names to background color values.
+    """
     formatter = AnnotatedHTMLFormatter(
         title=f"CC for {filename} at {key[:7]}",
         lineanchors="line",
