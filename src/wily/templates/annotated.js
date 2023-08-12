@@ -56,17 +56,18 @@ function metric_style_to_code_style(all_classes, name) {
     );
     for (let ci in unique_metric_classes) {
         let color_class = unique_metric_classes[ci];
-        let ha_code = document.getElementsByClassName(color_class);
-        for (let hi in ha_code) {
-            if (ha_code[hi].style) {
-                let val_style_name = color_class.replace("_code", "");
-                let val_style_class = document.querySelector(
-                    "." + val_style_name,
+        let code_divs = document.getElementsByClassName(color_class);
+        for (let hi in code_divs) {
+            let code_div = code_divs[hi];
+            if (code_div.style) {
+                let metric_span_class_name = color_class.replace("_code", "");
+                let metric_span_class = document.querySelector(
+                    "." + metric_span_class_name,
                 );
-                if (val_style_class) {
-                    let val_style = getComputedStyle(val_style_class);
-                    ha_code[hi].style.backgroundColor =
-                        val_style.backgroundColor;
+                if (metric_span_class) {
+                    let metric_span_style = getComputedStyle(metric_span_class);
+                    code_div.style.backgroundColor =
+                        metric_span_style.backgroundColor;
                 }
             }
         }
