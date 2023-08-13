@@ -298,7 +298,11 @@ def add_halstead_lineno(halstead: dict, cyclomatic: dict) -> None:
 
 
 def bulk_annotate(output_dir: Optional[Path] = None) -> None:
-    """Annotate all Python files found in the index's revisions."""
+    """
+    Annotate all Python files found in the index's revisions.
+
+    :param output_dir: A Path pointing to the directory to output HTML files.
+    """
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
     latest = {}
@@ -506,7 +510,8 @@ def generate_annotated_html(
     :param code: The source code to highlight.
     :param filename: The filename to display in HTML and base HTML file name on.
     :param metrics: Two maps of lines to metric values (CC and Halstead).
-    :param key: A Git revision key.
+    :param key: A Git revision key to display in title.
+    :param output_dir: A Path pointing to the directory to output HTML files.
     :return: A map of CSS class names to background color values.
     """
     formatter = AnnotatedHTMLFormatter(
