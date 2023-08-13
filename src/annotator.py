@@ -458,7 +458,7 @@ def annotate_revision(
         elif format.lower() == "console":
             print_annotated_source(code, metrics[0])
     if format.lower() == "html":
-        reports_dir = Path(__file__).parents[1] / "reports"
+        reports_dir = Path(__file__).parents[1] / output_dir
         templates_dir = (Path(__file__).parent / "wily" / "templates").resolve()
         js_file = reports_dir / "annotated.js"
         if not js_file.exists():
