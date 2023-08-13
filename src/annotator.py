@@ -322,7 +322,13 @@ def bulk_annotate(output_dir: Optional[Path] = None) -> None:
     for filename, rev_key in latest.items():
         try:
             styles.update(
-                annotate_revision(format="HTML", revision_index=rev_key, path=filename)
+                annotate_revision(
+                    format="HTML",
+                    revision_index=rev_key,
+                    path=filename,
+                    css=False,
+                    output_dir=output_dir,
+                )
             )
         except FileNotFoundError:
             logger.error(
