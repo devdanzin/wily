@@ -539,29 +539,69 @@ def generate_annotated_html(
     return formatter.metric_styles
 
 
-@click.command(help="Annotate source files with Cyclomatic Complexity values.")
+@click.group(help="Annotate source files with metric values.")
+def run() -> None:
+    pass
+
+
+@run.command()
 @click.option(
     "-f",
     "--format",
     default="CONSOLE",
-    help="Save HTML or print to CONSOLE",
+    help="Save HTML or print to CONSOLE.",
     type=click.STRING,
 )
 @click.option(
     "-r",
     "--revision",
     default="HEAD",
-    help="Annotate with metric values from specific revision",
+    help="Annotate with metric values from specific revision.",
     type=click.STRING,
 )
-def run(format: str, revision: str) -> None:
-    """Generate annotated source."""
+@click.option(
+    "-p",
+    "--path",
+    default="",
+    help="Path to annotate.",
+    type=click.Path(),
+)
+@click.option(
+    "-c",
+    "--css/--no-css",
+    default=True,
+    help="Write CSS file with styles to highlight code and metrics.",
+)
+@click.option(
+    "-o",
+    "--output",
+    default="reports",
+    help="Output directory to write files to.",
+    type=click.Path(path_type=Path),
+)
+def annotate(format: str, revision: str, path: str, css: bool, output: Path) -> None:
+    """Generate annotated source for a revision or single file."""
     if format.lower() not in ("html", "console"):
         logger.error(f"Format must be HTML or CONSOLE, not {format}.")
         exit(1)
 
-    annotate_revision(format=format, revision_index=revision)
+    annotate_revision(
+        format=format, revision_index=revision, path=path, css=css, output_dir=output
+    )
+
+
+@run.command("bulk-annotate")
+@click.option(
+    "-o",
+    "--output",
+    default="reports",
+    help="Output directory to write files to.",
+    type=click.Path(path_type=Path),
+)
+def bulk(output: Path):
+    """Annotate all Python files from all known revisions."""
+    bulk_annotate(output_dir=output)
 
 
 if __name__ == "__main__":
-    bulk_annotate()
+    run()
