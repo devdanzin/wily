@@ -297,13 +297,15 @@ def add_halstead_lineno(halstead: dict, cyclomatic: dict) -> None:
             details["endline"] = cyclomatic[filename]["detailed"][function]["endline"]
 
 
-def bulk_annotate() -> None:
+def bulk_annotate(output_dir: Optional[Path] = None) -> None:
     """Annotate all Python files found in the index's revisions."""
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
     latest = {}
     styles = {}
-    reports_dir = Path(__file__).parents[1] / "reports"
+    if output_dir is None:
+        output_dir = Path("reports")
+    reports_dir = Path(__file__).parents[1] / output_dir
     reports_dir.mkdir(exist_ok=True)
     templates_dir = (Path(__file__).parent / "wily" / "templates").resolve()
     shutil.copyfile(templates_dir / "annotated.js", reports_dir / "annotated.js")
@@ -357,7 +359,11 @@ def simplify_css(styles: dict[str, str]) -> dict[str, str]:
 
 
 def annotate_revision(
-    format: str = "HTML", revision_index: str = "", path: str = "", css: bool = False
+    format: str = "HTML",
+    revision_index: str = "",
+    path: str = "",
+    css: bool = False,
+    output_dir: Optional[Path] = None,
 ) -> dict[str, str]:
     """
     Generate annotated files from detailed metric data in a revision.
@@ -366,6 +372,7 @@ def annotate_revision(
     :param revision_index: A Git revision to annotate at.
     :param path: A single filename to annotate.
     :param css: Whether to write a CSS file containing styles.
+    :param output_dir: A Path pointing to the directory to output HTML files.
     :return: A dict mapping CSS class names to color values.
     """
     config = load_config(DEFAULT_CONFIG_PATH)
@@ -445,7 +452,7 @@ def annotate_revision(
         ]
         if format.lower() == "html":
             style = generate_annotated_html(
-                code, filename, metrics, target_revision.revision.key
+                code, filename, metrics, target_revision.revision.key, output_dir
             )
             styles.update(style)
         elif format.lower() == "console":
@@ -481,7 +488,11 @@ def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> No
 
 
 def generate_annotated_html(
-    code: str, filename: str, metrics: list[dict[int, tuple[str, str]]], key: str
+    code: str,
+    filename: str,
+    metrics: list[dict[int, tuple[str, str]]],
+    key: str,
+    output_dir: Optional[Path] = None,
 ) -> dict[str, str]:
     """
     Generate an annotated HTML file from source code and metric data.
@@ -506,7 +517,9 @@ def generate_annotated_html(
         PythonLexer(),
         formatter=formatter,
     )
-    reports_dir = Path(__file__).parents[1] / "reports"
+    if output_dir is None:
+        output_dir = Path("reports")
+    reports_dir = Path(__file__).parents[1] / output_dir
     reports_dir.mkdir(parents=True, exist_ok=True)
     htmlname = filename.replace("\\", ".").replace("/", ".")
     output = reports_dir / f"annotated_{htmlname}.html"
@@ -521,6 +534,8 @@ def generate_annotated_html(
     if not css_output.exists():
         with css_output.open("w") as css:
             css.write(formatter.get_style_defs())
+    if not (reports_dir / "annotated.js").exists():
+        shutil.copyfile(templates_dir / "annotated.js", reports_dir / "annotated.js")
     return formatter.metric_styles
 
 
