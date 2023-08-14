@@ -45,7 +45,7 @@ def get_metric_color(val: float, maximum: int = 50, name: Optional[str] = None) 
     Calculate RGB values for a scale from green to red through yellow.
 
     :param val: The value to convert to RGB color.
-    :param maximum: The maximum expected value, corresponding to red.
+    :param maximum: The maximum expected value, corresponding to one less than red.
     :param name: A name to get a maximum value from MAX_DICT.
     :return: A string of the form `"rgba(X, Y, 0, 0.75)"`.
     """
@@ -241,10 +241,10 @@ def map_cyclomatic_lines(details: dict) -> dict[int, tuple[str, str]]:
     last = last_line(details)
     lines = {i: ("--", "--") for i in range(last + 1)}
     for _name, detail in details.items():
-        if "is_method" in detail:
+        if "is_method" in detail:  # It's a function or method
             for line in range(detail["lineno"] - 1, detail["endline"]):
                 lines[line] = (lines[line][0], f"{detail['complexity']:02d}")
-        else:
+        else:  # It's a class
             for line in range(detail["lineno"] - 1, detail["endline"]):
                 lines[line] = (f"{detail['complexity']:02d}", lines[line][1])
     return lines
