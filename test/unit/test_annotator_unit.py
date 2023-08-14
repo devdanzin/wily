@@ -40,4 +40,15 @@ def test_last_line():
     assert annotator.last_line(details) == 0
 
 
-
+def test_append_css():
+    css_out = mock.MagicMock()
+    css_out.open = mock.MagicMock(return_value=css_out)
+    css_out.__enter__ = mock.MagicMock(return_value=css_out)
+    styles = {"one": "color1", "two": "color2", "three": "color1"}
+    annotator.append_css(css_out, styles)
+    print(css_out.mock_calls)
+    css_out.write.assert_called_once_with(
+        "\n\n"
+        ".one, .three { background-color: color1;}\n"
+        ".two { background-color: color2;}"
+    )
