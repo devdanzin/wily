@@ -16,7 +16,7 @@ from wily.lang import _
 from wily.operators import BaseOperator, Metric, MetricType
 
 NumberedHalsteadReport = collections.namedtuple(
-    'HalsteadReport',
+    'NumberedHalsteadReport',
     'h1 h2 N1 N2 vocabulary length '
     'calculated_length volume '
     'difficulty effort time bugs'
