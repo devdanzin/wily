@@ -8,7 +8,7 @@ import collections
 
 import radon.cli.harvest as harvesters
 from radon.cli import Config
-from radon.metrics import Halstead, halstead_visitor_report
+from radon.metrics import Halstead, HalsteadReport, halstead_visitor_report
 from radon.visitors import HalsteadVisitor
 
 from wily import logger
@@ -16,11 +16,8 @@ from wily.lang import _
 from wily.operators import BaseOperator, Metric, MetricType
 
 NumberedHalsteadReport = collections.namedtuple(
-    'NumberedHalsteadReport',
-    'h1 h2 N1 N2 vocabulary length '
-    'calculated_length volume '
-    'difficulty effort time bugs '
-    'lineno endline',
+    "NumberedHalsteadReport",
+    HalsteadReport._fields + ("lineno", "endline"),
 )
 
 
