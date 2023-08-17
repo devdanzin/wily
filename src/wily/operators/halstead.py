@@ -19,7 +19,7 @@ NumberedHalsteadReport = collections.namedtuple(
     'NumberedHalsteadReport',
     'h1 h2 N1 N2 vocabulary length '
     'calculated_length volume '
-    'difficulty effort time bugs'
+    'difficulty effort time bugs '
     'lineno endline',
 )
 
