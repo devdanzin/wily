@@ -29,12 +29,11 @@ class NumberedHalsteadVisitor(HalsteadVisitor):
         self.class_name = classname
 
     def visit_FunctionDef(self, node):
+        if self.class_name:
+            node.name = f"{self.class_name}.{node.name}"
         super().visit_FunctionDef(node)
         self.function_visitors[-1].lineno = node.lineno
         self.function_visitors[-1].endline = node.end_lineno
-        if self.class_name:
-            last_function = self.function_visitors[-1]
-            last_function.context = f"{self.class_name}.{last_function.context}"
 
     def visit_ClassDef(self, node):
         self.class_name = node.name
