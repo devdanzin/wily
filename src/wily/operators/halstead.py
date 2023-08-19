@@ -40,6 +40,7 @@ class NumberedHalsteadVisitor(HalsteadVisitor):
         for child in node.body:
             visitor = NumberedHalsteadVisitor(classname=self.class_name)
             visitor.visit(child)
+            self.function_visitors.extend(visitor.function_visitors)
 
 
 def number_report(visitor):
