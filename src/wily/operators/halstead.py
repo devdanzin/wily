@@ -3,12 +3,50 @@ Halstead operator.
 
 Measures all of the halstead metrics (volume, vocab, difficulty)
 """
+import ast
+import collections
+
 import radon.cli.harvest as harvesters
 from radon.cli import Config
+from radon.metrics import Halstead, HalsteadReport, halstead_visitor_report
+from radon.visitors import HalsteadVisitor
 
 from wily import logger
 from wily.lang import _
 from wily.operators import BaseOperator, Metric, MetricType
+
+NumberedHalsteadReport = collections.namedtuple(
+    "NumberedHalsteadReport",
+    HalsteadReport._fields + ("lineno", "endline"),
+)
+
+
+class NumberedHalsteadVisitor(HalsteadVisitor):
+    def __init__(self, context=None, lineno=None, endline=None):
+        super().__init__(context)
+        self.lineno = lineno
+        self.endline = endline
+
+    def visit_FunctionDef(self, node):
+        super().visit_FunctionDef(node)
+        self.function_visitors[-1].lineno = node.lineno
+        self.function_visitors[-1].endline = node.end_lineno
+
+
+def number_report(visitor):
+    return NumberedHalsteadReport(
+        *(halstead_visitor_report(visitor) + (visitor.lineno, visitor.endline))
+    )
+
+
+class NumberedHCHarvester(harvesters.HCHarvester):
+    def gobble(self, fobj):
+        """Analyze the content of the file object."""
+        code = fobj.read()
+        visitor = NumberedHalsteadVisitor.from_ast(ast.parse(code))
+        total = number_report(visitor)
+        functions = [(v.context, number_report(v)) for v in visitor.function_visitors]
+        return Halstead(total, functions)
 
 
 class HalsteadOperator(BaseOperator):
@@ -54,7 +92,7 @@ class HalsteadOperator(BaseOperator):
         # TODO : Import config from wily.cfg
         logger.debug(f"Using {targets} with {self.defaults} for HC metrics")
 
-        self.harvester = harvesters.HCHarvester(targets, config=Config(**self.defaults))
+        self.harvester = NumberedHCHarvester(targets, config=Config(**self.defaults))
 
     def run(self, module, options):
         """
@@ -100,4 +138,6 @@ class HalsteadOperator(BaseOperator):
             "length": report.length,
             "effort": report.effort,
             "difficulty": report.difficulty,
+            "lineno": report.lineno,
+            "endline": report.endline,
         }
