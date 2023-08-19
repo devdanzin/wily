@@ -22,15 +22,25 @@ NumberedHalsteadReport = collections.namedtuple(
 
 
 class NumberedHalsteadVisitor(HalsteadVisitor):
-    def __init__(self, context=None, lineno=None, endline=None):
+    def __init__(self, context=None, lineno=None, endline=None, classname=None):
         super().__init__(context)
         self.lineno = lineno
         self.endline = endline
+        self.class_name = classname
 
     def visit_FunctionDef(self, node):
         super().visit_FunctionDef(node)
         self.function_visitors[-1].lineno = node.lineno
         self.function_visitors[-1].endline = node.end_lineno
+        if self.class_name:
+            last_function = self.function_visitors[-1]
+            last_function.context = f"{self.class_name}.{last_function.context}"
+
+    def visit_ClassDef(self, node):
+        self.class_name = node.name
+        for child in node.body:
+            visitor = NumberedHalsteadVisitor(classname=self.class_name)
+            visitor.visit(child)
 
 
 def number_report(visitor):
