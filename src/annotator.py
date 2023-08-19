@@ -285,7 +285,6 @@ def bulk_annotate(output_dir: Optional[Path] = None) -> None:
     """
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
-    latest = {}
     styles = {}
     if output_dir is None:
         output_dir = Path("reports")
@@ -296,13 +295,9 @@ def bulk_annotate(output_dir: Optional[Path] = None) -> None:
     css_output = reports_dir / "annotated.css"
     css_output.unlink(missing_ok=True)
 
-    for rev_key in state.index[state.default_archiver].revision_keys:
-        rev_data = Path(config.cache_path) / "git" / f"{rev_key}.json"
-        as_dict = json.loads(rev_data.read_text())
-        cyclomatic = as_dict["operator_data"]["cyclomatic"]
-        for filename, _data in cyclomatic.items():
-            if filename.endswith(".py") and filename not in latest:
-                latest[filename] = rev_key
+    latest = get_latest_rev(
+        config.cache_path, state.index[state.default_archiver].revision_keys
+    )
     for filename, rev_key in latest.items():
         try:
             styles.update(
@@ -319,6 +314,25 @@ def bulk_annotate(output_dir: Optional[Path] = None) -> None:
                 f"Path {filename} not found in current state of git repository."
             )
     append_css(css_output, styles)
+
+
+def get_latest_rev(cache_path: str, revision_keys: list[str]) -> dict[str, str]:
+    """
+    Get latest known revision for files.
+
+    :param cache_path: The cache path from the config, used to find JSON files.
+    :param revision_keys: A list of revision keys.
+    :return: A dict mapping filenames to last known revision.
+    """
+    latest: dict[str, str] = {}
+    for rev_key in revision_keys:
+        rev_data = Path(cache_path) / "git" / f"{rev_key}.json"
+        as_dict = json.loads(rev_data.read_text())
+        cyclomatic = as_dict["operator_data"]["cyclomatic"]
+        for filename, _data in cyclomatic.items():
+            if filename.endswith(".py") and filename not in latest:
+                latest[filename] = rev_key
+    return latest
 
 
 def append_css(css_output: Path, styles: dict[str, str]):
