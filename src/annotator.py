@@ -260,7 +260,7 @@ def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
     last = last_line(details)
     lines = {i: ("---",) * 6 + ("-------",) * 3 for i in range(last + 1)}
     for _name, detail in details.items():
-        if "lineno" not in detail:
+        if "lineno" not in detail or detail["lineno"] is None:
             continue
         for line in range(detail["lineno"] - 1, detail["endline"]):
             lines[line] = (
