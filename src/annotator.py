@@ -277,26 +277,6 @@ def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
     return lines
 
 
-def add_halstead_lineno(halstead: dict, cyclomatic: dict) -> None:
-    """
-    Map line numbers from the cyclomatic data to the halstead data.
-
-    Use the Cyclomatic Complexity line numbers, as radon doesn't record line
-    numbers for Halstead metrics.
-
-    :param halstead: A dict with detailed Halstead information, without line numbers.
-    :param cyclomatic: A dict with detailed CC information, with line numbers.
-    """
-    for filename, data in halstead.items():
-        if "detailed" not in data:
-            continue
-        for function, details in data["detailed"].items():
-            if function not in cyclomatic[filename]["detailed"]:
-                continue
-            details["lineno"] = cyclomatic[filename]["detailed"][function]["lineno"]
-            details["endline"] = cyclomatic[filename]["detailed"][function]["endline"]
-
-
 def bulk_annotate(output_dir: Optional[Path] = None) -> None:
     """
     Annotate all Python files found in the index's revisions.
