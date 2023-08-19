@@ -72,6 +72,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         "effort",
         "difficulty",
     )
+    metric_names = halstead_names + ("cc_function",)
 
     def __init__(
         self, metrics: list[dict[int, tuple[str, str]]], **options: Any
@@ -93,13 +94,13 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         # These should match the column widths of CC metrics in map_cyclomatic_lines
         empty_cyclomatic_vals = ("--", "--")
         self.empty_cyclomatic_span = (
-            '<span class="cyclomatic_span cc_function_val" style="background-color: #ffffff;">'
+            '<span class="cyclomatic_span cc_function_val cc_functionnone" style="background-color: #ffffff;">'
             f'{" ".join(empty_cyclomatic_vals)} </span>'
         )
 
         # This will be used to create the CSS entries for all classes
         self.metric_styles: dict[str, str] = {
-            f"{name}none": "#ffffff" for name in self.halstead_names
+            f"{name}none": "#ffffff" for name in self.metric_names
         }
 
     def wrap(self, source) -> None:
@@ -125,7 +126,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                 yield 1, value
                 continue
 
-            div_classes = [f"{name}none" for name in self.halstead_names]
+            div_classes = [f"{name}none" for name in self.metric_names]
             if i in self.cyclomatic:  # Line has metric info available
                 cyclomatic = self.get_cyclomatic_content(div_classes, i)
                 halstead = self.get_halstead_content(div_classes, i)
