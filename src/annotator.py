@@ -418,7 +418,6 @@ def annotate_revision(
     as_dict = json.loads(rev_data.read_text())
     cyclomatic = as_dict["operator_data"]["cyclomatic"]
     halstead = as_dict["operator_data"]["halstead"]
-    add_halstead_lineno(halstead, cyclomatic)
     if path:
         if path not in cyclomatic:
             logger.error(f"Data for file {path} not found on revision {rev_key}.")
