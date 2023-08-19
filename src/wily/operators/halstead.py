@@ -41,6 +41,7 @@ class NumberedHalsteadVisitor(HalsteadVisitor):
             visitor = NumberedHalsteadVisitor(classname=self.class_name)
             visitor.visit(child)
             self.function_visitors.extend(visitor.function_visitors)
+        self.class_name = None
 
 
 def number_report(visitor):
