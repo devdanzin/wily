@@ -176,9 +176,14 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         :param i: Index into self.cyclomatic, corresponding to a source code line.
         :return: A string containing styled spans with Cyclomatic metric values.
         """
-        if self.cyclomatic[i][1][1] == "-":  # Just use function values for now
-            cyclomatic = self.empty_cyclomatic_span
-        else:
+        if self.cyclomatic[i][0][1] == self.cyclomatic[i][1][1] == "-":
+            cyclomatic = self.empty_cyclomatic_span  # No metric values
+        elif self.cyclomatic[i][0][1] != "-" and self.cyclomatic[i][1][1] == "-":
+            cyclomatic = (  # Only class metric values
+                '<span class="cyclomatic_span cc_function_val">'
+                f'{" ".join(self.cyclomatic[i])} </span>'
+            )
+        else:  # Function/method metric values, maybe class too
             val = int(self.cyclomatic[i][1])
             name = "cc_function"
             c = get_metric_color(val, name=name)
