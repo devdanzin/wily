@@ -23,7 +23,7 @@ from wily.commands.report import report
 from wily.config import DEFAULT_CONFIG_PATH, WilyConfig
 from wily.config import load as load_config
 from wily.helper.custom_enums import ReportFormat
-from wily.operators import ALL_OPERATORS
+from wily.operators import ALL_OPERATORS, resolve_metric
 
 logger.setLevel("INFO")
 start = time()
@@ -60,7 +60,9 @@ def get_headers(metrics: list[str]) -> str:
     """Get headers with metric names for the index.html table."""
     columns = ["<th><h3>Filename</h3></th>", "<th><h3>Report</h3></th>"]
     for metric in metrics:
-        columns.append(f"<th><h3>{metric}</h3></th>")
+        columns.append(
+            f'<th><h3 title="{resolve_metric(metric).description}">{metric}</h3></th>'
+        )
     nl_indent = "\n            "
     return nl_indent.join(columns)
 
