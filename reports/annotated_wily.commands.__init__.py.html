@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
     <title>Annotated source for wily\commands\__init__.py</title>
     <link rel="stylesheet" href="annotated.css" type="text/css">
     <style>
@@ -25,19 +26,19 @@
 <body onload="select_metric('cc_function', false);">
     <div  class="toggle">
         <button onclick="toggle()">Toggle</button>
-        <button id="h1" class="halstead" onclick="select_metric('h1', false)">h1</button>
-        <button id="h2" class="halstead" onclick="select_metric('h2', false)">h2</button>
-        <button id="N1" class="halstead" onclick="select_metric('N1', false)">N1</button>
-        <button id="N2" class="halstead" onclick="select_metric('N2', false)">N2</button>
-        <button id="vocabulary" class="halstead" onclick="select_metric('vocabulary', false)">vocabulary</button>
-        <button id="length" class="halstead" onclick="select_metric('length', false)">length</button>
-        <button id="volume" class="halstead" onclick="select_metric('volume', false)">volume</button>
-        <button id="effort" class="halstead" onclick="select_metric('effort', false)">effort</button>
-        <button id="difficulty" class="halstead" onclick="select_metric('difficulty', false)">difficulty</button>
-        <button id="All" class="halstead" onclick="select_metric('difficulty', true)">All</button>
+        <button id="h1" title="Unique Operands" class="halstead" onclick="select_metric('h1', false)">h1</button>
+        <button id="h2" title="Unique Operators" class="halstead" onclick="select_metric('h2', false)">h2</button>
+        <button id="N1" title="Number of Operands" class="halstead" onclick="select_metric('N1', false)">N1</button>
+        <button id="N2" title="Number of Operators" class="halstead" onclick="select_metric('N2', false)">N2</button>
+        <button id="vocabulary" title="Unique vocabulary (h1 + h2)" class="halstead" onclick="select_metric('vocabulary', false)">vocabulary</button>
+        <button id="length" title="Length of application" class="halstead" onclick="select_metric('length', false)">length</button>
+        <button id="volume" title="Code volume" class="halstead" onclick="select_metric('volume', false)">volume</button>
+        <button id="effort" title="Effort" class="halstead" onclick="select_metric('effort', false)">effort</button>
+        <button id="difficulty" title="Difficulty" class="halstead" onclick="select_metric('difficulty', false)">difficulty</button>
+        <button id="All" title="Display all Halstead metrics" class="halstead" onclick="select_metric('difficulty', true)">All</button>
     </div>
     <div>
-        <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">wily\commands\__init__.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"><a href="#line-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><div class="h1none h2none N1none N2none vocabularynone lengthnone volumenone effortnone difficultynone"><span class="cyclomatic_span cc_function_val ">-- -- </span><span class="halstead_span h1_val h1none">--- </span><span class="halstead_span h2_val h2none">--- </span><span class="halstead_span N1_val N1none">--- </span><span class="halstead_span N2_val N2none">--- </span><span class="halstead_span vocabulary_val vocabularynone">--- </span><span class="halstead_span length_val lengthnone">--- </span><span class="halstead_span volume_val volumenone">------- </span><span class="halstead_span effort_val effortnone">------- </span><span class="halstead_span difficulty_val difficultynone">------- </span>| <a id="line-1" name="line-1"></a><span class="sd">&quot;&quot;&quot;Command implementations for CLI.&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">wily\commands\__init__.py</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"><a href="#line-1">1</a></span></pre></div></td><td class="code"><div><pre><span></span><div class="h1none h2none N1none N2none vocabularynone lengthnone volumenone effortnone difficultynone cc_functionnone"><span class="cyclomatic_span cc_function_val cc_functionnone" style="background-color: #ffffff;">-- -- </span><span class="halstead_span h1_val h1none">--- </span><span class="halstead_span h2_val h2none">--- </span><span class="halstead_span N1_val N1none">--- </span><span class="halstead_span N2_val N2none">--- </span><span class="halstead_span vocabulary_val vocabularynone">--- </span><span class="halstead_span length_val lengthnone">--- </span><span class="halstead_span volume_val volumenone">------- </span><span class="halstead_span effort_val effortnone">------- </span><span class="halstead_span difficulty_val difficultynone">------- </span>| <a id="line-1" name="line-1"></a><span class="sd">&quot;&quot;&quot;Command implementations for CLI.&quot;&quot;&quot;</span>
 </div></pre></div></td></tr></table></div>
 
     </div>
