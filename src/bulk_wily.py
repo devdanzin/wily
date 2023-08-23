@@ -15,13 +15,13 @@ from typing import Optional
 
 import click
 from git.repo import Repo
-from wily.defaults import DEFAULT_GRID_STYLE
 
 from wily import logger
 from wily.commands.graph import graph
 from wily.commands.report import report
 from wily.config import DEFAULT_CONFIG_PATH, WilyConfig
 from wily.config import load as load_config
+from wily.defaults import DEFAULT_GRID_STYLE
 from wily.helper.custom_enums import ReportFormat
 from wily.operators import ALL_OPERATORS, resolve_metric
 
@@ -30,7 +30,12 @@ start = time()
 
 
 def get_all_tracked(config: WilyConfig) -> list[pathlib.Path]:
-    """Get all tracked files that ever existed in git repo."""
+    """
+    Get all tracked files that ever existed in git repo.
+
+    :param config: The config from which to get the repository path.
+    :return: A sorted list of unique Paths of tracked Python files.
+    """
     # ToDo: check whether using graph's method is better
     repo = Repo(config.path)
     path_log = repo.git.execute(
@@ -44,7 +49,11 @@ def get_all_tracked(config: WilyConfig) -> list[pathlib.Path]:
 
 
 def list_metrics() -> list[str]:
-    """List all known metrics (excluding rank)."""
+    """
+    List all known metrics (excluding rank).
+
+    :return: A list of all known metric names
+    """
     metrics = []
     for name, operator in sorted(ALL_OPERATORS.items()):
         if len(operator.operator_cls.metrics) == 0:
@@ -57,7 +66,12 @@ def list_metrics() -> list[str]:
 
 
 def get_headers(metrics: list[str]) -> str:
-    """Get headers with metric names for the index.html table."""
+    """
+    Get headers with metric names for the index.html table.
+
+    :param metrics: A list of metric names.
+    :return: The HTML headers for the bulk report table.
+    """
     columns = ["<th><h3>Filename</h3></th>", "<th><h3>Report</h3></th>"]
     for metric in metrics:
         columns.append(
@@ -77,25 +91,23 @@ def build_reports(
     globals_only: bool = False,
     changes_only: bool = True,
 ) -> list[pathlib.Path]:
-    """Build bulk reports.
+    """
+    Build bulk reports.
 
     This generates an index page that contains links to annotated source files,
     reports and metric graphs. Depending on options, also creates the HTML reports
     and graphs.
 
-    Args:
-        config: The `WilyConfig` that will be passed to `graph()` and `report()`.
-        metrics: A lisf of metric names for graph generation.
-        files: A list of `pathlib.Path` of the files for which to generate reports and graphs.
-        path: Output directory where files will be written.
-        cached: Whether to use caching to speed up reading JSON from wily's cache.
-        index_only: Only generate the index page, with links to existing files.
-        globals_only: Only generate the global graphs and the index page.
-        changes_only: Only show revisions with changes.
+    :param config: The `WilyConfig` that will be passed to `graph()` and `report()`.
+    :param metrics: A lisf of metric names for graph generation.
+    :param files: A list of `pathlib.Path` of the files for which to generate reports and graphs.
+    :param path: Output directory where files will be written.
+    :param cached: Whether to use caching to speed up reading JSON from wily's cache.
+    :param index_only: Only generate the index page, with links to existing files.
+    :param globals_only: Only generate the global graphs and the index page.
+    :param changes_only: Only show revisions with changes.
 
-    Returns:
-        A list of `pathlib.Path` files that would be created.
-
+    :return: A list of `pathlib.Path` files that would be created.
     """
     rows = []
     created_files = [path / "index.html"]
@@ -189,14 +201,13 @@ def build_reports(
 def link_if_exists(
     columns: list[str], filename: str, name: str, path: pathlib.Path
 ) -> None:
-    """Link to a metric/report file if it exists, otherwise just output the name.
+    """
+    Link to a metric/report file if it exists, otherwise just output the name.
 
-    Args:
-        columns: A list of strings that will be appended to.
-        filename: The name of the HTML file to link to, if it exists.
-        name: The name of the metric (or "Report") to include.
-        path: The output directory where files should be searched for.
-
+    :param columns: A list of strings that will be appended to.
+    :param filename: The name of the HTML file to link to, if it exists.
+    :param name: The name of the metric (or "Report") to include.
+    :param path: The output directory where files should be searched for.
     """
     if (path / filename).exists():
         columns.append(f'<td><a href="{filename}">{name}</a></td>')
@@ -205,17 +216,14 @@ def link_if_exists(
 
 
 def generate_global_row(metrics: list[str], nl_indent: str, path: pathlib.Path) -> str:
-    """Generate the "global" table row containing metrics.
+    """
+    Generate the "global" table row containing metrics.
 
-    Args:
-        metrics: A list of metric names.
-        nl_indent: A string containing a new-line and indentation to format the HTML.
-        path: The output directory where files should be searched for.
+    :param metrics: A list of metric names.
+    :param nl_indent: A string containing a new-line and indentation to format the HTML.
+    :param path: The output directory where files should be searched for.
 
-    Returns:
-        A string representing an HTML table row containing metric names (which
-        are links to global HTML graphs if the corresponding file exists).
-
+    :return: A string representing an HTML table row containing metric names/links.
     """
     columns = ["    <td></td>"]
     for metric in metrics:
@@ -232,19 +240,16 @@ def generate_global_row(metrics: list[str], nl_indent: str, path: pathlib.Path) 
 def generate_table_row(
     filename: str, htmlname: str, metrics: list[str], nl_indent: str, path: pathlib.Path
 ) -> str:
-    """Generate a table row containing the file and metrics.
+    """
+    Generate a table row containing the file and metrics.
 
-    Args:
-        filename: The source code filename, with path.
-        htmlname: The source code filename, with path and path separators replaced by dots.
-        metrics: A list of metrics for which to generate links/labels.
-        nl_indent: A string containing a new-line and indentation to format the HTML.
-        path: The output directory where files should be searched for.
+    :param filename: The source code filename, with path.
+    :param htmlname: The source code filename, with path and path separators replaced by dots.
+    :param metrics: A list of metrics for which to generate links/labels.
+    :param nl_indent: A string containing a new-line and indentation to format the HTML.
+    :param path: The output directory where files should be searched for.
 
-
-    Returns:
-        A string representing an HTML table row containing metric names (which
-        are links to HTML graphs if the corresponding file exists).
+    :return: A string representing an HTML table row containing metric names/links
     """
     columns: list[str] = []
     html_report = f"{htmlname}_report.html"
