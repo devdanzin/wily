@@ -294,9 +294,9 @@ def bulk_annotate(output_dir: Optional[Path] = None) -> None:
     styles = {}
     if output_dir is None:
         output_dir = Path("reports")
-    reports_dir = Path(__file__).parents[1] / output_dir
+    reports_dir = Path(output_dir)
     reports_dir.mkdir(exist_ok=True)
-    templates_dir = (Path(__file__).parent / "wily" / "templates").resolve()
+    templates_dir = (Path(__file__).parents[1] / "templates").resolve()
     shutil.copyfile(templates_dir / "annotated.js", reports_dir / "annotated.js")
     css_output = reports_dir / "annotated.css"
     css_output.unlink(missing_ok=True)
@@ -467,8 +467,8 @@ def annotate_revision(
         elif format.lower() == "console":
             print_annotated_source(code, metrics[0])
     if format.lower() == "html":
-        reports_dir = Path(__file__).parents[1] / output_dir
-        templates_dir = (Path(__file__).parent / "wily" / "templates").resolve()
+        reports_dir = Path(output_dir)
+        templates_dir = (Path(__file__).parents[1] / "templates").resolve()
         js_file = reports_dir / "annotated.js"
         if not js_file.exists():
             shutil.copyfile(templates_dir / "annotated.js", js_file)
@@ -529,13 +529,13 @@ def generate_annotated_html(
     )
     if output_dir is None:
         output_dir = Path("reports")
-    reports_dir = Path(__file__).parents[1] / output_dir
+    reports_dir = Path(output_dir)
     reports_dir.mkdir(parents=True, exist_ok=True)
     htmlname = filename.replace("\\", ".").replace("/", ".")
     output = reports_dir / f"annotated_{htmlname}.html"
     logger.info(f"Saving {filename} annotated source code to {output}.")
 
-    templates_dir = (Path(__file__).parent / "wily" / "templates").resolve()
+    templates_dir = (Path(__file__).parents[1] / "templates").resolve()
     report_template = Template((templates_dir / "annotated_template.html").read_text())
     result = report_template.safe_substitute(filename=filename, annotated=result)
     with output.open("w", errors="xmlcharrefreplace") as html:
