@@ -10,7 +10,6 @@ from string import Template
 from sys import exit
 from typing import Any, Optional
 
-import click
 import git
 from git import Repo
 from pygments import highlight
@@ -19,13 +18,14 @@ from pygments.lexers import PythonLexer
 
 from wily import logger
 from wily.archivers import resolve_archiver
-from wily.config import DEFAULT_CONFIG_PATH
 from wily.config import load as load_config
+from wily.defaults import DEFAULT_CONFIG_PATH
 from wily.state import IndexedRevision, State
 
 logger.setLevel(logging.INFO)
 
 # Maximum values for each metric, i.e. what will result in red background
+# TODO: Figure out useful values for Halstead metrics, current ones are arbitrary
 MAX_DICT = {
     "cc_function": 50,
     "h1": 40,
@@ -547,71 +547,3 @@ def generate_annotated_html(
     if not (reports_dir / "annotated.js").exists():
         shutil.copyfile(templates_dir / "annotated.js", reports_dir / "annotated.js")
     return formatter.metric_styles
-
-
-@click.group(help="Annotate source files with metric values.")
-def run() -> None:
-    pass
-
-
-@run.command()
-@click.option(
-    "-f",
-    "--format",
-    default="CONSOLE",
-    help="Save HTML or print to CONSOLE.",
-    type=click.STRING,
-)
-@click.option(
-    "-r",
-    "--revision",
-    default="HEAD",
-    help="Annotate with metric values from specific revision.",
-    type=click.STRING,
-)
-@click.option(
-    "-p",
-    "--path",
-    default="",
-    help="Path to annotate.",
-    type=click.Path(),
-)
-@click.option(
-    "-c",
-    "--css/--no-css",
-    default=True,
-    help="Write CSS file with styles to highlight code and metrics.",
-)
-@click.option(
-    "-o",
-    "--output",
-    default="reports",
-    help="Output directory to write files to.",
-    type=click.Path(path_type=Path),
-)
-def annotate(format: str, revision: str, path: str, css: bool, output: Path) -> None:
-    """Generate annotated source for a revision or single file."""
-    if format.lower() not in ("html", "console"):
-        logger.error(f"Format must be HTML or CONSOLE, not {format}.")
-        exit(1)
-
-    annotate_revision(
-        format=format, revision_index=revision, path=path, css=css, output_dir=output
-    )
-
-
-@run.command("bulk-annotate")
-@click.option(
-    "-o",
-    "--output",
-    default="reports",
-    help="Output directory to write files to.",
-    type=click.Path(path_type=Path),
-)
-def bulk(output: Path):
-    """Annotate all Python files from all known revisions."""
-    bulk_annotate(output_dir=output)
-
-
-if __name__ == "__main__":
-    run()
