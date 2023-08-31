@@ -465,7 +465,7 @@ def annotate_revision(
             )
             styles.update(style)
         elif format.lower() == "console":
-            print_annotated_source(code, metrics[0])
+            print_annotated_source(code, metrics[0], filename)
     if format.lower() == "html":
         reports_dir = Path(output_dir)
         templates_dir = (Path(__file__).parents[1] / "templates").resolve()
@@ -478,12 +478,15 @@ def annotate_revision(
     return styles
 
 
-def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> None:
+def print_annotated_source(
+    code: str, metrics: dict[int, tuple[str, str]], filename: str
+) -> None:
     """
     Print source annotated with metric to terminal.
 
     :param code: The source code to highlight.
     :param metrics: Map of lines to CC metric values.
+    :param filename: Name of the file being annotated.
     """
     result = highlight(
         code,
@@ -493,7 +496,7 @@ def print_annotated_source(code: str, metrics: dict[int, tuple[str, str]]) -> No
             metrics=metrics,
         ),
     )
-    print(result)
+    print(f"\n{filename}\n{result}")
 
 
 def generate_annotated_html(
