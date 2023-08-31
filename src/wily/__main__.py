@@ -525,6 +525,7 @@ def annotate(format: str, revision: str, path: str, css: bool, output: Path) -> 
         exit(1)
 
     from wily.commands.annotate import annotate_revision
+
     annotate_revision(
         format=format, revision_index=revision, path=path, css=css, output_dir=output
     )
@@ -541,6 +542,7 @@ def annotate(format: str, revision: str, path: str, css: bool, output: Path) -> 
 def bulk_annotator(output: Path):
     """Annotate all Python files from all known revisions."""
     from wily.commands.annotate import bulk_annotate
+
     bulk_annotate(output_dir=output)
 
 
