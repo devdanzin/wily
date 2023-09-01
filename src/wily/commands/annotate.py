@@ -521,7 +521,6 @@ def generate_annotated_html(
     :return: A map of CSS class names to background color values.
     """
     formatter = AnnotatedHTMLFormatter(
-        title=f"CC for {filename} at {key[:7]}",
         lineanchors="line",
         anchorlinenos=True,
         filename=filename,
