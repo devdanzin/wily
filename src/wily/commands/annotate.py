@@ -1,5 +1,4 @@
 """Annotate source code with metrics."""
-import logging
 import shutil
 from collections import defaultdict
 from pathlib import Path
@@ -18,8 +17,6 @@ from wily.archivers.git import GitArchiver
 from wily.cache import get
 from wily.config.types import WilyConfig
 from wily.state import IndexedRevision, State
-
-logger.setLevel(logging.INFO)
 
 # Maximum values for each metric, i.e. what will result in red background
 # TODO: Figure out useful values for Halstead metrics, current ones are arbitrary
@@ -464,7 +461,7 @@ def annotate_revision(
         ]
         if format.lower() == "html":
             style = generate_annotated_html(
-                code, filename, metrics, rev_key, output_dir
+                code, filename, metrics, output_dir
             )
             styles.update(style)
         elif format.lower() == "console":
@@ -507,7 +504,6 @@ def generate_annotated_html(
     code: str,
     filename: str,
     metrics: list[dict[int, tuple[str, str]]],
-    key: str,
     output_dir: Optional[Path] = None,
 ) -> dict[str, str]:
     """
@@ -516,7 +512,6 @@ def generate_annotated_html(
     :param code: The source code to highlight.
     :param filename: The filename to display in HTML and base HTML file name on.
     :param metrics: Two maps of lines to metric values (CC and Halstead).
-    :param key: A Git revision key to display in title.
     :param output_dir: A Path pointing to the directory to output HTML files.
     :return: A map of CSS class names to background color values.
     """
