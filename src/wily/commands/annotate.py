@@ -339,6 +339,39 @@ def get_latest_rev(config: WilyConfig, revision_keys: list[str]) -> dict[str, st
     return latest
 
 
+def get_rev_key(archiver: GitArchiver, revision_index: str, state: State) -> str:
+    """
+    Get a revision key from a revision index.
+
+    :param archiver: An archiver used to look up revisions.
+    :param revision_index: The revision description to look up.
+    :param state: The state to fetch a revision from.
+    :return: A revision key corresponding to the given revision description.
+    """
+    if not revision_index:
+        key = "HEAD"
+    else:
+        key = revision_index
+    try:
+        # Check that the revision exists
+        rev = archiver.find(key)
+        logger.debug(f"Resolved {key} to {rev.key} ({rev.message})")
+    except git.BadName:
+        logger.error(f"Revision {revision_index} not found in current git repository.")
+        exit(1)
+    try:
+        # Check that the revision exists in wily's cache
+        target_revision: IndexedRevision
+        target_revision = state.index[state.default_archiver][rev.key]
+    except KeyError:
+        logger.error(
+            f"Revision {revision_index or 'HEAD'} is not in the cache, make sure you have run wily build."
+        )
+        exit(1)
+    rev_key = target_revision.revision.key
+    return rev_key
+
+
 def append_css(css_output: Path, styles: dict[str, str]):
     """
     Append CSS from a style dict to a CSS file.
@@ -391,25 +424,7 @@ def annotate_revision(
     if output_dir is None:
         output_dir = Path("reports")
 
-    if not revision_index:
-        key = "HEAD"
-    else:
-        key = revision_index
-    try:
-        rev = archiver.find(key)
-        logger.debug(f"Resolved {key} to {rev.key} ({rev.message})")
-    except git.BadName:
-        logger.error(f"Revision {revision_index} not found in current git repository.")
-        exit(1)
-    try:
-        target_revision: IndexedRevision
-        target_revision = state.index[state.default_archiver][rev.key]
-    except KeyError:
-        logger.error(
-            f"Revision {revision_index or 'HEAD'} is not in the cache, make sure you have run wily build."
-        )
-        exit(1)
-    rev_key = target_revision.revision.key
+    rev_key = get_rev_key(archiver, revision_index, state)
     as_dict = get(config, "git", rev_key)
     cyclomatic = as_dict["operator_data"]["cyclomatic"]
     halstead = as_dict["operator_data"]["halstead"]
@@ -437,7 +452,7 @@ def annotate_revision(
     styles: dict[str, str] = {}
     for filename in py_files:
         # Check whether we can use files from working directory or have to fetch from git
-        outdated = archiver.is_data_outdated(filename, target_revision.revision.key)
+        outdated = archiver.is_data_outdated(filename, rev_key)
         path_ = Path(filename)
         if path_.exists() and not outdated:
             code = path_.read_text()
@@ -449,7 +464,7 @@ def annotate_revision(
         ]
         if format.lower() == "html":
             style = generate_annotated_html(
-                code, filename, metrics, target_revision.revision.key, output_dir
+                code, filename, metrics, rev_key, output_dir
             )
             styles.update(style)
         elif format.lower() == "console":
