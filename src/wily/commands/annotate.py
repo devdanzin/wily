@@ -11,7 +11,7 @@ from sys import exit
 from typing import Any, Optional
 
 import git
-from git import Repo
+from git.repo import Repo
 from pygments import highlight
 from pygments.formatters import HtmlFormatter, TerminalFormatter
 from pygments.lexers import PythonLexer
@@ -108,8 +108,8 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         output = source
         output = self.annotate_lines(output)
         if self.wrapcode:
-            output = self._wrap_code(output)
-        output = self._wrap_pre(output)
+            output = self._wrap_code(output)  # type: ignore
+        output = self._wrap_pre(output)  # type: ignore
         return output
 
     def annotate_lines(self, tokensource):
@@ -215,6 +215,7 @@ class AnnotatedTerminalFormatter(TerminalFormatter):
 
     def _write_lineno(self, outfile) -> None:
         """Write line numbers and metric annotations."""
+        self._lineno: int
         self._lineno += 1
         metric_values = " ".join(self.metrics.get(self._lineno - 1, ("--", "--")))
         outfile.write(
@@ -245,6 +246,7 @@ def map_cyclomatic_lines(details: dict) -> dict[int, tuple[str, str]]:
     :return: A dict mapping line numbers to Cyclomatic Complexity values.
     """
     last = last_line(details)
+    lines: dict[int, tuple[str, str]]
     lines = {i: ("--", "--") for i in range(last + 1)}
     for _name, detail in details.items():
         if "is_method" in detail:  # It's a function or method
@@ -389,6 +391,9 @@ def annotate_revision(
     state = State(config)
     repo = Repo(config.path)
 
+    if output_dir is None:
+        output_dir = Path("reports")
+
     if not revision_index:
         commit = repo.rev_parse("HEAD")
     else:
@@ -450,11 +455,12 @@ def annotate_revision(
             code = path_.read_text()
         else:
             git_filename = filename.replace("\\", "/")
-            code = repo.git.execute(
+            contents = repo.git.execute(
                 ["git", "show", f"{rev_key}:{git_filename}"],
                 as_process=False,
                 stdout_as_string=True,
             )
+            code = str(contents)
         metrics = [
             map_cyclomatic_lines(cyclomatic[filename]["detailed"]),
             map_halstead_lines(halstead[filename]["detailed"]),
