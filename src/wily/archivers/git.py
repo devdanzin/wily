@@ -195,3 +195,35 @@ class GitArchiver(BaseArchiver):
             modified_files=modified_files,
             deleted_files=deleted_files,
         )
+
+    def is_data_outdated(self, filename: str, key: str) -> bool:
+        """
+        Check whether file contents match between revision and working directory.
+
+        :param filename:
+        :param key:
+        :return:
+        """
+        outdated = False
+        commit = self.repo.rev_parse(key)
+        diff = commit.diff(None, filename)
+        if diff and diff[0].change_type in ("M",):
+            outdated = True
+        return outdated
+
+    def get_file_contents(self, rev_key: str, filename: str) -> str:
+        """
+        Get contents of a file in a given git revision.
+
+        :param rev_key: The key for the revision at which to fetch the file.
+        :param filename: The name of the file for which to get the contents.
+        :return: The file contents.
+        """
+        git_filename = filename.replace("\\", "/")
+        contents = self.repo.git.execute(
+            ["git", "show", f"{rev_key}:{git_filename}"],
+            as_process=False,
+            stdout_as_string=True,
+        )
+        code = str(contents)
+        return code

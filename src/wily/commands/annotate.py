@@ -8,13 +8,13 @@ from sys import exit
 from typing import Any, Optional
 
 import git
-from git.repo import Repo
 from pygments import highlight
 from pygments.formatters import HtmlFormatter, TerminalFormatter
 from pygments.lexers import PythonLexer
 
 from wily import logger
 from wily.archivers import resolve_archiver
+from wily.archivers.git import GitArchiver
 from wily.cache import get
 from wily.config import load as load_config
 from wily.config.types import WilyConfig
@@ -302,9 +302,7 @@ def bulk_annotate(output_dir: Optional[Path] = None) -> None:
     css_output = reports_dir / "annotated.css"
     css_output.unlink(missing_ok=True)
 
-    latest = get_latest_rev(
-        config, state.index[state.default_archiver].revision_keys
-    )
+    latest = get_latest_rev(config, state.index[state.default_archiver].revision_keys)
     for filename, rev_key in latest.items():
         try:
             styles.update(
@@ -387,30 +385,25 @@ def annotate_revision(
     """
     config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
-    repo = Repo(config.path)
+    archiver: GitArchiver
+    archiver = resolve_archiver(state.default_archiver).archiver_cls(config)
 
     if output_dir is None:
         output_dir = Path("reports")
 
     if not revision_index:
-        commit = repo.rev_parse("HEAD")
+        key = "HEAD"
     else:
-        try:
-            commit = repo.rev_parse(revision_index)
-        except git.BadName:
-            logger.error(
-                f"Revision {revision_index} not found in current git repository."
-            )
-            exit(1)
-        rev = (
-            resolve_archiver(state.default_archiver)
-            .archiver_cls(config)
-            .find(commit.hexsha)
-        )
-        logger.debug(f"Resolved {revision_index} to {rev.key} ({rev.message})")
+        key = revision_index
+    try:
+        rev = archiver.find(key)
+        logger.debug(f"Resolved {key} to {rev.key} ({rev.message})")
+    except git.BadName:
+        logger.error(f"Revision {revision_index} not found in current git repository.")
+        exit(1)
     try:
         target_revision: IndexedRevision
-        target_revision = state.index[state.default_archiver][commit.hexsha]
+        target_revision = state.index[state.default_archiver][rev.key]
     except KeyError:
         logger.error(
             f"Revision {revision_index or 'HEAD'} is not in the cache, make sure you have run wily build."
@@ -443,21 +436,13 @@ def annotate_revision(
         )
     styles: dict[str, str] = {}
     for filename in py_files:
-        diff = commit.diff(None, filename)
-        outdated = False
-        if diff and diff[0].change_type in ("M",):
-            outdated = True
+        # Check whether we can use files from working directory or have to fetch from git
+        outdated = archiver.is_data_outdated(filename, target_revision.revision.key)
         path_ = Path(filename)
         if path_.exists() and not outdated:
             code = path_.read_text()
         else:
-            git_filename = filename.replace("\\", "/")
-            contents = repo.git.execute(
-                ["git", "show", f"{rev_key}:{git_filename}"],
-                as_process=False,
-                stdout_as_string=True,
-            )
-            code = str(contents)
+            code = archiver.get_file_contents(rev_key, filename)
         metrics = [
             map_cyclomatic_lines(cyclomatic[filename]["detailed"]),
             map_halstead_lines(halstead[filename]["detailed"]),
@@ -468,6 +453,7 @@ def annotate_revision(
             )
             styles.update(style)
         elif format.lower() == "console":
+            # TODO: Allow printing more metrics
             print_annotated_source(code, metrics[0], filename)
     if format.lower() == "html":
         reports_dir = Path(output_dir)
