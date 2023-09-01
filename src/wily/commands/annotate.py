@@ -1,6 +1,4 @@
 """Annotate source code with metrics."""
-from __future__ import annotations
-
 import json
 import logging
 import shutil
