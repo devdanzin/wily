@@ -5,6 +5,7 @@ from pathlib import Path
 from sys import exit
 
 import click
+from click import Context
 
 from wily import WILY_LOG_NAME, __version__, logger
 from wily.archivers import resolve_archiver
@@ -518,8 +519,13 @@ def list_metrics(ctx, wrap):
     help="Output directory to write files to.",
     type=click.Path(path_type=Path),
 )
-def annotate(format: str, revision: str, path: str, css: bool, output: Path) -> None:
+@click.pass_context
+def annotate(
+    ctx: Context, format: str, revision: str, path: str, css: bool, output: Path
+) -> None:
     """Generate annotated source with metric values for a revision or single file."""
+    config = ctx.obj["CONFIG"]
+
     if format.lower() not in ("html", "console"):
         logger.error(f"Format must be HTML or CONSOLE, not {format}.")
         exit(1)
@@ -527,7 +533,12 @@ def annotate(format: str, revision: str, path: str, css: bool, output: Path) -> 
     from wily.commands.annotate import annotate_revision
 
     annotate_revision(
-        format=format, revision_index=revision, path=path, css=css, output_dir=output
+        config=config,
+        format=format,
+        revision_index=revision,
+        path=path,
+        css=css,
+        output_dir=output,
     )
 
 
@@ -539,11 +550,14 @@ def annotate(format: str, revision: str, path: str, css: bool, output: Path) -> 
     help="Output directory to write files to.",
     type=click.Path(path_type=Path),
 )
-def bulk_annotator(output: Path):
+@click.pass_context
+def bulk_annotator(ctx: Context, output: Path):
     """Annotate all Python files from all known revisions."""
+    config = ctx.obj["CONFIG"]
+
     from wily.commands.annotate import bulk_annotate
 
-    bulk_annotate(output_dir=output)
+    bulk_annotate(config=config, output_dir=output)
 
 
 @cli.command("setup", help=_("""Run a guided setup to build the wily cache."""))

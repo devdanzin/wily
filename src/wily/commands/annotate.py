@@ -16,9 +16,7 @@ from wily import logger
 from wily.archivers import resolve_archiver
 from wily.archivers.git import GitArchiver
 from wily.cache import get
-from wily.config import load as load_config
 from wily.config.types import WilyConfig
-from wily.defaults import DEFAULT_CONFIG_PATH
 from wily.state import IndexedRevision, State
 
 logger.setLevel(logging.INFO)
@@ -284,13 +282,13 @@ def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
     return lines
 
 
-def bulk_annotate(output_dir: Optional[Path] = None) -> None:
+def bulk_annotate(config: WilyConfig, output_dir: Optional[Path] = None) -> None:
     """
     Annotate all Python files found in the index's revisions.
 
+    :param config: The configuration.
     :param output_dir: A Path pointing to the directory to output HTML files.
     """
-    config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
     styles = {}
     if output_dir is None:
@@ -307,6 +305,7 @@ def bulk_annotate(output_dir: Optional[Path] = None) -> None:
         try:
             styles.update(
                 annotate_revision(
+                    config=config,
                     format="HTML",
                     revision_index=rev_key,
                     path=filename,
@@ -400,6 +399,7 @@ def simplify_css(styles: dict[str, str]) -> dict[str, str]:
 
 
 def annotate_revision(
+    config: WilyConfig,
     format: str = "HTML",
     revision_index: str = "",
     path: str = "",
@@ -409,6 +409,7 @@ def annotate_revision(
     """
     Generate annotated files from detailed metric data in a revision.
 
+    :param config: The configuration.
     :param format: Either `HTML` or `CONSOLE`, determines output format.
     :param revision_index: A Git revision to annotate at.
     :param path: A single filename to annotate.
@@ -416,7 +417,6 @@ def annotate_revision(
     :param output_dir: A Path pointing to the directory to output HTML files.
     :return: A dict mapping CSS class names to color values.
     """
-    config = load_config(DEFAULT_CONFIG_PATH)
     state = State(config)
     archiver: GitArchiver
     archiver = resolve_archiver(state.default_archiver).archiver_cls(config)
