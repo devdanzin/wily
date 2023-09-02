@@ -9,21 +9,17 @@ for each separate file.
 import pathlib
 from string import Template
 from time import time
-from typing import Optional
 
-import click
-from git.repo import Repo
+from git import Repo
 
 from wily import logger
 from wily.commands.graph import graph
 from wily.commands.report import report
-from wily.config import DEFAULT_CONFIG_PATH, WilyConfig
-from wily.config import load as load_config
+from wily.config import WilyConfig
 from wily.defaults import DEFAULT_GRID_STYLE
 from wily.helper.custom_enums import ReportFormat
 from wily.operators import ALL_OPERATORS, resolve_metric
 
-logger.setLevel("INFO")
 start = time()
 
 
@@ -47,7 +43,7 @@ def get_all_tracked(config: WilyConfig) -> tuple[pathlib.Path, ...]:
     return tuple(pathlib.Path(path) for path in paths)
 
 
-def list_metrics() -> list[str]:
+def list_all_metrics() -> list[str]:
     """
     List all known metrics (excluding rank).
 
@@ -182,7 +178,7 @@ def build_reports(
 
     entries = "".join(rows)
     table_headers = get_headers(metrics)
-    templates_dir = (pathlib.Path(__file__).parents[0] / "wily" / "templates").resolve()
+    templates_dir = (pathlib.Path(__file__).parents[1] / "templates").resolve()
     report_template = Template((templates_dir / "bulk_template.html").read_text())
     report_result = report_template.safe_substitute(
         headers=table_headers, content=entries
@@ -266,119 +262,3 @@ def generate_table_row(
             {nl_indent.join(columns)}
         </tr>"""
     return row
-
-
-@click.group
-def main() -> None:
-    """Bulk operations for wily."""
-
-
-@main.command(help="Build the bulk report.")
-@click.argument(
-    "paths",
-    nargs=-1,
-    type=click.Path(resolve_path=False, path_type=pathlib.Path),
-)
-@click.option(
-    "output_path",
-    "-o",
-    "--output",
-    type=click.Path(resolve_path=False, path_type=pathlib.Path),
-    help="Output directory",
-)
-@click.option(
-    "-c",
-    "--cache/--no-cache",
-    default=True,
-    help="Use caching",
-)
-@click.option(
-    "-i",
-    "--index/--full",
-    default=False,
-    help="Only build index.html",
-)
-@click.option(
-    "-g",
-    "--globals-only/--per-file",
-    default=False,
-    help="Only create metric graphs for all files",
-)
-@click.option(
-    "-m", "--metrics", help="Comma-separated metrics to build bulk reports with"
-)
-@click.option(
-    "-c",
-    "--changes/--all",
-    default=True,
-    help="Only show revisions that have changes",
-)
-@click.pass_context
-def build(
-    ctx: click.Context,
-    paths: tuple[pathlib.Path, ...],
-    output_path: Optional[pathlib.Path],
-    cache: bool,
-    index: bool,
-    globals_only: bool,
-    metrics: str,
-    changes: bool,
-) -> None:
-    """Build the bulk reports."""
-    if output_path is None:
-        output_path = pathlib.Path("reports/")
-    output_path.mkdir(exist_ok=True, parents=True)
-    config = load_config(DEFAULT_CONFIG_PATH)
-    files = paths if paths else get_all_tracked(config)
-    metrics_list = metrics.split(",") if metrics else list_metrics()
-    build_reports(
-        config,
-        metrics_list,
-        files,
-        output_path,
-        cached=cache,
-        index_only=index,
-        globals_only=globals_only,
-        changes_only=changes,
-    )
-    logger.info(f"Total time: {time() - start} secs")
-
-
-@main.command(help="Erase the bulk report files.")
-@click.argument(
-    "paths",
-    nargs=-1,
-    type=click.Path(resolve_path=False, path_type=pathlib.Path),
-)
-@click.option(
-    "output_path",
-    "-o",
-    "--output",
-    type=click.Path(resolve_path=False, path_type=pathlib.Path),
-    help="Output directory to clean",
-)
-@click.option("-m", "--metrics", help="Comma-separated metrics to clean bulk reports")
-@click.pass_context
-def clean(
-    ctx: click.Context,
-    paths: tuple[pathlib.Path, ...],
-    output_path: Optional[pathlib.Path],
-    metrics: str,
-) -> None:
-    """Erase the bulk report files."""
-    if output_path is None:
-        output_path = pathlib.Path("reports/")
-    config = load_config(DEFAULT_CONFIG_PATH)
-    files = paths if paths else get_all_tracked(config)
-    metrics_list = metrics.split(",") if metrics else list_metrics()
-    files_to_clean = build_reports(
-        config, metrics_list, files, output_path, index_only=True
-    )
-    for file in files_to_clean:
-        to_delete = pathlib.Path(file)
-        to_delete.unlink(missing_ok=True)
-    logger.info(f"Total time: {time() - start} secs")
-
-
-if __name__ == "__main__":
-    main()

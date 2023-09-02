@@ -1,11 +1,7 @@
 import pathlib
-import sys
 from unittest import mock
 
-path = str(pathlib.Path(__file__).parents[2] / "src")
-sys.path.insert(0, path)
-
-import bulk_wily
+import wily.commands.bulk
 
 
 def test_get_all_tracked():
@@ -15,7 +11,7 @@ def test_get_all_tracked():
     mock_repo = mock.Mock(**kwargs)
     mock_Repo = mock.Mock(return_value=mock_repo)
     with mock.patch("bulk_wily.Repo", mock_Repo):
-        result = bulk_wily.get_all_tracked(mock.Mock())
+        result = wily.commands.bulk.get_all_tracked(mock.Mock())
     assert result == [pathlib.Path("Mocked.py"), pathlib.Path("included.py")]
 
 
@@ -40,7 +36,7 @@ def test_list_metrics_real_metrics():
         "blank",
         "single_comments",
     ]
-    result = bulk_wily.list_metrics()
+    result = wily.commands.bulk.list_all_metrics()
     assert result == metrics
 
 
@@ -63,7 +59,7 @@ def test_list_metrics_mock_metrics():
         "multiple_operator": mock_multiple_operator,
     }
     with mock.patch("bulk_wily.ALL_OPERATORS", operators):
-        result = bulk_wily.list_metrics()
+        result = wily.commands.bulk.list_all_metrics()
         assert result == [
             "bare_operator",
             "multiple_metric1",
@@ -77,7 +73,7 @@ def test_get_headers_no_metrics():
     default_headers = nl_indent.join(
         ["<th><h3>Filename</h3></th>", "<th><h3>Report</h3></th>"]
     )
-    no_metrics_result = bulk_wily.get_headers([])
+    no_metrics_result = wily.commands.bulk.get_headers([])
     assert no_metrics_result == default_headers
 
 
@@ -91,14 +87,14 @@ def test_get_headers_metrics():
             <th><h3>metric1</h3></th>
             <th><h3>metric3</h3></th>
             <th><h3>metric3</h3></th>"""
-    metrics_result = bulk_wily.get_headers(metrics)
+    metrics_result = wily.commands.bulk.get_headers(metrics)
     assert metrics_result == default_headers + metric_headers
 
 
 def test_link_if_exists_link():
     mock_path = mock.MagicMock()
     columns = []
-    bulk_wily.link_if_exists(columns, "filename.html", "metric", mock_path)
+    wily.commands.bulk.link_if_exists(columns, "filename.html", "metric", mock_path)
     assert columns[0] == '<td><a href="filename.html">metric</a></td>'
 
 
@@ -108,7 +104,7 @@ def test_link_if_exists_no_link():
     mock_exists.exists = mock_exists
     mock_path.__truediv__.return_value = mock_exists
     columns = []
-    bulk_wily.link_if_exists(columns, "filename.html", "metric", mock_path)
+    wily.commands.bulk.link_if_exists(columns, "filename.html", "metric", mock_path)
     assert columns[0] == "<td>metric</td>"
 
 
@@ -126,7 +122,7 @@ def test_generate_global_row_empty():
             <td></td>
         </tr>"""
     metrics = []
-    result = bulk_wily.generate_global_row(metrics, nl_indent, mock_path)
+    result = wily.commands.bulk.generate_global_row(metrics, nl_indent, mock_path)
     assert result == empty_header
 
 
@@ -146,7 +142,7 @@ def test_generate_global_row_with_metrics():
             <td>metric2</td>
         </tr>"""
     metrics = ["metric1", "metric2"]
-    result = bulk_wily.generate_global_row(metrics, nl_indent, mock_path)
+    result = wily.commands.bulk.generate_global_row(metrics, nl_indent, mock_path)
     assert result == with_metrics
 
 
@@ -166,7 +162,7 @@ def test_generate_global_row_with_linked_metrics():
             <td><a href="global_metric2.html">metric2</a></td>
         </tr>"""
     metrics = ["metric1", "metric2"]
-    result = bulk_wily.generate_global_row(metrics, nl_indent, mock_path)
+    result = wily.commands.bulk.generate_global_row(metrics, nl_indent, mock_path)
     assert result == with_linked_metrics
 
 
@@ -187,7 +183,7 @@ def test_generate_table_row():
             <td>Report</td>
         </tr>"""
     metrics = []
-    result = bulk_wily.generate_table_row(
+    result = wily.commands.bulk.generate_table_row(
         filename, htmlname, metrics, nl_indent, mock_path
     )
     assert result == no_metrics_no_files
@@ -200,7 +196,7 @@ def test_generate_table_row():
             <td>metric2</td>
         </tr>"""
     metrics = ["metric1", "metric2"]
-    result = bulk_wily.generate_table_row(
+    result = wily.commands.bulk.generate_table_row(
         filename, htmlname, metrics, nl_indent, mock_path
     )
     assert result == metrics_no_files
@@ -212,7 +208,7 @@ def test_generate_table_row():
             <td><a href="test.py_report.html">Report</a></td>
         </tr>"""
     metrics = []
-    result = bulk_wily.generate_table_row(
+    result = wily.commands.bulk.generate_table_row(
         filename, htmlname, metrics, nl_indent, mock_path
     )
     assert result == no_metrics_with_files
@@ -225,7 +221,7 @@ def test_generate_table_row():
             <td><a href="test.py_metric2.html">metric2</a></td>
         </tr>"""
     metrics = ["metric1", "metric2"]
-    result = bulk_wily.generate_table_row(
+    result = wily.commands.bulk.generate_table_row(
         filename, htmlname, metrics, nl_indent, mock_path
     )
     assert result == metrics_with_files
@@ -243,7 +239,7 @@ def test_build_reports_empty():
 
     metrics = []
     files = []
-    result = bulk_wily.build_reports(
+    result = wily.commands.bulk.build_reports(
         config,
         metrics,
         files,
@@ -273,7 +269,7 @@ def test_build_reports_files_no_metrics():
     ):
         metrics = []
         files = ["file1.py", "file2.py"]
-        result = bulk_wily.build_reports(
+        result = wily.commands.bulk.build_reports(
             config,
             metrics,
             files,
@@ -303,7 +299,7 @@ def test_build_reports_files_and_metrics():
     ):
         metrics = ["metric1", "metric2"]
         files = ["file1.py", "file2.py"]
-        result = bulk_wily.build_reports(
+        result = wily.commands.bulk.build_reports(
             config,
             metrics,
             files,
@@ -333,7 +329,7 @@ def test_build_reports_index_only():
     ):
         metrics = ["metric1", "metric2"]
         files = ["file1.py", "file2.py"]
-        result = bulk_wily.build_reports(
+        result = wily.commands.bulk.build_reports(
             config,
             metrics,
             files,
@@ -363,7 +359,7 @@ def test_build_reports_globals_only():
     ):
         metrics = ["metric1", "metric2"]
         files = ["file1.py", "file2.py"]
-        result = bulk_wily.build_reports(
+        result = wily.commands.bulk.build_reports(
             config,
             metrics,
             files,

@@ -1,14 +1,15 @@
 """Main command line."""
-
 import traceback
 from pathlib import Path
 from sys import exit
+from typing import Optional
 
 import click
 
 from wily import WILY_LOG_NAME, __version__, logger
 from wily.archivers import resolve_archiver
 from wily.cache import exists, get_default_metrics
+from wily.commands.bulk import build_reports, get_all_tracked, list_all_metrics
 from wily.config import load as load_config
 from wily.defaults import DEFAULT_CONFIG_PATH, DEFAULT_GRID_STYLE
 from wily.helper import get_style
@@ -499,6 +500,116 @@ def list_metrics(ctx, wrap):
 def setup(ctx):
     """Run a guided setup to build the wily cache."""
     handle_no_cache(ctx)
+
+
+@cli.group
+def bulk() -> None:
+    """Bulk operations for wily."""
+
+
+@bulk.command("build", help="Build the bulk report.")
+@click.argument(
+    "paths",
+    nargs=-1,
+    type=click.Path(resolve_path=False, path_type=Path),
+)
+@click.option(
+    "output_path",
+    "-o",
+    "--output",
+    type=click.Path(resolve_path=False, path_type=Path),
+    help="Output directory",
+)
+@click.option(
+    "-c",
+    "--cache/--no-cache",
+    default=True,
+    help="Use caching",
+)
+@click.option(
+    "-i",
+    "--index/--full",
+    default=False,
+    help="Only build index.html",
+)
+@click.option(
+    "-g",
+    "--globals-only/--per-file",
+    default=False,
+    help="Only create metric graphs for all files",
+)
+@click.option(
+    "-m", "--metrics", help="Comma-separated metrics to build bulk reports with"
+)
+@click.option(
+    "-c",
+    "--changes/--all",
+    default=True,
+    help="Only show revisions that have changes",
+)
+@click.pass_context
+def bulk_build(
+    ctx: click.Context,
+    paths: tuple[Path, ...],
+    output_path: Optional[Path],
+    cache: bool,
+    index: bool,
+    globals_only: bool,
+    metrics: str,
+    changes: bool,
+) -> None:
+    """Build the bulk reports."""
+    if output_path is None:
+        output_path = Path("reports/")
+    output_path.mkdir(exist_ok=True, parents=True)
+    config = ctx.obj["CONFIG"]
+    files = paths if paths else get_all_tracked(config)
+    metrics_list = metrics.split(",") if metrics else list_all_metrics()
+    build_reports(
+        config,
+        metrics_list,
+        files,
+        output_path,
+        cached=cache,
+        index_only=index,
+        globals_only=globals_only,
+        changes_only=changes,
+    )
+
+
+@bulk.command("clean", help="Erase the bulk report files.")
+@click.argument(
+    "paths",
+    nargs=-1,
+    type=click.Path(resolve_path=False, path_type=Path),
+)
+@click.option(
+    "output_path",
+    "-o",
+    "--output",
+    type=click.Path(resolve_path=False, path_type=Path),
+    help="Output directory to clean",
+)
+@click.option("-m", "--metrics", help="Comma-separated metrics to clean bulk reports")
+@click.pass_context
+def bulk_clean(
+    ctx: click.Context,
+    paths: tuple[Path, ...],
+    output_path: Optional[Path],
+    metrics: str,
+) -> None:
+    """Erase the bulk report files."""
+    if output_path is None:
+        output_path = Path("reports/")
+    config = ctx.obj["CONFIG"]
+    files = paths if paths else get_all_tracked(config)
+    metrics_list = metrics.split(",") if metrics else list_all_metrics()
+    files_to_clean = build_reports(
+        config, metrics_list, files, output_path, index_only=True
+    )
+    for file in files_to_clean:
+        to_delete = Path(file)
+        to_delete.unlink(missing_ok=True)
 
 
 def handle_no_cache(context):
