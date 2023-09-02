@@ -156,6 +156,8 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
                     f'<span class="halstead_span {name}_val {nameval}">{val} </span>'
                 )
                 if nameval not in self.metric_styles:
+                    # If the style corresponding to this metric name and value
+                    # doesn't exist yet, create it and add to self.metric_styles
                     h = get_metric_color(val_, name=name)
                     self.metric_styles[nameval] = h
                 div_classes.append(f"{nameval}_code")
@@ -180,9 +182,11 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         else:  # Function/method metric values, maybe class too
             val = int(self.cyclomatic[i][1])
             name = "cc_function"
-            c = get_metric_color(val, name=name)
             cc_nameval = f"{name}{val}"
             if cc_nameval not in self.metric_styles:
+                # If the style corresponding to this metric name and value
+                # doesn't exist yet, create it and add to self.metric_styles
+                c = get_metric_color(val, name=name)
                 self.metric_styles[cc_nameval] = c
             div_classes.append(f"{cc_nameval}_code")
             cyclomatic = (
@@ -468,6 +472,7 @@ def annotate_revision(
             # TODO: Allow printing more metrics
             print_annotated_source(code, metrics[0], filename)
     if format.lower() == "html":
+        # Copy JS file and create CSS one.
         reports_dir = Path(output_dir)
         templates_dir = (Path(__file__).parents[1] / "templates").resolve()
         js_file = reports_dir / "annotated.js"
