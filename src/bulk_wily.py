@@ -6,8 +6,6 @@ Git. Generate an index page linking to HTML reports and graphs, if they exist.
 Doing so is faster and results in smaller files than naively running wily
 for each separate file.
 """
-from __future__ import annotations
-
 import pathlib
 from string import Template
 from time import time
@@ -29,7 +27,7 @@ logger.setLevel("INFO")
 start = time()
 
 
-def get_all_tracked(config: WilyConfig) -> list[pathlib.Path]:
+def get_all_tracked(config: WilyConfig) -> tuple[pathlib.Path, ...]:
     """
     Get all tracked files that ever existed in git repo.
 
@@ -38,14 +36,15 @@ def get_all_tracked(config: WilyConfig) -> list[pathlib.Path]:
     """
     # ToDo: check whether using graph's method is better
     repo = Repo(config.path)
-    path_log = repo.git.execute(
-        ["git", "log", "--name-only", "--pretty=format:", "--name-only"]
+    path_log = str(
+        repo.git.execute(
+            ["git", "log", "--name-only", "--pretty=format:", "--name-only"]
+        )
     )
-    assert isinstance(path_log, str)
     path_list = path_log.split("\n")
     paths = [name for name in path_list if name.endswith(".py")]
     paths = sorted(set(paths))
-    return [pathlib.Path(path) for path in paths]
+    return tuple(pathlib.Path(path) for path in paths)
 
 
 def list_metrics() -> list[str]:
@@ -84,7 +83,7 @@ def get_headers(metrics: list[str]) -> str:
 def build_reports(
     config: WilyConfig,
     metrics: list[str],
-    files: list[pathlib.Path],
+    files: tuple[pathlib.Path, ...],
     path: pathlib.Path,
     cached: bool = True,
     index_only: bool = False,
@@ -124,8 +123,8 @@ def build_reports(
         if not index_only:
             graph(
                 config,
-                "",
-                (metric,),
+                ("",),
+                metric,
                 output=metric_filename,
                 changes=changes_only,
                 text=False,
@@ -168,8 +167,8 @@ def build_reports(
             if not index_only and not globals_only:
                 graph(
                     config,
-                    filename,
-                    (metric,),
+                    (filename,),
+                    metric,
                     output=metric_filename,
                     changes=changes_only,
                     text=False,
@@ -317,7 +316,7 @@ def main() -> None:
 @click.pass_context
 def build(
     ctx: click.Context,
-    paths: tuple[pathlib.Path],
+    paths: tuple[pathlib.Path, ...],
     output_path: Optional[pathlib.Path],
     cache: bool,
     index: bool,
@@ -331,10 +330,10 @@ def build(
     output_path.mkdir(exist_ok=True, parents=True)
     config = load_config(DEFAULT_CONFIG_PATH)
     files = paths if paths else get_all_tracked(config)
-    metrics = metrics.split(",") if metrics else list_metrics()
+    metrics_list = metrics.split(",") if metrics else list_metrics()
     build_reports(
         config,
-        metrics,
+        metrics_list,
         files,
         output_path,
         cached=cache,
@@ -362,7 +361,7 @@ def build(
 @click.pass_context
 def clean(
     ctx: click.Context,
-    paths: tuple[pathlib.Path],
+    paths: tuple[pathlib.Path, ...],
     output_path: Optional[pathlib.Path],
     metrics: str,
 ) -> None:
@@ -371,8 +370,10 @@ def clean(
         output_path = pathlib.Path("reports/")
     config = load_config(DEFAULT_CONFIG_PATH)
     files = paths if paths else get_all_tracked(config)
-    metrics = metrics.split(",") if metrics else list_metrics()
-    files_to_clean = build_reports(config, metrics, files, output_path, index_only=True)
+    metrics_list = metrics.split(",") if metrics else list_metrics()
+    files_to_clean = build_reports(
+        config, metrics_list, files, output_path, index_only=True
+    )
     for file in files_to_clean:
         to_delete = pathlib.Path(file)
         to_delete.unlink(missing_ok=True)
