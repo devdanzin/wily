@@ -29,6 +29,7 @@ class CyclomaticComplexityOperator(BaseOperator):
         "order": SCORE,
         "include_ipynb": True,
         "ipynb_cells": True,
+        "class_names": True,
     }
 
     metrics = (

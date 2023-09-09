@@ -39,6 +39,7 @@ class MaintainabilityIndexOperator(BaseOperator):
         "sort": False,
         "include_ipynb": True,
         "ipynb_cells": True,
+        "class_names": True,
     }
 
     metrics = (

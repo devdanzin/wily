@@ -90,6 +90,7 @@ class HalsteadOperator(BaseOperator):
         "by_function": True,
         "include_ipynb": True,
         "ipynb_cells": True,
+        "class_names": True,
     }
 
     metrics = (

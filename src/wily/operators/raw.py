@@ -24,6 +24,7 @@ class RawMetricsOperator(BaseOperator):
         "summary": False,
         "include_ipynb": True,
         "ipynb_cells": True,
+        "class_names": True,
     }
     metrics = (
         Metric("loc", _("Lines of Code"), int, MetricType.Informational, sum),
