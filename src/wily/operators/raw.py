@@ -80,7 +80,8 @@ class RawMetricsOperator(BaseOperator):
                     function, report = instance
                     if function == "Module":
                         results[filename]["total"] = report
-                    results[filename]["detailed"][function] = report
+                    else:
+                        results[filename]["detailed"][function] = filter_report(report)
                 else:
                     if isinstance(instance, str) and instance == "error":
                         logger.debug(
@@ -101,3 +102,17 @@ class RawMetricsOperator(BaseOperator):
             "blank": report.blank,
             "single_comments": report.single_comments,
         }
+
+
+def filter_report(report: dict) -> dict:
+    return {
+        "lineno": report["lineno"],
+        "endline": report["endline"],
+        "loc": report["loc"],
+        "lloc": report["lloc"],
+        "sloc": report["sloc"],
+        "comments": report["comments"],
+        "multi": report["multi"],
+        "blank": report["blank"],
+        "single_comments": report["single_comments"],
+    }
