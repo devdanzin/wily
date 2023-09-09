@@ -3,8 +3,11 @@ Raw statistics operator.
 
 Includes insights like lines-of-code, number of comments. Does not measure complexity.
 """
+from typing import Union
+
 import radon.cli.harvest as harvesters
 from radon.cli import Config
+from radon.raw_visitor import RawClassMetrics, RawFunctionMetrics
 
 from wily import logger
 from wily.lang import _
@@ -67,6 +70,35 @@ class RawMetricsOperator(BaseOperator):
         """
         logger.debug("Running raw harvester")
         results = {}
-        for filename, metrics in dict(self.harvester.results).items():
-            results[filename] = {"total": metrics}
+        for filename, details in dict(self.harvester.results).items():
+            results[filename] = {"detailed": {}, "total": {}}
+            print(details)
+            for instance in details:
+                if isinstance(instance, list):
+                    for item in instance:
+                        function, report = item
+                        results[filename]["detailed"][function] = self._report_to_dict(
+                            report
+                        )
+                else:
+                    if isinstance(instance, str) and instance == "error":
+                        logger.debug(
+                            f"Failed to run Raw harvester on {filename} : {details['error']}"
+                        )
+                        continue
+                    assert isinstance(instance, (RawFunctionMetrics, RawClassMetrics))
+                    results[filename]["total"] = self._report_to_dict(instance)
         return results
+
+    def _report_to_dict(self, report: Union[RawFunctionMetrics, RawClassMetrics]) -> dict:
+        return {
+            "lineno": report.lineno,
+            "endline": report.endline,
+            "loc": report.loc,
+            "lloc": report.lloc,
+            "sloc": report.sloc,
+            "comments": report.comments,
+            "multi": report.multi,
+            "blank": report.blank,
+            "single_comments": report.single_comments,
+        }
