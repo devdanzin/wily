@@ -73,8 +73,6 @@ class RawMetricsOperator(BaseOperator):
         results = {}
         for filename, details in dict(self.harvester.results).items():
             results[filename] = {"detailed": {}, "total": {}}
-            print(filename)
-            print(details)
             for instance in details:
                 if isinstance(instance, tuple):
                     function, report = instance
@@ -106,6 +104,7 @@ class RawMetricsOperator(BaseOperator):
 
 def filter_report(report: dict) -> dict:
     return {
+        "is_class": "methods" in report,
         "lineno": report["lineno"],
         "endline": report["endline"],
         "loc": report["loc"],
