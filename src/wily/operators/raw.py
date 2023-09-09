@@ -73,22 +73,20 @@ class RawMetricsOperator(BaseOperator):
         results = {}
         for filename, details in dict(self.harvester.results).items():
             results[filename] = {"detailed": {}, "total": {}}
+            print(filename)
             print(details)
             for instance in details:
-                if isinstance(instance, list):
-                    for item in instance:
-                        function, report = item
-                        results[filename]["detailed"][function] = self._report_to_dict(
-                            report
-                        )
+                if isinstance(instance, tuple):
+                    function, report = instance
+                    if function == "Module":
+                        results[filename]["total"] = report
+                    results[filename]["detailed"][function] = report
                 else:
                     if isinstance(instance, str) and instance == "error":
                         logger.debug(
                             f"Failed to run Raw harvester on {filename} : {details['error']}"
                         )
                         continue
-                    assert isinstance(instance, (RawFunctionMetrics, RawClassMetrics))
-                    results[filename]["total"] = self._report_to_dict(instance)
         return results
 
     def _report_to_dict(self, report: Union[RawFunctionMetrics, RawClassMetrics]) -> dict:
