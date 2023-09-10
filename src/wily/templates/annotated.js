@@ -1,36 +1,59 @@
 "use strict";
 
-let disp = false;
+let disp = "cyclomatic";
 let first_toggle = true;
 let last_shown_halstead = "effort";
+let last_shown_raw = "loc";
 
 /**
  * Toggles visibility of metric spans and buttons, displaying last shown metric.
  */
 function toggle() {
+    if (disp === "cyclomatic") {
+        disp = "halstead";
+    } else if (disp === "halstead") {
+        disp = "raw";
+    } else if (disp === "raw") {
+        disp = "cyclomatic";
+    }
+
+    let ra_divs = document.getElementsByClassName("raw");
+    for (let ri in ra_divs) {
+        if (ra_divs[ri].style) {
+            ra_divs[ri].style.display = disp === "raw" ? "inline" : "none";
+        }
+    }
+    let ra_spans = document.getElementsByClassName("raw_span");
+    for (let ri in ra_spans) {
+        if (ra_spans[ri].style) {
+            ra_spans[ri].style.display = disp === "raw" ? "inline" : "none";
+        }
+    }
     let cy_divs = document.getElementsByClassName("cyclomatic");
     for (let ci in cy_divs) {
         if (cy_divs[ci].style) {
-            cy_divs[ci].style.display = disp ? "block" : "none";
+            cy_divs[ci].style.display =
+                disp === "cyclomatic" ? "block" : "none";
         }
     }
     let cy_spans = document.getElementsByClassName("cyclomatic_span");
     for (let ci in cy_spans) {
         if (cy_spans[ci].style) {
-            cy_spans[ci].style.display = disp ? "inline" : "none";
+            cy_spans[ci].style.display =
+                disp === "cyclomatic" ? "inline" : "none";
         }
     }
     let ha_divs = document.getElementsByClassName("halstead");
     for (let hi in ha_divs) {
         if (ha_divs[hi].style)
-            ha_divs[hi].style.display = disp ? "none" : "inline";
+            ha_divs[hi].style.display = disp === "halstead" ? "inline" : "none";
     }
     let ha_spans = document.getElementsByClassName("halstead_span");
     for (let hi in ha_spans) {
         if (ha_spans[hi].style)
-            ha_spans[hi].style.display = disp ? "none" : "inline";
+            ha_spans[hi].style.display =
+                disp === "halstead" ? "inline" : "none";
     }
-    disp = !disp;
 
     // Pick a Halstead metric the first time we toggle to them
     if (first_toggle) {
@@ -39,10 +62,12 @@ function toggle() {
     }
 
     // Pick either the CC metric or the last Halstead metric shown
-    if (!disp) {
+    if (disp === "cyclomatic") {
         select_metric("cc_function", false);
-    } else {
+    } else if (disp === "halstead") {
         select_metric(last_shown_halstead, false);
+    } else if (disp === "raw") {
+        select_metric(last_shown_raw, false);
     }
 }
 
@@ -86,9 +111,11 @@ function select_metric(name, show_all) {
     if (show_all) {
         name = last_shown_halstead;
     }
-    // Update last shown Halstead metric
-    if (name !== "cc_function") {
+    // Update last shown metric
+    if (halstead_names.includes(name)) {
         last_shown_halstead = name;
+    } else if (raw_names.includes(name)) {
+        last_shown_raw = name;
     }
     display_or_hide_metrics(name, show_all);
     let all_classes = get_div_classes();
@@ -96,8 +123,9 @@ function select_metric(name, show_all) {
     update_buttons(name);
 }
 
-let metric_names = [
-    "cc_function",
+let cc_names = ["cc_function"];
+
+let halstead_names = [
     "h1",
     "h2",
     "N1",
@@ -108,6 +136,18 @@ let metric_names = [
     "effort",
     "difficulty",
 ];
+
+let raw_names = [
+    "loc",
+    "lloc",
+    "sloc",
+    "comments",
+    "multi",
+    "blank",
+    "single_comments",
+];
+
+let metric_names = cc_names.concat(halstead_names, raw_names);
 
 /**
  * Displays or hides metric spans.
