@@ -55,6 +55,15 @@ def get_metric_color(val: float, maximum: int = 50, name: Optional[str] = None) 
 class AnnotatedHTMLFormatter(HtmlFormatter):
     """Annotate and color source code with metric values as HTML."""
 
+    raw_names = (
+        "loc",
+        "lloc",
+        "sloc",
+        "comments",
+        "multi",
+        "blank",
+        "single_comments",
+    )
     halstead_names = (
         "h1",
         "h2",
@@ -66,7 +75,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         "effort",
         "difficulty",
     )
-    metric_names = halstead_names + ("cc_function",)
+    metric_names = raw_names + halstead_names + ("cc_function",)
 
     def __init__(
         self, metrics: list[dict[int, tuple[str, str]]], **options: Any
@@ -75,6 +84,16 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
         super().__init__(**options)
         self.cyclomatic = metrics[0]
         self.halstead = metrics[1]
+        self.raw = metrics[2]
+
+        raw_spans: list[str] = []
+        # These should match the column widths of Raw metrics in map_raw_lines
+        empty_raw_vals = ("----",) * 7
+        for name, val in zip(self.raw_names, empty_raw_vals):
+            raw_spans.append(
+                f'<span class="raw_span {name}_val {name}none">{val} </span>'
+            )
+        self.empty_raw_spans = "".join(raw_spans)
 
         halstead_spans: list[str] = []
         # These should match the column widths of Halstead metrics in map_halstead_lines
@@ -124,17 +143,42 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
             if i in self.cyclomatic:  # Line has metric info available
                 cyclomatic = self.get_cyclomatic_content(div_classes, i)
                 halstead = self.get_halstead_content(div_classes, i)
+                raw = self.get_raw_content(div_classes, i)
                 yield 1, (
                     f'<div class="{" ".join(div_classes)}">'
+                    f"{raw}"
                     f"{cyclomatic}"
                     f"{halstead}| {value}</div>"
                 )
             else:  # Line is after last known line, add empty metric spans
                 yield 1, (
                     f'<div class="{" ".join(div_classes)}" style="background-color: #ffffff; width: 100%;">'
+                    f"{self.empty_raw_spans}"
                     f"{self.empty_cyclomatic_span}"
                     f"{self.empty_halstead_spans}| {value}</div>"
                 )
+
+    def get_raw_content(self, div_classes: list[str], i: int) -> str:
+        """
+        Build spans for Raw metrics.
+
+        :param div_classes: A list containing CSS class names.
+        :param i: Index into self.raw, corresponding to a source code line.
+        :return: A string containing styled spans with Raw metric values.
+        """
+        if i not in self.raw or self.raw[i][1][1] == "-":
+            # Line is either not known or has empty metric value ("-").
+            raw = self.empty_raw_spans
+        else:
+            spans = []
+            for name, val in zip(self.raw_names, self.raw[i]):
+                val_ = int(float(val))
+                nameval = f"{name}{val_}"
+                spans.append(
+                    f'<span class="raw_span {name}_val {nameval}">{val} </span>'
+                )
+            raw = "".join(spans)
+        return raw
 
     def get_halstead_content(self, div_classes: list[str], i: int) -> str:
         """
@@ -279,6 +323,32 @@ def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
                 f"{detail['volume']:07.2f}",
                 f"{detail['effort']:07.2f}",
                 f"{detail['difficulty']:07.2f}",
+            )
+    return lines
+
+
+def map_raw_lines(details: dict) -> dict[int, tuple[str, ...]]:
+    """
+    Map Raw metric values to lines, for functions.
+
+    :param details: A dict with detailed metric information, with line numbers.
+    :return: A dict mapping line numbers to Raw values.
+    """
+    last = last_line(details)
+    lines = {i: ("----",) * 7 for i in range(last + 1)}
+    for _name, detail in details.items():
+        # Skip classes, modules and any entries without line numbers
+        if "lineno" not in detail or detail["lineno"] is None or "is_class" not in detail or detail["is_class"]:
+            continue
+        for line in range(detail["lineno"] - 1, detail["endline"]):
+            lines[line] = (
+                f"{detail['loc']:04d}",
+                f"{detail['lloc']:04d}",
+                f"{detail['sloc']:04d}",
+                f"{detail['comments']:04d}",
+                f"{detail['multi']:04d}",
+                f"{detail['blank']:04d}",
+                f"{detail['single_comments']:04d}",
             )
     return lines
 
@@ -429,6 +499,7 @@ def annotate_revision(
     as_dict = get(config, "git", rev_key)
     cyclomatic = as_dict["operator_data"]["cyclomatic"]
     halstead = as_dict["operator_data"]["halstead"]
+    raw = as_dict["operator_data"]["raw"]
     if path:
         if path not in cyclomatic:
             logger.error(f"Data for file {path} not found on revision {rev_key}.")
@@ -462,6 +533,7 @@ def annotate_revision(
         metrics = [
             map_cyclomatic_lines(cyclomatic[filename]["detailed"]),
             map_halstead_lines(halstead[filename]["detailed"]),
+            map_raw_lines(raw[filename]["detailed"]),
         ]
         if format.lower() == "html":
             style = generate_annotated_html(
