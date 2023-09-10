@@ -88,7 +88,9 @@ class RawMetricsOperator(BaseOperator):
                         continue
         return results
 
-    def _report_to_dict(self, report: Union[RawFunctionMetrics, RawClassMetrics]) -> dict:
+    def _report_to_dict(
+        self, report: Union[RawFunctionMetrics, RawClassMetrics]
+    ) -> dict:
         return {
             "lineno": report.lineno,
             "endline": report.endline,

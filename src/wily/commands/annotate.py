@@ -338,7 +338,12 @@ def map_raw_lines(details: dict) -> dict[int, tuple[str, ...]]:
     lines = {i: ("----",) * 7 for i in range(last + 1)}
     for _name, detail in details.items():
         # Skip classes, modules and any entries without line numbers
-        if "lineno" not in detail or detail["lineno"] is None or "is_class" not in detail or detail["is_class"]:
+        if (
+            "lineno" not in detail
+            or detail["lineno"] is None
+            or "is_class" not in detail
+            or detail["is_class"]
+        ):
             continue
         for line in range(detail["lineno"] - 1, detail["endline"]):
             lines[line] = (
@@ -536,9 +541,7 @@ def annotate_revision(
             map_raw_lines(raw[filename]["detailed"]),
         ]
         if format.lower() == "html":
-            style = generate_annotated_html(
-                code, filename, metrics, output_dir
-            )
+            style = generate_annotated_html(code, filename, metrics, output_dir)
             styles.update(style)
         elif format.lower() == "console":
             # TODO: Allow printing more metrics
