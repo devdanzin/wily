@@ -335,7 +335,7 @@ def map_raw_lines(details: dict) -> dict[int, tuple[str, ...]]:
     :return: A dict mapping line numbers to Raw values.
     """
     last = last_line(details)
-    lines = {i: ("----",) * 7 for i in range(last + 1)}
+    lines: dict[int, tuple[str, ...]] = {i: ("----",) * 7 for i in range(last + 1)}
     for _name, detail in details.items():
         # Skip classes, modules and any entries without line numbers
         if (
