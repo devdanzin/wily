@@ -109,7 +109,11 @@ function metric_style_to_code_style(all_classes, name) {
 function select_metric(name, show_all) {
     // When displaying all Halstead metrics, use the last shown one to color code.
     if (show_all) {
-        name = last_shown_halstead;
+        if (halstead_names.includes(name)) {
+            name = last_shown_halstead;
+        } else if (raw_names.includes(name)) {
+            name = last_shown_raw;
+        }
     }
     // Update last shown metric
     if (halstead_names.includes(name)) {
@@ -162,11 +166,21 @@ function display_or_hide_metrics(name, show_all) {
         for (let si in spans_to_display_or_hide) {
             if (
                 spans_to_display_or_hide[si].style &&
-                metric_names[mni] !== "cc_function"
-            )
+                disp === "halstead" &&
+                halstead_names.includes(metric_names[mni])
+            ) {
                 spans_to_display_or_hide[si].style.display = show_all
                     ? "inline"
                     : "none";
+            } else if (
+                spans_to_display_or_hide[si].style &&
+                disp === "raw" &&
+                raw_names.includes(metric_names[mni])
+            ) {
+                spans_to_display_or_hide[si].style.display = show_all
+                    ? "inline"
+                    : "none";
+            }
         }
     }
     let spans_to_display = document.getElementsByClassName(name + "_val");
