@@ -79,7 +79,9 @@ class RawMetricsOperator(BaseOperator):
                     if name == "__ModuleMetrics__":
                         results[filename]["total"] = self._report_to_dict(instance)
                     else:
-                        results[filename]["detailed"][name] = self._report_to_dict(instance)
+                        results[filename]["detailed"][name] = self._report_to_dict(
+                            instance
+                        )
                 else:
                     if isinstance(instance, str) and instance == "error":
                         logger.debug(
@@ -88,10 +90,10 @@ class RawMetricsOperator(BaseOperator):
                         continue
         return results
 
-    def _report_to_dict(self, report: Union[RawFunctionMetrics, RawClassMetrics]) -> dict:
-        return {
-            "lineno": report.lineno,
-            "endline": report.endline,
+    def _report_to_dict(
+        self, report: Union[Module, RawFunctionMetrics, RawClassMetrics]
+    ) -> dict:
+        raw_metrics = {
             "loc": report.loc,
             "lloc": report.lloc,
             "sloc": report.sloc,
@@ -100,6 +102,9 @@ class RawMetricsOperator(BaseOperator):
             "blank": report.blank,
             "single_comments": report.single_comments,
         }
+        if hasattr(report, "lineno"):
+            raw_metrics.update({"lineno": report.lineno, "endline": report.endline})
+        return raw_metrics
 
 
 def filter_report(report: dict) -> dict:
