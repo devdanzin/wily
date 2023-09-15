@@ -7,6 +7,7 @@ from typing import Union
 
 import radon.cli.harvest as harvesters
 from radon.cli import Config
+from radon.raw import Module
 from radon.raw_visitor import RawClassMetrics, RawFunctionMetrics
 
 from wily import logger
@@ -73,13 +74,12 @@ class RawMetricsOperator(BaseOperator):
         results = {}
         for filename, details in dict(self.harvester.results).items():
             results[filename] = {"detailed": {}, "total": {}}
-            for instance in details:
-                if isinstance(instance, tuple):
-                    function, report = instance
-                    if function == "Module":
-                        results[filename]["total"] = report
+            for name, instance in details:
+                if isinstance(instance, (Module, RawClassMetrics, RawFunctionMetrics)):
+                    if name == "__ModuleMetrics__":
+                        results[filename]["total"] = self._report_to_dict(instance)
                     else:
-                        results[filename]["detailed"][function] = filter_report(report)
+                        results[filename]["detailed"][name] = self._report_to_dict(instance)
                 else:
                     if isinstance(instance, str) and instance == "error":
                         logger.debug(
