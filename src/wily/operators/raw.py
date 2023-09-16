@@ -76,12 +76,11 @@ class RawMetricsOperator(BaseOperator):
             results[filename] = {"detailed": {}, "total": {}}
             for name, instance in details:
                 if isinstance(instance, (Module, RawClassMetrics, RawFunctionMetrics)):
+                    report_as_dict = self._report_to_dict(instance)
                     if name == "__ModuleMetrics__":
-                        results[filename]["total"] = self._report_to_dict(instance)
+                        results[filename]["total"] = report_as_dict
                     else:
-                        results[filename]["detailed"][name] = self._report_to_dict(
-                            instance
-                        )
+                        results[filename]["detailed"][name] = report_as_dict
                 else:
                     if isinstance(instance, str) and instance == "error":
                         logger.debug(
