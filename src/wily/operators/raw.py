@@ -102,6 +102,7 @@ class RawMetricsOperator(BaseOperator):
             "single_comments": report.single_comments,
         }
         if hasattr(report, "lineno"):
+            assert isinstance(report, (RawClassMetrics, RawFunctionMetrics))
             raw_metrics.update(
                 {
                     "is_class": hasattr(report, "methods"),
