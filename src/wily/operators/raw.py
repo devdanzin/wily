@@ -102,20 +102,11 @@ class RawMetricsOperator(BaseOperator):
             "single_comments": report.single_comments,
         }
         if hasattr(report, "lineno"):
-            raw_metrics.update({"lineno": report.lineno, "endline": report.endline})
+            raw_metrics.update(
+                {
+                    "is_class": hasattr(report, "methods"),
+                    "lineno": report.lineno,
+                    "endline": report.endline,
+                }
+            )
         return raw_metrics
-
-
-def filter_report(report: dict) -> dict:
-    return {
-        "is_class": "methods" in report,
-        "lineno": report["lineno"],
-        "endline": report["endline"],
-        "loc": report["loc"],
-        "lloc": report["lloc"],
-        "sloc": report["sloc"],
-        "comments": report["comments"],
-        "multi": report["multi"],
-        "blank": report["blank"],
-        "single_comments": report["single_comments"],
-    }
