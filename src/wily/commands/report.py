@@ -56,7 +56,7 @@ def report(
     """
     metrics = sorted(metrics)
     logger.debug("Running report command")
-    logger.info(f"-----------History for {metrics}------------")
+    logger.info("-----------History for %s------------", metrics)
 
     data = []
     metric_metas = []
@@ -98,7 +98,10 @@ def report(
             for meta in metric_metas:
                 try:
                     logger.debug(
-                        f"Fetching metric {meta['key']} for {meta['operator']} in {path}"
+                        "Fetching metric %s for %s in %s",
+                        meta["key"],
+                        meta["operator"],
+                        path,
                     )
                     val = rev.get(
                         config, archiver, meta["operator"], path, meta["key"], cached
@@ -157,7 +160,7 @@ def report(
                         )
                     )
     if not data:
-        logger.error(f"No data found for {path} with changes={changes_only}.")
+        logger.error("No data found for %s with changes=%s.", path, changes_only)
         return
 
     descriptions = [meta["title"] for meta in metric_metas]
@@ -203,7 +206,7 @@ def report(
         except FileExistsError:
             pass
 
-        logger.info(f"wily report was saved to {report_path}")
+        logger.info("wily report was saved to %s", report_path)
     else:
         maxcolwidth = get_maxcolwidth(headers, wrap)
         print(
