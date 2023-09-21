@@ -32,7 +32,7 @@ def run_operator(
     :param targets: Files/paths to scan
     """
     instance = operator.operator_cls(config, targets)
-    logger.debug(f"Running {operator.name} operator on {revision}")
+    logger.debug("Running %s operator on %s", operator.name, revision)
 
     data = instance.run(revision, config)
 
@@ -55,7 +55,7 @@ def build(config: WilyConfig, archiver: Archiver, operators: List[Operator]) -> 
     :param operators: The list of operators to execute
     """
     try:
-        logger.debug(f"Using {archiver.name} archiver module")
+        logger.debug("Using %s archiver module", archiver.name)
         archiver_instance = archiver.archiver_cls(config)
         revisions = archiver_instance.revisions(config.path, config.max_revisions)
     except InvalidGitRepositoryError:
@@ -65,7 +65,7 @@ def build(config: WilyConfig, archiver: Archiver, operators: List[Operator]) -> 
         revisions = archiver_instance.revisions(config.path, config.max_revisions)
     except Exception as e:
         message = getattr(e, "message", f"{type(e)} - {e}")
-        logger.error(f"Failed to setup archiver: '{message}'")
+        logger.error("Failed to setup archiver: '%s'", message)
         exit(1)
 
     state = State(config, archiver=archiver_instance)
@@ -78,11 +78,14 @@ def build(config: WilyConfig, archiver: Archiver, operators: List[Operator]) -> 
     revisions = [revision for revision in revisions if revision not in index][::-1]
 
     logger.info(
-        f"Found {len(revisions)} revisions from '{archiver_instance.name}' archiver in '{config.path}'."
+        "Found %s revisions from '%s' archiver in '%s'.",
+        len(revisions),
+        archiver_instance.name,
+        config.path,
     )
 
     _op_desc = ",".join([operator.name for operator in operators])
-    logger.info(f"Running operators - {_op_desc}")
+    logger.info("Running operators - %s", _op_desc)
 
     bar = Bar("Processing", max=len(revisions) * len(operators))
     state.operators = operators
@@ -120,7 +123,9 @@ def build(config: WilyConfig, archiver: Archiver, operators: List[Operator]) -> 
                         and len(data[i][1]) == 0
                     ):
                         logger.warning(
-                            f"In revision {revision.key}, for operator {operators[i].name}: No data collected"
+                            "In revision %s, for operator %s: No data collected",
+                            revision.key,
+                            operators[i].name,
                         )
 
                 # Map the data back into a dictionary
@@ -134,9 +139,10 @@ def build(config: WilyConfig, archiver: Archiver, operators: List[Operator]) -> 
 
                     # Copy the ir from any unchanged files from the prev revision
                     if not seed:
-                        missing_indices = {
-                            str(pathlib.Path(fn)) for fn in revision.tracked_files
-                        } - indices
+                        # File names in result are platform dependent, so we convert
+                        # to Path and back to str.
+                        files = {str(pathlib.Path(f)) for f in revision.tracked_files}
+                        missing_indices = files - indices
                         # TODO: Check existence of file path.
                         for missing in missing_indices:
                             # Don't copy aggregate keys as their values may have changed
@@ -157,11 +163,14 @@ def build(config: WilyConfig, archiver: Archiver, operators: List[Operator]) -> 
                         for deleted in revision.deleted_files:
                             result.pop(deleted, None)
 
+                    # Add empty path for storing total aggregates
+                    dirs = [""]
+                    # Directory names in result are platform dependent, so we convert
+                    # to Path and back to str.
+                    dirs += [str(pathlib.Path(d)) for d in revision.tracked_dirs if d]
                     # Aggregate metrics across all root paths using the aggregate function in the metric
-                    # Note assumption is that nested dirs are listed after parent..
-                    for root in sorted(
-                        {str(pathlib.Path(dn)) for dn in revision.tracked_dirs}
-                    ):
+                    # Note assumption is that nested dirs are listed after parent, hence sorting.
+                    for root in sorted(dirs):
                         # find all matching entries recursively
                         aggregates = [
                             path for path in result.keys() if path.startswith(root)
@@ -193,7 +202,7 @@ def build(config: WilyConfig, archiver: Archiver, operators: List[Operator]) -> 
         index.save()
         bar.finish()
     except Exception as e:
-        logger.error(f"Failed to build cache: {type(e)}: '{e}'")
+        logger.error("Failed to build cache: %s: '%s'", type(e), e)
         raise e
     finally:
         # Reset the archive after every run back to the head of the branch
