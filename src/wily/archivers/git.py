@@ -200,16 +200,13 @@ class GitArchiver(BaseArchiver):
         """
         Check whether file contents match between revision and working directory.
 
-        :param filename:
-        :param key:
-        :return:
+        :param filename: The name of the file to check.
+        :param key: The revision to which compare file contents.
+        :return: Whether the working directory copy of the file is outdated.
         """
-        outdated = False
         commit = self.repo.rev_parse(key)
         diff = commit.diff(None, filename)
-        if diff and diff[0].change_type in ("M",):
-            outdated = True
-        return outdated
+        return bool(diff and diff[0].change_type == "M")
 
     def get_file_contents(self, rev_key: str, filename: str) -> str:
         """
@@ -225,5 +222,4 @@ class GitArchiver(BaseArchiver):
             as_process=False,
             stdout_as_string=True,
         )
-        code = str(contents)
-        return code
+        return str(contents)
