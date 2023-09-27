@@ -11,6 +11,7 @@ import operator as op
 import os
 from pathlib import Path
 from sys import exit
+from typing import Optional
 
 import radon.cli.harvest
 import tabulate
@@ -25,7 +26,7 @@ from wily.state import State
 
 def rank(
     config: WilyConfig,
-    path: str,
+    path: Optional[str],
     metric: str,
     revision_index: str,
     limit: int,
@@ -51,8 +52,8 @@ def rank(
 
     data = []
 
-    operator, resolved_metric = resolve_metric_as_tuple(metric)
-    operator = operator.name
+    _operator, resolved_metric = resolve_metric_as_tuple(metric)
+    operator = _operator.name
 
     state = State(config)
 
@@ -127,7 +128,7 @@ def rank(
 
     # Tack on the total row at the end
     total = resolved_metric.aggregate(rev[1] for rev in data)
-    data.append(["Total", total])
+    data.append(("Total", total))
 
     headers = ("File", resolved_metric.description)
     maxcolwidth = get_maxcolwidth(headers, wrap)

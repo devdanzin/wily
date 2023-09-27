@@ -3,7 +3,7 @@ Raw statistics operator.
 
 Includes insights like lines-of-code, number of comments. Does not measure complexity.
 """
-from typing import Union
+from typing import Any, Dict, Iterable, Union
 
 import radon.cli.harvest as harvesters
 from radon.cli import Config
@@ -11,6 +11,7 @@ from radon.raw import Module
 from radon.raw_visitor import RawClassMetrics, RawFunctionMetrics
 
 from wily import logger
+from wily.config.types import WilyConfig
 from wily.lang import _
 from wily.operators import BaseOperator, Metric, MetricType
 
@@ -45,12 +46,12 @@ class RawMetricsOperator(BaseOperator):
     )
     default_metric_index = 0  # LOC
 
-    def __init__(self, config, targets):
+    def __init__(self, config: WilyConfig, targets: Iterable[str]):
         """
         Instantiate a new raw operator.
 
         :param config: The wily configuration.
-        :type  config: :class:`WilyConfig`
+        :param targets: An iterable of paths from which to harvest metrics.
         """
         # TODO: Use config from wily.cfg for harvester
         logger.debug("Using %s with %s for Raw metrics", targets, self.defaults)
@@ -58,18 +59,13 @@ class RawMetricsOperator(BaseOperator):
             targets, config=Config(**self.defaults)
         )
 
-    def run(self, module, options):
+    def run(self, module: str, options: Dict[str, Any]) -> Dict[Any, Any]:
         """
         Run the operator.
 
         :param module: The target module path.
-        :type  module: ``str``
-
         :param options: Any runtime options.
-        :type  options: ``dict``
-
         :return: The operator results.
-        :rtype: ``dict``
         """
         logger.debug("Running raw harvester")
         results = {}
