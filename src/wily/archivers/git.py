@@ -4,6 +4,7 @@ Git Archiver.
 Implementation of the archiver API for the gitpython module.
 """
 import logging
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import git.exc
@@ -205,7 +206,8 @@ class GitArchiver(BaseArchiver):
         :return: Whether the working directory copy of the file is outdated.
         """
         commit = self.repo.rev_parse(key)
-        diff = commit.diff(None, filename)
+        filepath = str(Path(self.repo.working_dir) / filename)
+        diff = commit.diff(None, filepath)
         return bool(diff and diff[0].change_type == "M")
 
     def get_file_contents(self, rev_key: str, filename: str) -> str:

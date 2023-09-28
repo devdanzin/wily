@@ -67,12 +67,11 @@ def test_git_end_to_end(tmpdir):
 
     # Test that outdated file contents are detected
     archiver2 = GitArchiver(config)
-    filename = str(tmppath / "test.py")
-    outdated = archiver2.is_data_outdated(filename, "HEAD")
+    outdated = archiver2.is_data_outdated("test.py", "HEAD")
     assert not outdated
-    with open(filename, "w") as file2:
+    with open(tmppath / "test.py", "w") as file2:
         file2.write("print(2)")
-    outdated = archiver2.is_data_outdated(filename, "HEAD")
+    outdated = archiver2.is_data_outdated("test.py", "HEAD")
     assert outdated
 
     # Test that file contents can be fetched for different revisions
