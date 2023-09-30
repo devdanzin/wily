@@ -532,7 +532,7 @@ def annotate_revision(
         outdated = archiver.is_data_outdated(filename, rev_key)
         path_ = Path(filename)
         if path_.exists() and not outdated:
-            code = path_.read_text()
+            code = path_.read_text(encoding="utf-8", errors="xmlcharrefreplace")
         else:
             code = archiver.get_file_contents(rev_key, filename)
         metrics = [
