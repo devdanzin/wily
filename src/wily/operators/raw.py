@@ -71,6 +71,11 @@ class RawMetricsOperator(BaseOperator):
         results = {}
         for filename, details in dict(self.harvester.results).items():
             results[filename] = {"detailed": {}, "total": {}}
+            if isinstance(details, dict) and "error" in details:
+                logger.debug(
+                    f"Failed to run Raw harvester on {filename} : {details['error']}"
+                )
+                continue
             for name, instance in details:
                 if isinstance(instance, (Module, RawClassMetrics, RawFunctionMetrics)):
                     report_as_dict = self._report_to_dict(instance)
