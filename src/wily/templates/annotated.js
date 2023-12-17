@@ -17,48 +17,12 @@ function toggle() {
         disp = "cyclomatic";
     }
 
-    let ra_divs = document.getElementsByClassName("raw");
-    for (let ri in ra_divs) {
-        if (ra_divs[ri].style) {
-            ra_divs[ri].style.display = "raw" === disp ? "inline" : "none";
-        }
-    }
-    let ra_spans = document.getElementsByClassName("raw_span");
-    for (let ri in ra_spans) {
-        if (ra_spans[ri].style) {
-            ra_spans[ri].style.display = "raw" === disp ? "inline" : "none";
-        }
-    }
-    let cy_divs = document.getElementsByClassName("cyclomatic");
-    for (let ci in cy_divs) {
-        if (cy_divs[ci].style) {
-            cy_divs[ci].style.display =
-                "cyclomatic" === disp ? "block" : "none";
-        }
-    }
-    let cy_spans = document.getElementsByClassName("cyclomatic_span");
-    for (let ci in cy_spans) {
-        if (cy_spans[ci].style) {
-            cy_spans[ci].style.display =
-                "cyclomatic" === disp ? "inline" : "none";
-        }
-    }
-    let ha_divs = document.getElementsByClassName("halstead");
-    for (let hi in ha_divs) {
-        if (ha_divs[hi].style)
-            {
-              ha_divs[hi].style.display =
-                "halstead" === disp ? "inline" : "none";
-            }
-    }
-    let ha_spans = document.getElementsByClassName("halstead_span");
-    for (let hi in ha_spans) {
-        if (ha_spans[hi].style)
-            {
-              ha_spans[hi].style.display =
-                "halstead" === disp ? "inline" : "none";
-            }
-    }
+    toggle_elements("raw", false);
+    toggle_elements("raw_span", false);
+    toggle_elements("cyclomatic", true);
+    toggle_elements("cyclomatic_span", false);
+    toggle_elements("halstead", false);
+    toggle_elements("halstead_span", false);
 
     // Pick a Halstead metric the first time we toggle to them
     if (first_toggle) {
@@ -73,6 +37,27 @@ function toggle() {
         select_metric(last_shown_halstead, false);
     } else if ("raw" === disp) {
         select_metric(last_shown_raw, false);
+    }
+}
+
+/**
+ * Toggles visibility of elements matching classname, allowing to choose block or inline.
+ * @param {string} classname
+ * @param {boolean} block
+ */
+function toggle_elements(classname, block) {
+    let style = "inline";
+    if (block === true) {
+        style = "block";
+    }
+    let display_name = classname.split("_")[0];
+    let spans = document.getElementsByClassName(classname);
+    for (let si in spans) {
+        if (spans[si].style)
+            {
+              spans[si].style.display =
+                display_name === disp ? style : "none";
+            }
     }
 }
 
