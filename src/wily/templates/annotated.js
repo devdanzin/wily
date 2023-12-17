@@ -9,50 +9,55 @@ let last_shown_raw = "loc";
  * Toggles visibility of metric spans and buttons, displaying last shown metric.
  */
 function toggle() {
-    if (disp === "cyclomatic") {
+    if ("cyclomatic" === disp) {
         disp = "halstead";
-    } else if (disp === "halstead") {
+    } else if ("halstead" === disp) {
         disp = "raw";
-    } else if (disp === "raw") {
+    } else if ("raw" === disp) {
         disp = "cyclomatic";
     }
 
     let ra_divs = document.getElementsByClassName("raw");
     for (let ri in ra_divs) {
         if (ra_divs[ri].style) {
-            ra_divs[ri].style.display = disp === "raw" ? "inline" : "none";
+            ra_divs[ri].style.display = "raw" === disp ? "inline" : "none";
         }
     }
     let ra_spans = document.getElementsByClassName("raw_span");
     for (let ri in ra_spans) {
         if (ra_spans[ri].style) {
-            ra_spans[ri].style.display = disp === "raw" ? "inline" : "none";
+            ra_spans[ri].style.display = "raw" === disp ? "inline" : "none";
         }
     }
     let cy_divs = document.getElementsByClassName("cyclomatic");
     for (let ci in cy_divs) {
         if (cy_divs[ci].style) {
             cy_divs[ci].style.display =
-                disp === "cyclomatic" ? "block" : "none";
+                "cyclomatic" === disp ? "block" : "none";
         }
     }
     let cy_spans = document.getElementsByClassName("cyclomatic_span");
     for (let ci in cy_spans) {
         if (cy_spans[ci].style) {
             cy_spans[ci].style.display =
-                disp === "cyclomatic" ? "inline" : "none";
+                "cyclomatic" === disp ? "inline" : "none";
         }
     }
     let ha_divs = document.getElementsByClassName("halstead");
     for (let hi in ha_divs) {
         if (ha_divs[hi].style)
-            ha_divs[hi].style.display = disp === "halstead" ? "inline" : "none";
+            {
+              ha_divs[hi].style.display =
+                "halstead" === disp ? "inline" : "none";
+            }
     }
     let ha_spans = document.getElementsByClassName("halstead_span");
     for (let hi in ha_spans) {
         if (ha_spans[hi].style)
-            ha_spans[hi].style.display =
-                disp === "halstead" ? "inline" : "none";
+            {
+              ha_spans[hi].style.display =
+                "halstead" === disp ? "inline" : "none";
+            }
     }
 
     // Pick a Halstead metric the first time we toggle to them
@@ -62,11 +67,11 @@ function toggle() {
     }
 
     // Pick either the CC metric or the last Halstead metric shown
-    if (disp === "cyclomatic") {
+    if ("cyclomatic" === disp) {
         select_metric("cc_function", false);
-    } else if (disp === "halstead") {
+    } else if ("halstead" === disp) {
         select_metric(last_shown_halstead, false);
-    } else if (disp === "raw") {
+    } else if ("raw" === disp) {
         select_metric(last_shown_raw, false);
     }
 }
@@ -166,7 +171,7 @@ function display_or_hide_metrics(name, show_all) {
         for (let si in spans_to_display_or_hide) {
             if (
                 spans_to_display_or_hide[si].style &&
-                disp === "halstead" &&
+                "halstead" === disp &&
                 halstead_names.includes(metric_names[mni])
             ) {
                 spans_to_display_or_hide[si].style.display = show_all
@@ -174,7 +179,7 @@ function display_or_hide_metrics(name, show_all) {
                     : "none";
             } else if (
                 spans_to_display_or_hide[si].style &&
-                disp === "raw" &&
+                "raw" === disp &&
                 raw_names.includes(metric_names[mni])
             ) {
                 spans_to_display_or_hide[si].style.display = show_all
@@ -186,7 +191,9 @@ function display_or_hide_metrics(name, show_all) {
     let spans_to_display = document.getElementsByClassName(name + "_val");
     for (let si in spans_to_display) {
         if (spans_to_display[si].style)
-            spans_to_display[si].style.display = "inline";
+            {
+              spans_to_display[si].style.display = "inline";
+            }
     }
 }
 
