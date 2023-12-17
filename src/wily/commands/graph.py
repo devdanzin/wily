@@ -12,7 +12,7 @@ import plotly.offline
 
 from wily import format_datetime, logger
 from wily.config.types import WilyConfig
-from wily.operators import resolve_metric, resolve_metric_as_tuple
+from wily.operators import Metric, resolve_metric, resolve_metric_as_tuple
 from wily.state import State
 
 
@@ -38,7 +38,7 @@ def graph(
     changes: bool = True,
     text: bool = False,
     aggregate: bool = False,
-    plotlyjs: Union[bool, str] = False,
+    plotlyjs: Union[bool, str] = True,
     cached: bool = False,
 ) -> None:
     """
@@ -52,7 +52,7 @@ def graph(
     :param changes: Only graph changes.
     :param text: Show commit message inline in graph.
     :param aggregate: Aggregate values for graph.
-    :param plotlyjs: Whether and how to include plotlyjs.
+    :param plotlyjs: How to include plotly.min.js.
     :param cached: Whether to use caching.
     """
     logger.debug("Running graph command")
@@ -90,6 +90,7 @@ def graph(
         f"{(' for ' + paths[0]) if len(paths) == 1 else ''}{' aggregated' if aggregate else ''}"
     )
     operator, key = metric_parts(metrics_list[0])
+    z_axis: Union[Metric, str]
     if len(metrics_list) == 1:  # only y-axis
         z_axis = z_operator = z_key = ""
     else:
@@ -180,5 +181,5 @@ def graph(
         },
         auto_open=auto_open,
         filename=filename,
-        include_plotlyjs=plotlyjs,
+        include_plotlyjs=plotlyjs,  # type: ignore
     )
