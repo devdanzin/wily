@@ -10,7 +10,7 @@ import pathlib
 from string import Template
 from time import time
 
-from git import Repo
+from git.repo import Repo
 
 from wily import logger
 from wily.commands.graph import graph

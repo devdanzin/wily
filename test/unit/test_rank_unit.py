@@ -40,6 +40,7 @@ def test_rank(capsys):
             threshold=0,
             descending=False,
             wrap=False,
+            cached=False,
         )
 
     captured = capsys.readouterr()
@@ -86,6 +87,7 @@ def test_rank_wrapped(capsys):
             threshold=0,
             descending=False,
             wrap=True,
+            cached=False,
         )
 
     captured = capsys.readouterr()
@@ -128,6 +130,7 @@ def test_rank_descending(capsys):
             threshold=0,
             descending=True,
             wrap=False,
+            cached=False,
         )
 
     captured = capsys.readouterr()
@@ -168,6 +171,7 @@ def test_rank_limit(capsys):
             threshold=0,
             descending=False,
             wrap=False,
+            cached=False,
         )
 
     captured = capsys.readouterr()
@@ -196,6 +200,7 @@ def test_rank_path(capsys):
             threshold=0,
             descending=False,
             wrap=False,
+            cached=False,
         )
 
     captured = capsys.readouterr()
@@ -225,6 +230,7 @@ def test_rank_path_output(capsys):
             threshold=0,
             descending=False,
             wrap=False,
+            cached=False,
         )
 
     captured = capsys.readouterr()
@@ -255,6 +261,7 @@ def test_keyerror(capsys):
                 threshold=0,
                 descending=False,
                 wrap=False,
+                cached=False,
             )
         except SystemExit:
             raised = True
@@ -287,6 +294,7 @@ def test_threshold(capsys):
                 threshold=10,
                 descending=False,
                 wrap=False,
+                cached=False,
             )
         except SystemExit:
             raised = True

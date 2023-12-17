@@ -42,17 +42,17 @@ def test_list_metrics_real_metrics():
 
 def test_list_metrics_mock_metrics():
     bare_operator_metrics = {"operator_cls.metrics": []}
-    mock_bare_operator = mock.Mock(**bare_operator_metrics)
+    mock_bare_operator = mock.Mock(**bare_operator_metrics)  # type: ignore
     single_metric = mock.Mock()
     single_metric.name = "single_metric"
     single_operator_metrics = {"operator_cls.metrics": [single_metric]}
-    mock_single_operator = mock.Mock(**single_operator_metrics)
+    mock_single_operator = mock.Mock(**single_operator_metrics)  # type: ignore
     multiple_metric1 = mock.Mock()
     multiple_metric1.name = "multiple_metric1"
     multiple_metric2 = mock.Mock()
     multiple_metric2.name = "multiple_metric2"
     multiple_operator_metrics = {"operator_cls.metrics": [multiple_metric1, multiple_metric2]}
-    mock_multiple_operator = mock.Mock(**multiple_operator_metrics)
+    mock_multiple_operator = mock.Mock(**multiple_operator_metrics)  # type: ignore
     operators = {
         "bare_operator": mock_bare_operator,
         "single_operator": mock_single_operator,
@@ -238,7 +238,7 @@ def test_build_reports_empty():
     mock_graph = mock.Mock()
 
     metrics = []
-    files = []
+    files = ()
     result = wily.commands.bulk.build_reports(
         config,
         metrics,
@@ -268,7 +268,7 @@ def test_build_reports_files_no_metrics():
         "bulk_wily.graph", mock_graph
     ):
         metrics = []
-        files = ["file1.py", "file2.py"]
+        files = (pathlib.Path("file1.py"), pathlib.Path("file2.py"))
         result = wily.commands.bulk.build_reports(
             config,
             metrics,
@@ -298,7 +298,7 @@ def test_build_reports_files_and_metrics():
         "bulk_wily.graph", mock_graph
     ):
         metrics = ["metric1", "metric2"]
-        files = ["file1.py", "file2.py"]
+        files = (pathlib.Path("file1.py"), pathlib.Path("file2.py"))
         result = wily.commands.bulk.build_reports(
             config,
             metrics,
@@ -328,7 +328,7 @@ def test_build_reports_index_only():
         "bulk_wily.graph", mock_graph
     ):
         metrics = ["metric1", "metric2"]
-        files = ["file1.py", "file2.py"]
+        files = (pathlib.Path("file1.py"), pathlib.Path("file2.py"))
         result = wily.commands.bulk.build_reports(
             config,
             metrics,
@@ -358,7 +358,7 @@ def test_build_reports_globals_only():
         "bulk_wily.graph", mock_graph
     ):
         metrics = ["metric1", "metric2"]
-        files = ["file1.py", "file2.py"]
+        files = (pathlib.Path("file1.py"), pathlib.Path("file2.py"))
         result = wily.commands.bulk.build_reports(
             config,
             metrics,

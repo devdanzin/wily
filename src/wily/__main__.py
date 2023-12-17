@@ -241,6 +241,7 @@ def rank(ctx, path, metric, revision, limit, desc, threshold, wrap):
         threshold=threshold,
         descending=desc,
         wrap=wrap,
+        cached=False,
     )
 
 
