@@ -9,6 +9,7 @@ let last_shown_raw = "loc";
  * Toggles visibility of metric spans and buttons, displaying last shown metric.
  */
 function toggle() {
+    // Set cycling order: cyclomatic -> halstead -> raw -> cyclomatic
     if ("cyclomatic" === disp) {
         disp = "halstead";
     } else if ("halstead" === disp) {
@@ -17,6 +18,7 @@ function toggle() {
         disp = "cyclomatic";
     }
 
+    // Toggle element visibility
     toggle_elements("raw", false);
     toggle_elements("raw_span", false);
     toggle_elements("cyclomatic", true);
