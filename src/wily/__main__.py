@@ -531,6 +531,13 @@ def bulk() -> None:
     type=click.Path(resolve_path=False, path_type=Path),
 )
 @click.option(
+    "path_root",
+    "-p",
+    "--path-root",
+    type=click.Path(resolve_path=False, path_type=Path),
+    help="Root of paths for which to bulk build.",
+)
+@click.option(
     "output_path",
     "-o",
     "--output",
@@ -568,19 +575,22 @@ def bulk() -> None:
 def bulk_build(
     ctx: click.Context,
     paths: tuple[Path, ...],
+    path_root: Optional[Path],
     output_path: Optional[Path],
     cache: bool,
     index: bool,
     globals_only: bool,
     metrics: str,
-    changes: bool,
+    all: bool,
 ) -> None:
     """Build the bulk reports."""
     if output_path is None:
         output_path = Path("reports/")
     output_path.mkdir(exist_ok=True, parents=True)
     config = ctx.obj["CONFIG"]
-    files = paths if paths else get_all_tracked(config)
+    if path_root is None:
+        path_root = Path()
+    files = paths if paths else get_all_tracked(path_root, config)
     metrics_list = metrics.split(",") if metrics else list_all_metrics()
     build_reports(
         config,
@@ -590,7 +600,7 @@ def bulk_build(
         cached=cache,
         index_only=index,
         globals_only=globals_only,
-        changes_only=changes,
+        changes_only=not all,
     )
 
 

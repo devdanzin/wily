@@ -23,10 +23,11 @@ from wily.operators import ALL_OPERATORS, resolve_metric
 start = time()
 
 
-def get_all_tracked(config: WilyConfig) -> tuple[pathlib.Path, ...]:
+def get_all_tracked(path_root: pathlib.Path, config: WilyConfig) -> tuple[pathlib.Path, ...]:
     """
     Get all tracked files that ever existed in git repo.
 
+    :param path_root: Root of paths for which to bulk build.
     :param config: The config from which to get the repository path.
     :return: A sorted list of unique Paths of tracked Python files.
     """
@@ -38,9 +39,13 @@ def get_all_tracked(config: WilyConfig) -> tuple[pathlib.Path, ...]:
         )
     )
     path_list = path_log.split("\n")
-    paths = [name for name in path_list if name.endswith(".py")]
-    paths = sorted(set(paths))
-    return tuple(pathlib.Path(path) for path in paths)
+    str_paths = [name for name in path_list if name.endswith(".py")]
+    paths = [pathlib.Path(path).resolve() for path in sorted(set(str_paths))]
+
+    path_root = path_root.resolve()
+    local = pathlib.Path(".").resolve()
+    paths = tuple(path.relative_to(local) for path in paths if path_root in path.parents)
+    return paths
 
 
 def list_all_metrics() -> list[str]:
