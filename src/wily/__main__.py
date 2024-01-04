@@ -559,9 +559,9 @@ def bulk() -> None:
     "-m", "--metrics", help="Comma-separated metrics to build bulk reports with"
 )
 @click.option(
-    "-c",
-    "--changes/--all",
-    default=True,
+    "-a",
+    "--all/--changes",
+    default=False,
     help="Only show revisions that have changes",
 )
 @click.pass_context
