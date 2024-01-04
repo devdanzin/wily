@@ -107,7 +107,7 @@ def build(config: WilyConfig, archiver: Archiver, operators: List[Operator]) -> 
                     if any(  # Check that changed files are children of the targets
                         True
                         for target in config.targets
-                        if pathlib.Path(target)
+                        if pathlib.Path(target).resolve()
                         in (pathlib.Path(config.path) / file).parents
                     )
                 ]
