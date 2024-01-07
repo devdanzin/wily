@@ -92,7 +92,9 @@ def build(config: WilyConfig, archiver: Archiver, operators: List[Operator]) -> 
 
     # Index all files the first time, only scan changes afterward
     seed = True
-    assert isinstance(config.targets, (list, tuple)), f"Type: {type(config.targets)}; Targets: {config.targets}"
+    assert isinstance(
+        config.targets, (list, tuple)
+    ), f"Type: {type(config.targets)}; Targets: {config.targets}"
     try:
         with multiprocessing.Pool(processes=len(operators)) as pool:
             prev_stats: Dict[str, Dict] = {}
