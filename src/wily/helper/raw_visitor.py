@@ -18,7 +18,6 @@ BaseRawFuncMetrics = namedtuple(
         "endline",
         "is_method",
         "classname",
-        "closures",
         "loc",
         "lloc",
         "sloc",
@@ -37,7 +36,6 @@ BaseRawClassMetrics = namedtuple(
         "col_offset",
         "endline",
         "methods",
-        "inner_classes",
         "loc",
         "lloc",
         "sloc",
@@ -196,25 +194,14 @@ class RawVisitor(CodeVisitor):
 
         When visiting functions a new visitor is created to recursively analyze the function's body.
         """
-        closures = []
-        visitor = None
-
-        # Do we really need closures for Raw?
-        for child in node.body:
-            visitor = RawVisitor(classname=self.classname, atok=self.atok)
-            visitor.visit(child)  # type: ignore
-            closures.extend(visitor.functions)
-
-        max_line = visitor.max_line if visitor is not None else 0
         self.get_raw_metrics(node)
         func_metrics = RawFunctionMetrics(
             node.name,
             node.lineno,
             node.col_offset,
-            max(node.lineno, max_line, node.lineno + self.loc - 1),
+            max(node.lineno, node.lineno + self.loc - 1),
             self.to_method,
             self.classname,
-            closures,
             self.loc,
             self.lloc,
             self.sloc,
@@ -235,9 +222,8 @@ class RawVisitor(CodeVisitor):
         methods = []
         classname = node.name
         visitors_max_lines = [node.lineno]
-        inner_classes = []
         for child in node.body:
-            if not isinstance(child, (ast.ClassDef, ast.FunctionDef)):
+            if not isinstance(child, ast.FunctionDef):
                 continue
             visitor = RawVisitor(
                 True,
@@ -247,7 +233,6 @@ class RawVisitor(CodeVisitor):
             visitor.visit(child)  # type: ignore
             methods.extend(visitor.functions)
             visitors_max_lines.append(visitor.max_line)
-            inner_classes.extend(visitor.classes)
 
         self.get_raw_metrics(node)
         line_loc = [node.lineno + self.loc - 1]
@@ -257,7 +242,6 @@ class RawVisitor(CodeVisitor):
             node.col_offset,
             max(visitors_max_lines + list(map(GET_ENDLINE, methods)) + line_loc),
             methods,
-            inner_classes,
             self.loc,
             self.lloc,
             self.sloc,
