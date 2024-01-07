@@ -3,17 +3,29 @@ Raw statistics operator.
 
 Includes insights like lines-of-code, number of comments. Does not measure complexity.
 """
-from typing import Any, Dict, Iterable, Union
+from typing import Any, Dict, Iterable, Optional, Sequence, Union
 
 import radon.cli.harvest as harvesters
 from radon.cli import Config
 from radon.raw import Module
-from radon.raw_visitor import RawClassMetrics, RawFunctionMetrics
 
 from wily import logger
 from wily.config.types import WilyConfig
+from wily.helper.raw_visitor import RawClassMetrics, RawFunctionMetrics, RawVisitor
 from wily.lang import _
 from wily.operators import BaseOperator, Metric, MetricType
+
+
+class NumberedRawHarvester(harvesters.RawHarvester):
+    """A class that analyzes Python modules' raw metrics, collecting results by block."""
+
+    def gobble(  # type: ignore
+        self, fobj
+    ) -> Sequence[
+        tuple[str, Union[Optional[Module], RawClassMetrics, RawFunctionMetrics]],
+    ]:
+        """Analyze the content of the file object."""
+        return RawVisitor.from_code(fobj.read()).blocks
 
 
 class RawMetricsOperator(BaseOperator):
@@ -55,9 +67,7 @@ class RawMetricsOperator(BaseOperator):
         """
         # TODO: Use config from wily.cfg for harvester
         logger.debug("Using %s with %s for Raw metrics", targets, self.defaults)
-        self.harvester = harvesters.RawHarvester(
-            targets, config=Config(**self.defaults)
-        )
+        self.harvester = NumberedRawHarvester(targets, config=Config(**self.defaults))
 
     def run(self, module: str, options: Dict[str, Any]) -> Dict[Any, Any]:
         """

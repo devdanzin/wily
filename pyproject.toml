@@ -31,6 +31,7 @@ dependencies = [
     "plotly>=4.0.0,<6.0.0",
     "progress>=1.4,<2.0",
     "dataclasses; python_version == '3.6'",
+    "asttokens>=2.4.1,<2.5.0",
 ]
 requires-python = ">=3.6"
 dynamic=["version", "description"]
