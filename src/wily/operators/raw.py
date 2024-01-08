@@ -67,7 +67,7 @@ class RawMetricsOperator(BaseOperator):
         logger.debug("Using %s with %s for Raw metrics", targets, self.defaults)
         self.harvester = NumberedRawHarvester(targets, config=Config(**self.defaults))
 
-    def run(self, module: str, options: Dict[str, Any]) -> Dict[Any, Any]:
+    def run(self, module: str, options: Dict[str, Any]) -> Dict[str, Union[int, bool]]:
         """
         Run the operator.
 
