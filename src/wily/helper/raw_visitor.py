@@ -2,7 +2,7 @@
 import ast
 import tokenize
 from collections import namedtuple
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
 
 import asttokens
 from radon.metrics import analyze
@@ -95,8 +95,8 @@ class RawVisitor(CodeVisitor):
         atok: Optional[asttokens.ASTTokens] = None,
     ) -> None:
         """Set up the Visitor instance."""
-        self.functions = []
-        self.classes = []
+        self.functions: list[RawFunctionMetrics] = []
+        self.classes: list[RawClassMetrics] = []
         self.to_method = to_method
         self.classname = classname
         self.atok = atok
@@ -121,7 +121,7 @@ class RawVisitor(CodeVisitor):
     @property
     def blocks(
         self,
-    ) -> Sequence[
+    ) -> list[
         tuple[str, Union[Optional[Module], RawClassMetrics, RawFunctionMetrics]],
     ]:
         """
@@ -130,6 +130,9 @@ class RawVisitor(CodeVisitor):
         These include: all the functions, the classes and their methods. The returned
         list is not sorted.
         """
+        blocks: list[
+            tuple[str, Union[Optional[Module], RawClassMetrics, RawFunctionMetrics]]
+        ]
         blocks = [("__ModuleMetrics__", self.module)]
         blocks.extend((f.fullname, f) for f in self.functions)
         for cls in self.classes:

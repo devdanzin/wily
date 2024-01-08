@@ -4,7 +4,7 @@ from collections import defaultdict
 from pathlib import Path
 from string import Template
 from sys import exit
-from typing import Any, Optional
+from typing import Any, Mapping, Optional
 
 import git
 from pygments import highlight
@@ -78,7 +78,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
     metric_names = raw_names + halstead_names + ("cc_function",)
 
     def __init__(
-        self, metrics: list[dict[int, tuple[str, str]]], **options: Any
+        self, metrics: list[Mapping[int, tuple[str, ...]]], **options: Any
     ) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
@@ -250,7 +250,7 @@ class AnnotatedHTMLFormatter(HtmlFormatter):
 class AnnotatedTerminalFormatter(TerminalFormatter):
     """Annotate and source code with metric values to print to terminal."""
 
-    def __init__(self, metrics: dict[int, tuple[str, str]], **options: Any) -> None:
+    def __init__(self, metrics: Mapping[int, tuple[str, ...]], **options: Any) -> None:
         """Set up the formatter instance with metrics."""
         super().__init__(**options)
         self.metrics = metrics
@@ -300,7 +300,7 @@ def map_cyclomatic_lines(details: dict) -> dict[int, tuple[str, str]]:
     return lines
 
 
-def map_halstead_lines(details: dict) -> dict[int, tuple[str, ...]]:
+def map_halstead_lines(details: dict) -> Mapping[int, tuple[str, ...]]:
     """
     Map Halstead metric values to lines, for functions.
 
@@ -560,7 +560,7 @@ def annotate_revision(
 
 
 def print_annotated_source(
-    code: str, metrics: dict[int, tuple[str, str]], filename: str
+    code: str, metrics: Mapping[int, tuple[str, ...]], filename: str
 ) -> None:
     """
     Print source annotated with metric to terminal.
@@ -583,7 +583,7 @@ def print_annotated_source(
 def generate_annotated_html(
     code: str,
     filename: str,
-    metrics: list[dict[int, tuple[str, str]]],
+    metrics: list[Mapping[int, tuple[str, ...]]],
     output_dir: Optional[Path] = None,
 ) -> dict[str, str]:
     """

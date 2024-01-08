@@ -67,7 +67,7 @@ class RawMetricsOperator(BaseOperator):
         logger.debug("Using %s with %s for Raw metrics", targets, self.defaults)
         self.harvester = NumberedRawHarvester(targets, config=Config(**self.defaults))
 
-    def run(self, module: str, options: Dict[str, Any]) -> Dict[str, Union[int, bool]]:
+    def run(self, module: str, options: Dict[str, Any]) -> Dict[str, Dict]:
         """
         Run the operator.
 
@@ -76,7 +76,7 @@ class RawMetricsOperator(BaseOperator):
         :return: The operator results.
         """
         logger.debug("Running raw harvester")
-        results = {}
+        results: Dict[str, Dict] = {}
         for filename, details in dict(self.harvester.results).items():
             assert isinstance(details, dict)
             results[filename] = {"detailed": {}, "total": {}}
@@ -96,7 +96,7 @@ class RawMetricsOperator(BaseOperator):
 
     def _report_to_dict(
         self, report: Union[Module, RawFunctionMetrics, RawClassMetrics]
-    ) -> dict:
+    ) -> Dict[str, Union[int, bool]]:
         raw_metrics = {
             "loc": report.loc,
             "lloc": report.lloc,
