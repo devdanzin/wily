@@ -18,10 +18,18 @@ def test_get_metric_color():
     assert wily.commands.annotate.get_metric_color(1.5, maximum=1) == yellow
     for name, maximum in wily.commands.annotate.MAX_DICT.items():
         assert wily.commands.annotate.get_metric_color(0, name=name) == pure_green
-        assert wily.commands.annotate.get_metric_color(maximum + 1, name=name) == pure_red
-        assert wily.commands.annotate.get_metric_color(maximum / 2 + 1, name=name) == yellow
+        assert (
+            wily.commands.annotate.get_metric_color(maximum + 1, name=name) == pure_red
+        )
+        assert (
+            wily.commands.annotate.get_metric_color(maximum / 2 + 1, name=name)
+            == yellow
+        )
     # Test that maximum is ignored when a name is passed
-    assert wily.commands.annotate.get_metric_color(maximum / 2 + 1, maximum=1, name=name) == yellow
+    assert (
+        wily.commands.annotate.get_metric_color(maximum / 2 + 1, maximum=1, name=name)
+        == yellow
+    )
 
 
 def test_last_line():
