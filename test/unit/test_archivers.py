@@ -14,7 +14,7 @@ class MockAuthor:
 
 
 class MockStats:
-    files = {}
+    files: dict = {}
 
 
 TEST_AUTHOR = MockAuthor()
@@ -27,7 +27,7 @@ class MockCommit:
     committed_date = "1/1/1990"
     stats = TEST_STATS
     hexsha = "123abc"
-    parents = []
+    parents: list = []
 
     def __init__(self, message):
         self.message = message

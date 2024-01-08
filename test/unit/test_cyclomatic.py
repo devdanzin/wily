@@ -8,7 +8,7 @@ from wily.config import DEFAULT_CONFIG
 
 
 class MockCC:
-    results = {}
+    results: dict = {}
 
 
 @mock.patch("wily.operators.cyclomatic.harvesters.CCHarvester", return_value=MockCC)

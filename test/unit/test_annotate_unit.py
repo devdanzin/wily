@@ -16,6 +16,8 @@ def test_get_metric_color():
     assert wily.commands.annotate.get_metric_color(26) == yellow
     assert wily.commands.annotate.get_metric_color(501, maximum=1000) == yellow
     assert wily.commands.annotate.get_metric_color(1.5, maximum=1) == yellow
+    name = "cc_function"
+    maximum = 50
     for name, maximum in wily.commands.annotate.MAX_DICT.items():
         assert wily.commands.annotate.get_metric_color(0, name=name) == pure_green
         assert (
