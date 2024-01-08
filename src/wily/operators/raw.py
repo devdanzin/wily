@@ -3,7 +3,7 @@ Raw statistics operator.
 
 Includes insights like lines-of-code, number of comments. Does not measure complexity.
 """
-from typing import Any, Dict, Iterable, Optional, Sequence, Union
+from typing import Any, Dict, Iterable, Optional, Union
 
 import radon.cli.harvest as harvesters
 from radon.cli import Config
@@ -19,13 +19,11 @@ from wily.operators import BaseOperator, Metric, MetricType
 class NumberedRawHarvester(harvesters.RawHarvester):
     """A class that analyzes Python modules' raw metrics, collecting results by block."""
 
-    def gobble(  # type: ignore
+    def gobble(
         self, fobj
-    ) -> Sequence[
-        tuple[str, Union[Optional[Module], RawClassMetrics, RawFunctionMetrics]],
-    ]:
+    ) -> dict[str, Union[Optional[Module], RawClassMetrics, RawFunctionMetrics]]:
         """Analyze the content of the file object."""
-        return RawVisitor.from_code(fobj.read()).blocks
+        return dict(RawVisitor.from_code(fobj.read()).blocks)
 
 
 class RawMetricsOperator(BaseOperator):
@@ -80,25 +78,20 @@ class RawMetricsOperator(BaseOperator):
         logger.debug("Running raw harvester")
         results = {}
         for filename, details in dict(self.harvester.results).items():
+            assert isinstance(details, dict)
             results[filename] = {"detailed": {}, "total": {}}
-            if isinstance(details, dict) and "error" in details:
+            if "error" in details:
                 logger.debug(
                     f"Failed to run Raw harvester on {filename} : {details['error']}"
                 )
                 continue
-            for name, instance in details:
+            for name, instance in details.items():
                 if isinstance(instance, (Module, RawClassMetrics, RawFunctionMetrics)):
                     report_as_dict = self._report_to_dict(instance)
                     if name == "__ModuleMetrics__":
                         results[filename]["total"] = report_as_dict
                     else:
                         results[filename]["detailed"][name] = report_as_dict
-                else:
-                    if isinstance(instance, str) and instance == "error":
-                        logger.debug(
-                            f"Failed to run Raw harvester on {filename} : {details['error']}"
-                        )
-                        continue
         return results
 
     def _report_to_dict(
