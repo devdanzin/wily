@@ -32,6 +32,7 @@ dependencies = [
     "progress>=1.4,<2.0",
     "dataclasses; python_version == '3.6'",
     "asttokens>=2.4.1,<2.5.0",
+    "pygments>=2.17.2,<3.0.0",
 ]
 requires-python = ">=3.6"
 dynamic=["version", "description"]
