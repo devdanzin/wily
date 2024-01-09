@@ -50,6 +50,9 @@ def report(
     :param changes_only: Only report revisions where delta != 0
     :param wrap: Wrap output
     """
+    if path in (".", ".\\", "./"):
+        path = ""
+
     metrics = sorted(metrics)
     logger.debug("Running report command")
     logger.info("-----------History for %s------------", metrics)
