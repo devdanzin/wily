@@ -90,7 +90,7 @@ def diff(
     )
 
     # Convert the list of metrics to a list of metric instances
-    operators = {resolve_operator(metric.split(".")[0]) for metric in metrics}
+    operators = tuple(resolve_operator(metric.split(".")[0]) for metric in metrics)
     resolved_metrics = [
         (metric.split(".")[0], resolve_metric(metric)) for metric in metrics
     ]
