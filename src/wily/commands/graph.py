@@ -138,6 +138,8 @@ def graph(
                 # missing data
                 pass
 
+        if len(x) < 2:
+            continue
         # Create traces
         trace = go.Scatter(
             x=x,
