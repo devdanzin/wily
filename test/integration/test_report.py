@@ -83,6 +83,16 @@ def test_report_path(builddir):
     assert "Not found" not in result.stdout
 
 
+def test_report_path_root_dir(builddir):
+    """
+    Test that report with a root dir path results in no "Not Found" messages
+    """
+    runner = CliRunner()
+    result = runner.invoke(main.cli, ["--path", builddir, "report", "."])
+    assert result.exit_code == 0, result.stdout
+    assert "Not found" not in result.stdout
+
+
 def test_report_with_message(builddir):
     """
     Test that report works messages in UI
