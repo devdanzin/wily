@@ -99,7 +99,7 @@ def report(
                         "Fetching metric %s for %s in %s",
                         meta["key"],
                         meta["operator"],
-                        path,
+                        path or ".",
                     )
                     val = rev.get(config, archiver, meta["operator"], path, meta["key"])
 
@@ -156,7 +156,7 @@ def report(
                         )
                     )
     if not data:
-        logger.error("No data found for %s with changes=%s.", path, changes_only)
+        logger.error("No data found for %s with changes=%s.", path or ".", changes_only)
         return
 
     descriptions = [meta["title"] for meta in metric_metas]
